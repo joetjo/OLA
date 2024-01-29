@@ -65,7 +65,7 @@ class MarkdownHelper:
 
         return entryCount
 
-    def generateAllReports(self):
+    def generateAllReports(self, signal):
         logging.info("MDR | Markdown vault: {}".format(self.VAULT))
         count = self.processFolder(Path(self.VAULT), "")
 
@@ -80,6 +80,7 @@ class MarkdownHelper:
             current = 1
             for report in self.REPORTS:
                 logging.info("MDR | Processing report \"{}\" {}/{}".format(report["title"], current, total))
+                signal.emit(report["title"])
                 current = current + 1
                 MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT).generate()
         except Exception as e:

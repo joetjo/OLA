@@ -92,12 +92,16 @@ class OLAApplication(QApplication):
 
     def startReporting(self):
         mdgen = MdReportGenerator()
-        mdgen.signals.md_report_generation_finished.connect(self.mdReportsGenerated())
+        mdgen.signals.md_report_generation_finished.connect(self.mdReportsGenerated)
+        mdgen.signals.md_last_report.connect(self.mdReportsStarted)
         self.threadpool.start(mdgen)
 
         filegen = FileUsageGenerator()
         filegen.signals.file_usage_generation_finished.connect(self.fileUsageGenerated)
         self.threadpool.start(filegen)
+
+    def mdReportsStarted(self, reportName):
+        self.main.tmp.setText("Processing {}" .format(reportName))
 
     def mdReportsGenerated(self):
         self.main.tmp.setText("Markdown reports Generated")
