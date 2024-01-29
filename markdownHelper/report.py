@@ -11,6 +11,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+import logging
 from datetime import datetime
 
 # Ugly but simple
@@ -251,7 +252,7 @@ class MhReportEntry:
 
     def generate(self, writer):
         if self.isVirtual:
-            print("  | {} VIRTUAL [{}->{}] ({} {})".format(LONG_BLANK[0:len(self.level) * 2],
+            logging.debug("MDR |  | {} VIRTUAL [{}->{}] ({} {})".format(LONG_BLANK[0:len(self.level) * 2],
                                                            len(self.inputFiles), len(self.filteredFiles), self.tags,
                                                            self.paths))
             if len(self.filteredFiles) > 0:
@@ -273,7 +274,7 @@ class MhReportEntry:
 
             return
 
-        print("  | {} {} [{}->{} / {}] ({} {})".format(LONG_BLANK[0:len(self.level) * 2], self.title(),
+        logging.debug("MDR |  | {} {} [{}->{} / {}] ({} {})".format(LONG_BLANK[0:len(self.level) * 2], self.title(),
                                                        len(self.inputFiles), len(self.filteredFiles),
                                                        len(self.elseFiles), self.tags, self.paths))
 
@@ -357,6 +358,6 @@ class MhReport:
     def generate(self):
         rootReport = MhReportEntry(self.json, self.inputFiles, self.allTags, self.allSubContents,
                                    self.commentTag, self.showTags)
-        print("Generate report \"{}\" to {}".format(rootReport.title(), self.target()))
+        logging.info("MDR | Generate report \"{}\" to {}".format(rootReport.title(), self.target()))
         with open(self.target(), 'w', encoding='utf-8') as writer:
             rootReport.generate(writer)

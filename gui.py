@@ -9,6 +9,11 @@ from tools import MdReportGenerator, FileUsageGenerator
 from version import OLAVersionInfo
 
 
+class OLAGuiSetup:
+    WITH = 500
+    HEIGHT = 200
+
+
 class OLAGui:
     APP = None
 
@@ -37,8 +42,8 @@ class OLAMainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Obsidian Launcher Assistant - {}".format(OLAVersionInfo.CURRENT))
 
-        self.setMinimumWidth(200)
-        self.setMinimumHeight(150)
+        self.setMinimumWidth(OLAGuiSetup.WITH)
+        self.setMinimumHeight(OLAGuiSetup.HEIGHT)
         self.move(10, 10)
 
         toolbar = OLAToolbar("Main toolbar", self)

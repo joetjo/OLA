@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime
 
@@ -40,7 +41,7 @@ class GhDiskEntries:
                 self.leafEntries[folderName] = [path]
 
     def addPathAndName(self, path, name, ignore):  # absolute path
-        print("  [{}] Location:[{}] Name:[{}]".format(self.name, path, name))
+        logging.debug("FUR |  [{}] Location:[{}] Name:[{}]".format(self.name, path, name))
         if name not in ignore:
             try:
                 self.entries[name].append(path)
@@ -151,13 +152,14 @@ class DiskAnalyser:
         self.unsortedFiles = dict()  # key root folder, value : list of files
 
     def generateReport(self):
-        print("   | Markdown vault: \n   |   {}\n   |   {}\n====\nFolder to check:".format(self.REPORT_ALLFILES, self.REPORT_ERRORS))
+        logging.info("FUR | Markdown vault: {}".format(self.REPORT_ALLFILES))
+        logging.info("FUR | Folder to check: {}".format(self.REPORT_ERRORS))
         for folder in self.FOLDERS:
-            print("   | - {}".format(folder))
+            logging.debug("FUR |   | - {}".format(folder))
 
-        print("====\nParsing all requested folders....")
+        logging.debug("FUR | Parsing all requested folders....")
         for folder in self.FOLDERS:
-            print("   | - {}".format(folder))
+            logging.debug("FUR |   | - {}".format(folder))
             stat = GhDiskStat(folder)
             self.unsortedFiles[folder] = []
             self.stats.append(stat)
@@ -174,8 +176,8 @@ class DiskAnalyser:
         self.allFiles.sort()
         self.allFolders.sort()
 
-        print("====\n {} folders detected, {} files detected".format(self.globalStat.folderCount, self.globalStat.fileCount))
-        print(" {} unique folders detected, {} unique files detected".format(len(self.allFolders.entries), len(self.allFiles.entries)))
+        logging.info("FUR | {} folders detected, {} files detected".format(self.globalStat.folderCount, self.globalStat.fileCount))
+        logging.info("FUR | {} unique folders detected, {} unique files detected".format(len(self.allFolders.entries), len(self.allFiles.entries)))
 
         with open(self.REPORT_ALLFILES, 'w', encoding='utf-8') as writer:
             self.allFolders.writeLeaf(writer, self.IGNORE_DUPLICATE)

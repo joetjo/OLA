@@ -11,8 +11,9 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+import logging
 
 VERSION = "2.0.3"
 
 
-print("\n====\nMarkdown Helper Version {}".format(VERSION))
+logging.info("MDR | Markdown Helper Version {}".format(VERSION))

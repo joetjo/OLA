@@ -11,6 +11,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+import logging
 
 from base.setup import GhSetup
 
@@ -41,7 +42,7 @@ class MarkdownHelper:
     # folder: Path
     # shift: String ( String length provide the indentation level )
     def processFolder(self, folder, shift):
-        print("{}{}".format(folder, shift))
+        logging.debug("MDR | {}{}".format(folder, shift))
         entryCount = 0
 
         # Loop on file in current folder
@@ -51,9 +52,9 @@ class MarkdownHelper:
                 entryCount = entryCount + 1
                 mdfile = MhMarkdownFile(key, entry)
                 self.FILES[key] = mdfile
-                print("{}>{} {}".format(shift, key, mdfile.tags))
+                logging.debug("MDR | {}>{} {}".format(shift, key, mdfile.tags))
                 if len(mdfile.tagsComment) > 0:
-                    print("{}>>>> comments {}".format(shift, mdfile.tagsComment))
+                    logging.debug("MDR | {}>>>> comments {}".format(shift, mdfile.tagsComment))
                 for tag in mdfile.tags:
                     self.TAGS[tag] = tag
 
@@ -65,19 +66,21 @@ class MarkdownHelper:
         return entryCount
 
     def generateAllReports(self):
-        print("   | Markdown vault: {}\n====".format(self.VAULT))
+        logging.info("MDR | Markdown vault: {}".format(self.VAULT))
         count = self.processFolder(Path(self.VAULT), "")
 
-        print("\n=================")
-        print("> {} md files detected".format(count))
-        print("> {} tags detected".format(len(self.TAGS)))
+        logging.info("MDR | > {} md files detected".format(count))
+        logging.info("MDR | > {} tags detected".format(len(self.TAGS)))
 
         for key in sorted(self.FILES):
             self.SORTED_FILES[key] = self.FILES[key]
 
         try:
+            total = len(self.REPORTS)
+            current = 1
             for report in self.REPORTS:
-                print("\n=================\nProcessing report \"{}\"\n=================\n".format(report["title"]))
+                logging.info("MDR | Processing report \"{}\" {}/{}".format(report["title"], current, total))
+                current = current + 1
                 MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT).generate()
         except Exception as e:
             raise
