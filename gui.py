@@ -13,6 +13,8 @@
 #   limitations under the License.
 
 import logging
+from datetime import datetime
+
 from PySide6.QtCore import QCoreApplication, QSize, QThreadPool
 from PySide6.QtGui import QAction, QPixmap
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMessageBox, QMainWindow, \
@@ -26,6 +28,8 @@ from version import OLAVersionInfo
 class OLAGuiSetup:
     WITH = 500
     HEIGHT = 200
+    POSX = 400
+    POSY = 1500
 
 
 class OLAGui:
@@ -47,8 +51,17 @@ class OLAToolbar(QToolBar):
         bExit = QAction("Exit", self)
         bExit.setStatusTip("Don't know, maybe, stop the App")
         #        bExit.setIcon(Icons.EXIT)
-        #        bExit.triggered.connect(MainWindow.shutdown)
+        bExit.triggered.connect(OLAGui.APP.shutdown)
         self.addAction(bExit)
+
+
+class OLAStatusBar(QStatusBar):
+
+    def __init__(self):
+        super().__init__()
+
+    def set(self, message):
+        self.showMessage("{} | {}".format(datetime.now().strftime("%H:%M:%S"), message))
 
 
 class OLAMainWindow(QMainWindow):
@@ -58,10 +71,14 @@ class OLAMainWindow(QMainWindow):
 
         self.setMinimumWidth(OLAGuiSetup.WITH)
         self.setMinimumHeight(OLAGuiSetup.HEIGHT)
-        self.move(10, 10)
+        self.move(OLAGuiSetup.POSX, OLAGuiSetup.POSY)
 
-        toolbar = OLAToolbar("Main toolbar", self)
-        self.addToolBar(toolbar)
+        self.toolbar = OLAToolbar("Main toolbar", self)
+        self.addToolBar(self.toolbar)
+
+        self.status = OLAStatusBar()
+        self.setStatusBar(self.status)
+        self.status.set( "Loading in progress...")
 
         layout = QVBoxLayout()
 
@@ -73,6 +90,9 @@ class OLAMainWindow(QMainWindow):
         self.setCentralWidget(mainWidget)
 
         logging.info("OLAMainWindow - Main window ready")
+
+    def setStatus(self, message):
+        self.status.set(message)
 
 
 class OLAApplication(QApplication):
@@ -90,6 +110,9 @@ class OLAApplication(QApplication):
         self.main.show()
         self.exec()
 
+    def shutdown(self):
+        QCoreApplication.quit();
+
     def startReporting(self):
         mdgen = MdReportGenerator()
         mdgen.signals.md_report_generation_finished.connect(self.mdReportsGenerated)
@@ -101,10 +124,10 @@ class OLAApplication(QApplication):
         self.threadpool.start(filegen)
 
     def mdReportsStarted(self, reportName):
-        self.main.tmp.setText("Processing {}" .format(reportName))
+        self.main.setStatus("Processing {}".format(reportName))
 
     def mdReportsGenerated(self):
-        self.main.tmp.setText("Markdown reports Generated")
+        self.main.setStatus("Markdown reports Generated")
 
     def fileUsageGenerated(self):
-        self.main.tmp.setText("File usage Generated")
+        self.main.setStatus("File usage Generated")
