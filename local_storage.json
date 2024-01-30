@@ -23,9 +23,9 @@
             "sheet": ""
         },
         "Control": {
-            "duration": "53.269271",
-            "last_duration": "10.187264",
-            "last_session": "1620068248.1973631",
+            "duration": "151.40106",
+            "last_duration": "24.532307",
+            "last_session": "1706639970.9275613",
             "note": "",
             "www": "",
             "tips": "",
@@ -56,15 +56,15 @@
             "sheet": ""
         },
         "TheWitcher2": {
-          "duration": "119.10325",
-          "last_duration": "3.82963",
-          "last_session": "1646481863.2353122",
-          "note": "",
-          "www": "",
-          "tips": "",
-          "type": "RPG",
-          "status": "IN PROGRESS",
-          "sheet": ""
+            "duration": "119.10325",
+            "last_duration": "3.82963",
+            "last_session": "1646481863.2353122",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "type": "RPG",
+            "status": "IN PROGRESS",
+            "sheet": ""
         },
         "MassEffectDefinitiveAndLastEdition": {
             "duration": "55.286666",
@@ -101,6 +101,15 @@
         }
     },
     "last_sessions": [
+        [
+            "Control",
+            "C:\\Users\\nicol\\PycharmProjects\\Ola\\tests\\jeux\\games\\Control\\Control.exe",
+            "Control",
+            "",
+            "STEAM",
+            "",
+            ""
+        ],
         [
             "TheWitcher2",
             "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher2\\tw2.exe",
@@ -145,15 +154,6 @@
             "EPIC",
             "C:/Users/nicol/PycharmProjects/jopLauncher/tests/jeux/games/Borderland2/Launcher.exe",
             "tests\\jeux\\games\\Borderland2\\borderland2.exe"
-        ],
-        [
-            "Control",
-            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\Control\\Control.exe",
-            "Control",
-            "",
-            "STEAM",
-            "",
-            ""
         ],
         [
             "RoseOfSegunda",

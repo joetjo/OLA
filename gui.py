@@ -22,6 +22,7 @@ from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMessage
     QApplication, QStatusBar, QToolBar, QComboBox, QFileDialog, QGroupBox, QLineEdit, QGridLayout
 
 from resources.resources import Icons
+from sbsgl.core.procevent import EventListener
 from sbsgl.sbsgl import SBSGL
 from tools import MdReportGenerator, FileUsageGenerator
 from version import OLAVersionInfo
@@ -34,6 +35,7 @@ class OLAGuiSetup:
 
 class OLAGui:
     APP = None
+    PLAYING_PANEL = None
 
 
 class OLABackend:
@@ -72,11 +74,23 @@ class OLAPlayingPanel(QGroupBox):
     def __init__(self):
         super().__init__()
 
-        layout = QVBoxLayout()
+        OLAGui.PLAYING_PANEL = self
+
+        layout = QHBoxLayout()
         self.setLayout(layout)
 
         label = QLabel("playing panel")
         layout.addWidget(label)
+
+        self.game = QLabel("-")
+        layout.addWidget(self.game)
+
+    def refresh(self):
+        game = OLABackend.SBSGL.procmgr.getCurrentGame()
+        if game is not None:
+            self.game.setText(game.getName())
+        else:
+            self.game.setText("")
 
 
 class OLAGameSessions(QWidget):
@@ -145,6 +159,17 @@ class OLAMainWindow(QMainWindow):
         self.status.set(message)
 
 
+class SbsglListener(EventListener):
+    def newGame(self, game):
+        pass
+
+    def endGame(self, proc):
+        pass
+
+    def refreshDone(self, current_game, platform_list_updated, others):
+        OLAGui.PLAYING_PANEL.refresh()
+
+
 class OLAApplication(QApplication):
 
     def __init__(self, argv):
@@ -162,6 +187,7 @@ class OLAApplication(QApplication):
     def start(self):
         # self.startReporting()
         OLABackend.SBSGL = SBSGL()
+        OLABackend.SBSGL.procmgr.setListener(SbsglListener())
         self.main.show()
         self.exec()
 

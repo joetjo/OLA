@@ -11,10 +11,8 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
+import logging
 from abc import ABC, abstractmethod
-
-from sbsgl.log import Log
 
 
 class EventListener(ABC):
@@ -22,7 +20,7 @@ class EventListener(ABC):
 
     @abstractmethod
     def newGame(self, game):
-        Log.debug("[ABC Impl] New game detected {} ({})".format(game.getName(), game.process.getPath()))
+        logging.info("SGL | New game detected {} ({})".format(game.getName(), game.process.getPath()))
 
     @abstractmethod
     def refreshDone(self, current_game, platform_list_updated, others):
@@ -30,4 +28,4 @@ class EventListener(ABC):
 
     @abstractmethod
     def endGame(self, proc):
-        Log.debug("[ABC Impl] End game detected {} ({})".format(proc.getName(), proc.getPath()))
+        logging.info("SGL | End game detected {} ({})".format(proc.getName(), proc.getPath()))
