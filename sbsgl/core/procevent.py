@@ -12,7 +12,22 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-class Pair:
-    def __init__(self, one, two):
-        self.one = one
-        self.two = two
+from abc import ABC, abstractmethod
+
+from launcher.log import Log
+
+
+class EventListener(ABC):
+    pass
+
+    @abstractmethod
+    def newGame(self, game):
+        Log.debug("[ABC Impl] New game detected {} ({})".format(game.getName(), game.process.getPath()))
+
+    @abstractmethod
+    def refreshDone(self, current_game, platform_list_updated, others):
+        pass
+
+    @abstractmethod
+    def endGame(self, proc):
+        Log.debug("[ABC Impl] End game detected {} ({})".format(proc.getName(), proc.getPath()))

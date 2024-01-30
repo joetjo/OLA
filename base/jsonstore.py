@@ -1,4 +1,4 @@
-# Copyright 2023 joetjo https://github.com/joetjo/MarkdownHelper
+# Copyright 2024 joetjo https://github.com/joetjo/MarkdownHelper
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class GhStorage:
 
     def open(self):
         if self.json_file is not None:
-            with open(self.json_file) as file:
+            with open(self.json_file, encoding='utf-8') as file:
                 self.content = json.load(file)
                 self.version = self.getOrCreate("version", 0)
             print("GhStorage: loaded - version {}".format(self.version))

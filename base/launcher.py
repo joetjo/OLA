@@ -12,7 +12,19 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-class Pair:
-    def __init__(self, one, two):
-        self.one = one
-        self.two = two
+import os
+import subprocess
+import threading
+
+
+class GhLauncher:
+
+    @staticmethod
+    def launch(label, exe, cwd=os.getcwd()):
+        print("Launcher: Launching {} ({}) from folder {} ".format(label, exe, cwd))
+        bg = threading.Thread(target=GhLauncher.launchImpl, args=(exe, cwd))
+        bg.start()
+
+    @staticmethod
+    def launchImpl(exe, cwd):
+        subprocess.run(exe, cwd=cwd)

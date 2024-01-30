@@ -11,8 +11,9 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+import logging
 
-class Pair:
-    def __init__(self, one, two):
-        self.one = one
-        self.two = two
+VERSION = "2.0.3"
+
+
+logging.info("SGL | Simple Game Launcher {}".format(VERSION))
