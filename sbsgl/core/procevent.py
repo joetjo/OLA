@@ -1,4 +1,4 @@
-# Copyright 2024 joetjo https://github.com/joetjo/MarkdownHelper
+# Copyright 2023 joetjo https://github.com/joetjo/MarkdownHelper
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 
 from abc import ABC, abstractmethod
 
-from launcher.log import Log
+from sbsgl.log import Log
 
 
 class EventListener(ABC):

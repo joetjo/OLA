@@ -1,4 +1,4 @@
-# Copyright 2024 joetjo https://github.com/joetjo/MarkdownHelper
+# Copyright 2023 joetjo https://github.com/joetjo/MarkdownHelper
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -18,15 +18,15 @@ import logging  # This module is thread safe.
 import threading
 import time
 
-from JopLauncherConstant import JopLauncher, JopSETUP
+from sbsgl.JopLauncherConstant import JopLauncher, JopSETUP
 from base.jsonstore import GhStorage
 from data.session import SessionList, Session
-from launcher.core.migrations.migrate import StorageVersion
-from launcher.core.private.currentgame import GameProcessHolder
-from launcher.core.private.process import ProcessInfo
-from launcher.core.private.processutil import ProcessUtil
-from launcher.jopsetup import JopSetup
-from launcher.log import Log
+from sbsgl.core.migrations.migrate import StorageVersion
+from sbsgl.core.private.currentgame import GameProcessHolder
+from sbsgl.core.private.process import ProcessInfo
+from sbsgl.core.private.processutil import ProcessUtil
+from sbsgl.jopsetup import JopSetup
+from sbsgl.log import Log
 
 LOCAL_STORAGE = 'local_storage.json'
 LOCK = threading.Lock()

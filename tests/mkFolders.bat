@@ -1,0 +1,11 @@
+mkdir jeux
+mkdir jeux\games
+mkdir jeux\games\Borderland2
+mkdir jeux\games\MassEffectDefinitiveAndLastEdition
+mkdir jeux\games\TheWitcher3
+mkdir jeux\games\AssassinsCreed42
+mkdir jeux\games\TheWitcher2
+mkdir jeux\games\RoseOfSegunda
+mkdir jeux\games\Control
+mkdir jeux\games\Dos2
+mkdir platforms

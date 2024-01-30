@@ -1,4 +1,4 @@
-# Copyright 2024 joetjo https://github.com/joetjo/MarkdownHelper
+# Copyright 2023 joetjo https://github.com/joetjo/MarkdownHelper
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@ import os
 import re
 from datetime import datetime
 
-from JopLauncherConstant import JopLauncher, JopSETUP
-from launcher.log import Log
+from sbsgl.JopLauncherConstant import JopLauncher, JopSETUP
+from sbsgl.log import Log
 
 
 class ProcessInfo:

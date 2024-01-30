@@ -21,19 +21,23 @@ from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMessage
     QVBoxLayout, \
     QApplication, QStatusBar, QToolBar, QComboBox, QFileDialog, QGroupBox, QLineEdit, QGridLayout
 
+from resources.resources import Icons
+from sbsgl.sbsgl import SBSGL
 from tools import MdReportGenerator, FileUsageGenerator
 from version import OLAVersionInfo
 
 
 class OLAGuiSetup:
-    WITH = 500
-    HEIGHT = 200
     POSX = 400
     POSY = 1500
 
 
 class OLAGui:
     APP = None
+
+
+class OLABackend:
+    SBSGL = None
 
 
 class OLAToolbar(QToolBar):
@@ -64,13 +68,56 @@ class OLAStatusBar(QStatusBar):
         self.showMessage("{} | {}".format(datetime.now().strftime("%H:%M:%S"), message))
 
 
+class OLAPlayingPanel(QGroupBox):
+    def __init__(self):
+        super().__init__()
+
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        label = QLabel("playing panel")
+        layout.addWidget(label)
+
+
+class OLAGameSessions(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        label = QLabel("Game Session panel")
+        layout.addWidget(label)
+
+
+class OLAObsidianAssistant(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        label = QLabel("Obsidian Assistant panel")
+        layout.addWidget(label)
+
+
+class OLATabPanel(QTabWidget):
+
+    def __init__(self):
+        super().__init__()
+
+        self.setTabPosition(QTabWidget.North)
+        self.setMovable(True)
+
+        self.addTab(OLAObsidianAssistant(), "Assistant")
+        self.addTab(OLAGameSessions(), "Sessions")
+
+
 class OLAMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Obsidian Launcher Assistant - {}".format(OLAVersionInfo.CURRENT))
 
-        self.setMinimumWidth(OLAGuiSetup.WITH)
-        self.setMinimumHeight(OLAGuiSetup.HEIGHT)
         self.move(OLAGuiSetup.POSX, OLAGuiSetup.POSY)
 
         self.toolbar = OLAToolbar("Main toolbar", self)
@@ -78,12 +125,15 @@ class OLAMainWindow(QMainWindow):
 
         self.status = OLAStatusBar()
         self.setStatusBar(self.status)
-        self.status.set( "Loading in progress...")
+        self.status.set("Loading in progress...")
 
         layout = QVBoxLayout()
 
-        self.tmp = QLabel("TEST")
-        layout.addWidget(self.tmp)
+        self.playingPanel = OLAPlayingPanel()
+        layout.addWidget(self.playingPanel)
+
+        self.tabPanel = OLATabPanel()
+        layout.addWidget(self.tabPanel)
 
         mainWidget = QWidget()
         mainWidget.setLayout(layout)
@@ -99,19 +149,24 @@ class OLAApplication(QApplication):
 
     def __init__(self, argv):
         super().__init__(argv)
+
+        Icons.initIcons()
+
         OLAGui.APP = self
         self.setQuitOnLastWindowClosed(True)
+        self.setWindowIcon(Icons.APP)
         self.main = OLAMainWindow()
         self.threadpool = QThreadPool()
         logging.info("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
     def start(self):
-        self.startReporting()
+        # self.startReporting()
+        OLABackend.SBSGL = SBSGL()
         self.main.show()
         self.exec()
 
     def shutdown(self):
-        QCoreApplication.quit();
+        QCoreApplication.quit()
 
     def startReporting(self):
         mdgen = MdReportGenerator()

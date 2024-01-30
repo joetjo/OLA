@@ -1,0 +1,201 @@
+{
+    "Games": {
+        "BorderLand2": {
+            "duration": "1187.943862",
+            "last_duration": "13.330738",
+            "last_session": "1620068842.1029294",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "type": "",
+            "status": "",
+            "sheet": ""
+        },
+        "Assassins Creed - JoProd Arrival": {
+            "duration": "204.594551",
+            "last_duration": "35.728468",
+            "last_session": "1620067515.472239",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "type": "",
+            "status": "",
+            "sheet": ""
+        },
+        "Control": {
+            "duration": "53.269271",
+            "last_duration": "10.187264",
+            "last_session": "1620068248.1973631",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "type": "",
+            "status": "",
+            "sheet": ""
+        },
+        "RoseOfSegunda": {
+            "duration": "193.01230299999997",
+            "last_duration": "12.399528",
+            "last_session": "1620067629.973435",
+            "note": "",
+            "www": "https://blackcrosstaylor.itch.io/tros",
+            "tips": "blackcross-taylor.com/index.php/guides",
+            "type": "",
+            "status": "IN PROGRESS",
+            "sheet": ""
+        },
+        "TheWitcher3": {
+            "duration": "571.5086640000001",
+            "last_duration": "8.489118",
+            "last_session": "1620127640.2617931",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "type": "RPG",
+            "status": "",
+            "sheet": ""
+        },
+        "TheWitcher2": {
+          "duration": "119.10325",
+          "last_duration": "3.82963",
+          "last_session": "1646481863.2353122",
+          "note": "",
+          "www": "",
+          "tips": "",
+          "type": "RPG",
+          "status": "IN PROGRESS",
+          "sheet": ""
+        },
+        "MassEffectDefinitiveAndLastEdition": {
+            "duration": "55.286666",
+            "last_duration": "27.640335",
+            "last_session": "1619963186.0556378",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "type": "",
+            "status": "",
+            "sheet": ""
+        },
+        "Divinity Original Sin": {
+            "duration": "273.901528",
+            "last_duration": "22.361531",
+            "last_session": "1644996686.4871333",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "type": "",
+            "status": "",
+            "sheet": ""
+        },
+        "TheWitcher2Renamed": {
+            "duration": "30.051218",
+            "last_duration": "30.051218",
+            "last_session": "1641629750.2411008",
+            "note": "1",
+            "www": "test 2",
+            "tips": "ytdyfyhfghd",
+            "type": "RPG",
+            "status": "IN PROGRESS",
+            "sheet": "C:/Users/nicol/Documents/GitHub/gList2/Some stat....md"
+        }
+    },
+    "last_sessions": [
+        [
+            "TheWitcher2",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher2\\tw2.exe",
+            "tw2",
+            "",
+            "",
+            "",
+            ""
+        ],
+        [
+            "Divinity Original Sin",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\DivOriginalSin2\\dos2.exe",
+            "dos2",
+            "",
+            "STEAM",
+            "",
+            ""
+        ],
+        [
+            "TheWitcher2Renamed",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher2Renamed\\tw2.exe",
+            "tw2",
+            "",
+            "",
+            "",
+            ""
+        ],
+        [
+            "TheWitcher3",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher3\\tw3.exe",
+            "tw3",
+            "ALauncher",
+            "GOG",
+            "",
+            ""
+        ],
+        [
+            "BorderLand2",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\Borderland2\\BorderLand2.exe",
+            "BorderLand2",
+            "",
+            "EPIC",
+            "C:/Users/nicol/PycharmProjects/jopLauncher/tests/jeux/games/Borderland2/Launcher.exe",
+            "tests\\jeux\\games\\Borderland2\\borderland2.exe"
+        ],
+        [
+            "Control",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\Control\\Control.exe",
+            "Control",
+            "",
+            "STEAM",
+            "",
+            ""
+        ],
+        [
+            "RoseOfSegunda",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
+            "renpy",
+            "",
+            "ITCHIO",
+            "",
+            ""
+        ],
+        [
+            "Assassins Creed - JoProd Arrival",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\AssassinsCreed42\\AssassinsCreeds42.exe",
+            "AssassinsCreeds42",
+            "",
+            "UBISOFT",
+            "",
+            ""
+        ],
+        [
+            "MassEffectDefinitiveAndLastEdition",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\MassEffectDefinitiveAndLastEdition\\ME123.exe",
+            "ME123",
+            "",
+            "ORIGIN",
+            "",
+            ""
+        ]
+    ],
+    "mappings": {
+        "AssassinsCreeds42": "Assassins Creed - JoProd Arrival",
+        "renpy": "PARENT",
+        "tw3": "PARENT",
+        "tw2": "PARENT",
+        "ME123": "PARENT",
+        "dos2": "Divinity Original Sin"
+    },
+    "launchers": {
+        "ALauncher": "C:/Users/nicol/PycharmProjects/jopLauncher/tests/jeux/games/ALauncher.exe"
+    },
+    "version": 4,
+    "ignored": [
+        "Launcher"
+    ]
+}
