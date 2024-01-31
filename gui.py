@@ -13,33 +13,33 @@
 #   limitations under the License.
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from PySide6.QtCore import QCoreApplication, QSize, QThreadPool
+from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QAction, QPixmap
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMessageBox, QMainWindow, \
     QVBoxLayout, \
     QApplication, QStatusBar, QToolBar, QComboBox, QFileDialog, QGroupBox, QLineEdit, QGridLayout
 
 from resources.resources import Icons
-from sbsgl.core.procevent import EventListener
 from sbsgl.sbsgl import SBSGL
-from tools import MdReportGenerator, FileUsageGenerator
+from tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScanner, OLABackend
 from version import OLAVersionInfo
 
 
 class OLAGuiSetup:
     POSX = 400
     POSY = 1500
+    PROCESS_SCANNER_TIMER = 20 * 1000
+    GAME_NAME_MIN_WIDTH = 150
+    VISIBLE_SESSION_COUNT = 5
 
 
 class OLAGui:
     APP = None
+    MAIN = None
     PLAYING_PANEL = None
-
-
-class OLABackend:
-    SBSGL = None
+    SESSIONS = None
 
 
 class OLAToolbar(QToolBar):
@@ -48,15 +48,21 @@ class OLAToolbar(QToolBar):
         super().__init__(name)
         self.setIconSize(QSize(24, 24))
 
-        bExit = QAction("Generate", self)
-        bExit.setStatusTip("Generate Markdown report and file usage")
-        #        bExit.setIcon(Icons.EXIT)
-        bExit.triggered.connect(OLAGui.APP.startReporting)
-        self.addAction(bExit)
+        bRefresh = QAction("Check running process", self)
+        bRefresh.setStatusTip("Scan now to detect game process running")
+        bRefresh.setIcon(Icons.REFRESH)
+        bRefresh.triggered.connect(OLAGui.APP.startProcessCheck)
+        self.addAction(bRefresh)
+
+        bGen = QAction("Generate obsidian reports", self)
+        bGen.setStatusTip("Generate Markdown report and file usage")
+        bGen.setIcon(Icons.DOCUMENT)
+        bGen.triggered.connect(OLAGui.APP.startReporting)
+        self.addAction(bGen)
 
         bExit = QAction("Exit", self)
         bExit.setStatusTip("Don't know, maybe, stop the App")
-        #        bExit.setIcon(Icons.EXIT)
+        bExit.setIcon(Icons.EXIT)
         bExit.triggered.connect(OLAGui.APP.shutdown)
         self.addAction(bExit)
 
@@ -76,32 +82,86 @@ class OLAPlayingPanel(QGroupBox):
 
         OLAGui.PLAYING_PANEL = self
 
-        layout = QHBoxLayout()
-        self.setLayout(layout)
+        self.setLayout(QHBoxLayout())
 
-        label = QLabel("playing panel")
-        layout.addWidget(label)
+        # LEFT PANEL - Current Game
+        leftPanel = QWidget()
+        leftPanelLayout = QGridLayout()
+        leftPanel.setLayout(leftPanelLayout)
 
-        self.game = QLabel("-")
-        layout.addWidget(self.game)
+        # LEFT PANEL - LINE 1
+        leftPanelLayout.addWidget(QLabel("Playing"), 0, 0, Qt.AlignTop)
+        leftPanelLayout.addWidget(QLabel(":"), 0, 1)
+        self.game = QLabel("")
+        self.game.setMinimumWidth(OLAGuiSetup.GAME_NAME_MIN_WIDTH)
+        leftPanelLayout.addWidget(self.game, 0, 2)
+
+        leftPanelLayout.addWidget(QLabel("Play time"), 1, 0)
+        leftPanelLayout.addWidget(QLabel(":"), 1, 1)
+        self.ptime = QLabel("")
+        self.ptime.setMinimumWidth(OLAGuiSetup.GAME_NAME_MIN_WIDTH)
+        leftPanelLayout.addWidget(self.ptime, 1, 2)
+
+        leftPanelLayout.addWidget(QLabel("Total time"), 2, 0)
+        leftPanelLayout.addWidget(QLabel(":"), 2, 1)
+        self.ttime = QLabel("")
+        self.ttime.setMinimumWidth(OLAGuiSetup.GAME_NAME_MIN_WIDTH)
+        leftPanelLayout.addWidget(self.ttime, 2, 2)
+
+        self.layout().addWidget(leftPanel)
+
+        # TODO RIGHT PANEL - Search and filtering
+        rightPanel = QWidget()
+        rightPanel.setLayout(leftPanelLayout)
+
+        self.layout().addWidget(rightPanel)
+
+        self.layout().addStretch()
 
     def refresh(self):
         game = OLABackend.SBSGL.procmgr.getCurrentGame()
         if game is not None:
             self.game.setText(game.getName())
+            if game.process.hasData():
+                self.ptime.setText(str(timedelta(seconds=float(game.process.getStoreEntry()["duration"]))))
+            else:
+                self.ptime.setText("")
         else:
             self.game.setText("")
+            self.ptime.setText("")
 
 
 class OLAGameSessions(QWidget):
     def __init__(self):
         super().__init__()
+        OLAGui.SESSIONS = self
 
         layout = QVBoxLayout()
         self.setLayout(layout)
 
-        label = QLabel("Game Session panel")
-        layout.addWidget(label)
+        self.sessions = []
+        for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
+            self.sessions.append([])
+            self.sessions[idx].append(QLabel())
+            layout.addWidget(self.sessions[idx][0])
+        layout.addStretch()
+
+    def loadSessions(self):
+        sessions = OLABackend.SBSGL.procmgr.getSessions()
+        count = len(sessions)
+        current = 0
+        if count > 0:
+            logging.debug("OLAGameSessions:  Loading {} sessions :".format(count))
+            for session in sessions:
+                # TODO : test if matching filter
+                if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
+                    self.sessions[current][0].setText(session.getName())
+                    current = current + 1
+        else:
+            logging.debug("OLAGameSessions: no session to load")
+
+        for idx in range(current, OLAGuiSetup.VISIBLE_SESSION_COUNT):
+            self.session[current][0].setText("")
 
 
 class OLAObsidianAssistant(QWidget):
@@ -123,13 +183,14 @@ class OLATabPanel(QTabWidget):
         self.setTabPosition(QTabWidget.North)
         self.setMovable(True)
 
-        self.addTab(OLAObsidianAssistant(), "Assistant")
         self.addTab(OLAGameSessions(), "Sessions")
+        self.addTab(OLAObsidianAssistant(), "Assistant")
 
 
 class OLAMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        OLAGui.MAIN = self
         self.setWindowTitle("Obsidian Launcher Assistant - {}".format(OLAVersionInfo.CURRENT))
 
         self.move(OLAGuiSetup.POSX, OLAGuiSetup.POSY)
@@ -159,17 +220,6 @@ class OLAMainWindow(QMainWindow):
         self.status.set(message)
 
 
-class SbsglListener(EventListener):
-    def newGame(self, game):
-        pass
-
-    def endGame(self, proc):
-        pass
-
-    def refreshDone(self, current_game, platform_list_updated, others):
-        OLAGui.PLAYING_PANEL.refresh()
-
-
 class OLAApplication(QApplication):
 
     def __init__(self, argv):
@@ -184,12 +234,29 @@ class OLAApplication(QApplication):
         self.threadpool = QThreadPool()
         logging.info("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
+        self.timer = QTimer()
+        self.timer.setInterval(OLAGuiSetup.PROCESS_SCANNER_TIMER)
+        self.timer.timeout.connect(self.startProcessCheck)
+        self.timer.start()
+        logging.info("Process scanner set to be executed every {}s".format(OLAGuiSetup.PROCESS_SCANNER_TIMER / 1000))
+
+        self.scanInProgress = False
+
     def start(self):
         # self.startReporting()
         OLABackend.SBSGL = SBSGL()
-        OLABackend.SBSGL.procmgr.setListener(SbsglListener())
+        self.startProcessCheck()
         self.main.show()
         self.exec()
+
+    def startProcessCheck(self):
+        if not self.scanInProgress:
+            self.scanInProgress = True
+            proc = SgSGLProcessScanner()
+            proc.signals.refresh_finished.connect(self.scanFinished)
+            self.threadpool.start(proc)
+        else:
+            OLAGui.MAIN.setStatus("/!\\ game process scan rejected")
 
     def shutdown(self):
         QCoreApplication.quit()
@@ -203,6 +270,12 @@ class OLAApplication(QApplication):
         filegen = FileUsageGenerator()
         filegen.signals.file_usage_generation_finished.connect(self.fileUsageGenerated)
         self.threadpool.start(filegen)
+
+    def scanFinished(self):
+        self.scanInProgress = False
+        OLAGui.PLAYING_PANEL.refresh()
+        OLAGui.SESSIONS.loadSessions()
+        OLAGui.MAIN.setStatus("Game process scan done")
 
     def mdReportsStarted(self, reportName):
         self.main.setStatus("Processing {}".format(reportName))

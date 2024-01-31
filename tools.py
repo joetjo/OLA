@@ -20,6 +20,10 @@ from diskAnalyser.DiskAnalyser import DiskAnalyser
 from markdownHelper.markdown import MarkdownHelper
 
 
+class OLABackend:
+    SBSGL = None
+
+
 class MdReportGeneratorSignals(QObject):
     md_report_generation_finished = Signal()
     md_last_report = Signal(object)
@@ -27,6 +31,13 @@ class MdReportGeneratorSignals(QObject):
 
 class FileUsageGeneratorSignals(QObject):
     file_usage_generation_finished = Signal()
+
+
+class SbSGLSignals(QObject):
+    refresh_finished = Signal()
+    refresh_done = Signal(object, object, object)  # TODO NOT USED Listener
+    game_started = Signal(object)  # TODO NOT USED Listener
+    game_ended = Signal(object)  # TODO NOT USED Listener
 
 
 class MdReportGenerator(QRunnable):
@@ -57,3 +68,16 @@ class FileUsageGenerator(QRunnable):
             logging.info("Generation File Usage finished")
         finally:
             self.signals.file_usage_generation_finished.emit()
+
+
+class SgSGLProcessScanner(QRunnable):
+    def __init__(self):
+        super().__init__()
+        self.signals = SbSGLSignals()
+
+    @Slot()  # QtCore.Slot
+    def run(self):
+        try:
+            OLABackend.SBSGL.procmgr.refresh()
+        finally:
+            self.signals.refresh_finished.emit()

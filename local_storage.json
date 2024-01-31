@@ -23,9 +23,9 @@
             "sheet": ""
         },
         "Control": {
-            "duration": "151.40106",
-            "last_duration": "24.532307",
-            "last_session": "1706639970.9275613",
+            "duration": "676.567723",
+            "last_duration": "440.006146",
+            "last_session": "1706718031.1123636",
             "note": "",
             "www": "",
             "tips": "",
@@ -98,6 +98,17 @@
             "type": "RPG",
             "status": "IN PROGRESS",
             "sheet": "C:/Users/nicol/Documents/GitHub/gList2/Some stat....md"
+        },
+        "full_game.motherless": {
+            "duration": "3860.101692",
+            "last_duration": "3860.101692",
+            "last_session": "1706705848.5423274",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "sheet": "",
+            "type": "",
+            "status": ""
         }
     },
     "last_sessions": [
@@ -107,6 +118,15 @@
             "Control",
             "",
             "STEAM",
+            "",
+            ""
+        ],
+        [
+            "full_game.motherless",
+            "J:\\Jeux\\VNA\\ml\\full_game.motherless.exe",
+            "full_game.motherless",
+            "",
+            "",
             "",
             ""
         ],

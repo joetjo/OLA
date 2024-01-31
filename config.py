@@ -17,7 +17,7 @@ from version import OLAVersionInfo
 
 
 class OLASetup:
-    LOG_LEVEL = logging.INFO
+    LOG_LEVEL = logging.DEBUG
     LOG_FILENAME = "ola.log"
 
 

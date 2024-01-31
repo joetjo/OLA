@@ -38,7 +38,6 @@ class JopSetup:
     GAME_NAME_WIDTH = "GAME_NAME_WIDTH"
     URL_WIDTH = "URL_WIDTH"
     PARAMS_WIDTH = "PARAMS_WIDTH"
-    REFRESH_DELAY = "REFRESH_DELAY"
     MAX_LAST_SESSION_COUNT = "MAX_LAST_SESSION_COUNT"
     GAME_PATTERN = "GAME_PATTERN"
     GAME_EXTENSION = "GAME_EXTENSION"
@@ -96,7 +95,6 @@ class JopSetup:
         self.initSetupEntry(self.GAME_NAME_WIDTH, 30)
         self.initSetupEntry(self.URL_WIDTH, 70)
         self.initSetupEntry(self.PARAMS_WIDTH, 45)
-        self.initSetupEntry(self.REFRESH_DELAY, 5)
         self.initSetupEntry(self.MAX_LAST_SESSION_COUNT, 30)
         self.initSetupEntry(self.GAME_PATTERN, 'jeux')
         self.initSetupEntry(self.GAME_EXTENSION, '.exe')

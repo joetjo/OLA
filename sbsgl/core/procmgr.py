@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-# psutil must no be imported --> all call inside ProcessUtil fpr easy test purpose
+# psutil must not be imported --> all call inside ProcessUtil for easy test purpose
 import copy
 import logging  # This module is thread safe.
 import threading
@@ -20,13 +20,12 @@ import time
 
 from sbsgl.JopLauncherConstant import JopLauncher, JopSETUP
 from base.jsonstore import GhStorage
-from data.session import SessionList, Session
+from sbsgl.data.session import SessionList, Session
 from sbsgl.core.migrations.migrate import StorageVersion
 from sbsgl.core.private.currentgame import GameProcessHolder
 from sbsgl.core.private.process import ProcessInfo
 from sbsgl.core.private.processutil import ProcessUtil
 from sbsgl.jopsetup import JopSetup
-from sbsgl.log import Log
 
 LOCAL_STORAGE = 'local_storage.json'
 LOCK = threading.Lock()
@@ -52,7 +51,6 @@ class ProcMgr:
         self.plist = dict()
         self.currentGame = GameProcessHolder()
         self.previousGame = GameProcessHolder()
-        self.eventListener = None
 
         self.storage = GhStorage(LOCAL_STORAGE, version=JopLauncher.DB_VERSION)
         StorageVersion.check_migration(self.storage, JopLauncher.DB_VERSION)
@@ -79,9 +77,6 @@ class ProcMgr:
         self.games_types = JopSETUP.get(JopSetup.GAME_TYPES)
         self.games_statuses = JopSETUP.get(JopSetup.GAME_STATUSES)
         self.games_notes = JopSETUP.get(JopSetup.GAME_NOTES)
-
-    def setListener(self, event_listener):
-        self.eventListener = event_listener
 
     # Returns current game if current game is still running
     def getCurrentGameDetected(self):
@@ -185,9 +180,6 @@ class ProcMgr:
                             else:
                                 # Path update in case game has been moved or updated
                                 session.setPath(p.path)
-
-                            if self.eventListener is not None:
-                                self.eventListener.newGame(self.currentGame)
                         else:
                             logging.info("More than one game detected ! {} is ignored".format(self.currentGame.getName()))
                     else:
@@ -213,15 +205,7 @@ class ProcMgr:
         # Check for running game platform
         #
         self.others = others
-        platform_list_updated = len(self.platforms) != platforms
-        if not platform_list_updated:
-            platform_list_updated = len(self.platforms) != len(list(set(platforms)) & list(set(self.platforms)))
         self.platforms = platforms
-        if self.eventListener is not None:
-            current_name = None
-            if game_detected is not None:
-                current_name = game_detected.getName()
-            self.eventListener.refreshDone(current_name, platform_list_updated, others)
 
         #
         # Check if current game has been stopped
@@ -243,9 +227,6 @@ class ProcMgr:
 
             self.storage.save()
 
-            if self.eventListener is not None:
-                self.eventListener.endGame(self.previousGame.process)
-
             self.previousGame = None
 
         logging.debug("END PLIST UPDATE")
@@ -266,6 +247,9 @@ class ProcMgr:
             logging.info("CORE: Couldn't get the lock. Maybe next time")
 
     def getSessions(self):
+        """
+        :return: List of Session
+        """
         return self.sessions.list()
 
     def get(self, pid):
@@ -292,6 +276,9 @@ class ProcMgr:
         return result
 
     def getCurrentGame(self):
+        """
+        :return: GameProcessHolder
+        """
         if self.currentGame.isSet():
             return self.currentGame
         else:
