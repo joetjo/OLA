@@ -32,7 +32,7 @@ class OLAGuiSetup:
     POSY = 1500
     PROCESS_SCANNER_TIMER = 20 * 1000
     GAME_NAME_MIN_WIDTH = 150
-    VISIBLE_SESSION_COUNT = 5
+    VISIBLE_SESSION_COUNT = 20
 
 
 class OLAGui:
@@ -161,7 +161,7 @@ class OLAGameSessions(QWidget):
             logging.debug("OLAGameSessions: no session to load")
 
         for idx in range(current, OLAGuiSetup.VISIBLE_SESSION_COUNT):
-            self.session[current][0].setText("")
+            self.sessions[current][0].setText("")
 
 
 class OLAObsidianAssistant(QWidget):
