@@ -131,6 +131,20 @@ class OLAPlayingPanel(QGroupBox):
             self.ptime.setText("")
 
 
+class OLAGameLine(QWidget):
+    def __init__(self, layout):
+        super().__init__()
+
+        self.label = QLabel()
+        layout.addWidget(self.label)
+
+    def setSession(self, session):
+        self.label.setText(session.getName())
+
+    def reset(self):
+        self.label.setText("")
+
+
 class OLAGameSessions(QWidget):
     def __init__(self):
         super().__init__()
@@ -142,7 +156,7 @@ class OLAGameSessions(QWidget):
         self.sessions = []
         for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
             self.sessions.append([])
-            self.sessions[idx].append(QLabel())
+            self.sessions[idx].append(OLAGameLine(layout))
             layout.addWidget(self.sessions[idx][0])
         layout.addStretch()
 
@@ -155,13 +169,13 @@ class OLAGameSessions(QWidget):
             for session in sessions:
                 # TODO : test if matching filter
                 if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
-                    self.sessions[current][0].setText(session.getName())
+                    self.sessions[current][0].setSession(session)
                     current = current + 1
         else:
             logging.debug("OLAGameSessions: no session to load")
 
         for idx in range(current, OLAGuiSetup.VISIBLE_SESSION_COUNT):
-            self.sessions[current][0].setText("")
+            self.sessions[current][0].reset()
 
 
 class OLAObsidianAssistant(QWidget):
