@@ -65,7 +65,7 @@ class MarkdownHelper:
 
         return entryCount
 
-    def generateAllReports(self, signal):
+    def parseVault(self):
         logging.info("MDR | Markdown vault: {}".format(self.VAULT))
         count = self.processFolder(Path(self.VAULT), "")
 
@@ -75,7 +75,11 @@ class MarkdownHelper:
         for key in sorted(self.FILES):
             self.SORTED_FILES[key] = self.FILES[key]
 
+    def generateAllReports(self, signal, reload=False):
         try:
+            if reload or len(self.SORTED_FILES) == 0:
+                self.parseVault()
+
             total = len(self.REPORTS)
             current = 1
             for report in self.REPORTS:

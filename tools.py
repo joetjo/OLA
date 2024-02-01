@@ -22,6 +22,7 @@ from markdownHelper.markdown import MarkdownHelper
 
 class OLABackend:
     SBSGL = None
+    VAULT = None
 
 
 class MdReportGeneratorSignals(QObject):
@@ -41,16 +42,22 @@ class SbSGLSignals(QObject):
 
 
 class MdReportGenerator(QRunnable):
-    def __init__(self):
+    def __init__(self, report=True):
         super().__init__()
         self.signals = MdReportGeneratorSignals()
+        self.report = report
 
     @Slot()  # QtCore.Slot
     def run(self):
         try:
             logging.info("Starting Markdown report generation")
-            MarkdownHelper(vault="C:\\Users\\nicol\\Documents\\GitHub\\gList2").generateAllReports(self.signals.md_last_report)
-            logging.info("Generation Markdown report finished")
+            OLABackend.VAULT = MarkdownHelper(vault="C:\\Users\\nicol\\Documents\\GitHub\\gList2")
+            if self.report:
+                OLABackend.VAULT.generateAllReports(self.signals.md_last_report, reload=True)
+                logging.info("Generation Markdown report finished")
+            else:
+                OLABackend.VAULT.parseVault()
+                logging.info("Parse Vault finished")
         finally:
             self.signals.md_report_generation_finished.emit()
 

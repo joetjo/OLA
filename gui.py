@@ -40,6 +40,7 @@ class OLAGui:
     MAIN = None
     PLAYING_PANEL = None
     SESSIONS = None
+    ASSISTANT = None
 
 
 class OLAToolbar(QToolBar):
@@ -54,10 +55,16 @@ class OLAToolbar(QToolBar):
         bRefresh.triggered.connect(OLAGui.APP.startProcessCheck)
         self.addAction(bRefresh)
 
-        bGen = QAction("Generate obsidian reports", self)
+        bGen = QAction("Generate vault reports", self)
         bGen.setStatusTip("Generate Markdown report and file usage")
         bGen.setIcon(Icons.DOCUMENT)
         bGen.triggered.connect(OLAGui.APP.startReporting)
+        self.addAction(bGen)
+
+        bGen = QAction("Load obsidian vault", self)
+        bGen.setStatusTip("Parse content of Obsidian vault")
+        bGen.setIcon(Icons.FOLDER)
+        bGen.triggered.connect(OLAGui.APP.parseVault)
         self.addAction(bGen)
 
         bExit = QAction("Exit", self)
@@ -181,12 +188,21 @@ class OLAGameSessions(QWidget):
 class OLAObsidianAssistant(QWidget):
     def __init__(self):
         super().__init__()
+        OLAGui.ASSISTANT = self
 
         layout = QVBoxLayout()
         self.setLayout(layout)
 
-        label = QLabel("Obsidian Assistant panel")
-        layout.addWidget(label)
+        self.label = QLabel("Obsidian vault not parsed")
+        layout.addWidget(self.label)
+
+        layout.addStretch()
+
+    def vaultParsingInProgress(self):
+        self.label.setText("Vault loading in progress")
+
+    def vaultParsed(self):
+        self.label.setText("Vault: {} files, {} tags".format(len(OLABackend.VAULT.SORTED_FILES), len(OLABackend.VAULT.TAGS)))
 
 
 class OLATabPanel(QTabWidget):
@@ -257,7 +273,7 @@ class OLAApplication(QApplication):
         self.scanInProgress = False
 
     def start(self):
-        # self.startReporting()
+        self.parseVault()
         OLABackend.SBSGL = SBSGL()
         self.startProcessCheck()
         self.main.show()
@@ -275,9 +291,16 @@ class OLAApplication(QApplication):
     def shutdown(self):
         QCoreApplication.quit()
 
+    def parseVault(self):
+        OLAGui.ASSISTANT.vaultParsingInProgress()
+        mdgen = MdReportGenerator(report=False)
+        mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
+        self.threadpool.start(mdgen)
+
     def startReporting(self):
+        OLAGui.ASSISTANT.vaultParsingInProgress()
         mdgen = MdReportGenerator()
-        mdgen.signals.md_report_generation_finished.connect(self.mdReportsGenerated)
+        mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
         mdgen.signals.md_last_report.connect(self.mdReportsStarted)
         self.threadpool.start(mdgen)
 
@@ -294,8 +317,13 @@ class OLAApplication(QApplication):
     def mdReportsStarted(self, reportName):
         self.main.setStatus("Processing {}".format(reportName))
 
+    def mdParsed(self):
+        self.main.setStatus("Vault parsed")
+        OLAGui.ASSISTANT.vaultParsed()
+
     def mdReportsGenerated(self):
-        self.main.setStatus("Markdown reports Generated")
+        self.main.setStatus("Vault reports Generated")
+        OLAGui.ASSISTANT.vaultParsed()
 
     def fileUsageGenerated(self):
         self.main.setStatus("File usage Generated")
