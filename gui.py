@@ -19,8 +19,9 @@ from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QAction, QPixmap
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMessageBox, QMainWindow, \
     QVBoxLayout, \
-    QApplication, QStatusBar, QToolBar, QComboBox, QFileDialog, QGroupBox, QLineEdit, QGridLayout
+    QApplication, QStatusBar, QToolBar, QComboBox, QFileDialog, QGroupBox, QLineEdit, QGridLayout, QPushButton
 
+from base.osutil import OSUtil
 from resources.resources import Icons
 from sbsgl.sbsgl import SBSGL
 from tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScanner, OLABackend
@@ -148,6 +149,17 @@ class OLAGameLine(QWidget):
         self.vaultPath = QLabel()
         layout.addWidget(self.vaultPath, row, 1)
 
+        bVault = QPushButton("open")
+        bVault.setStatusTip("Open in obsidian Vault")
+        bVault.setIcon(Icons.DOCUMENT)
+        bVault.clicked.connect(self.openInVault)
+        layout.addWidget(bVault, row, 2)
+
+    def openInVault(self):
+        url = "obsidian://open?path={}".format(self.vaultPath.text().replace(" ", "%20").replace("\\", "%2F"))
+        logging.info("opening {}".format(url))
+        OSUtil.systemOpen(url)
+
     def setSession(self, session):
         self.name.setText(session.getName())
 
@@ -156,7 +168,7 @@ class OLAGameLine(QWidget):
         :param play: MhMarkdownFile
         """
         self.name.setText(play.name)
-        self.vaultPath.setText(str(play.localPath))
+        self.vaultPath.setText(str(play.path))
 
     def reset(self):
         self.name.setText("")
