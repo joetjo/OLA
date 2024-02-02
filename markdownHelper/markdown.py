@@ -32,6 +32,7 @@ class MarkdownHelper:
             self.VAULT = vault
         else:
             self.VAULT = self.SETUP.getBloc("global")["base_folder"]
+        self.vaultLenPath = len(self.VAULT)+1
         self.playtag = playtag
         self.IGNORE = self.SETUP.getBloc("global")["ignore"]
         self.REPORTS = self.SETUP.getBloc("global")["reports"]
@@ -52,7 +53,7 @@ class MarkdownHelper:
             if entry.is_file() and entry.name.endswith(".md") and entry.name not in self.IGNORE:
                 key = entry.name[0:len(entry.name) - 3]
                 entryCount = entryCount + 1
-                mdfile = MhMarkdownFile(key, entry)
+                mdfile = MhMarkdownFile(key, entry, self.vaultLenPath)
                 self.FILES[key] = mdfile
                 logging.debug("MDR | {}>{} {}".format(shift, key, mdfile.tags))
                 if len(mdfile.tagsComment) > 0:

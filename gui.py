@@ -139,38 +139,44 @@ class OLAPlayingPanel(QGroupBox):
 
 
 class OLAGameLine(QWidget):
-    def __init__(self, layout):
+    def __init__(self, row, layout):
         super().__init__()
 
-        self.label = QLabel()
-        layout.addWidget(self.label)
+        self.name = QLabel()
+        layout.addWidget(self.name, row, 0)
+
+        self.vaultPath = QLabel()
+        layout.addWidget(self.vaultPath, row, 1)
 
     def setSession(self, session):
-        self.label.setText(session.getName())
+        self.name.setText(session.getName())
 
-    def setPlaying(self, playing):
-        self.label.setText(playing)
+    def setPlaying(self, play):
+        """
+        :param play: MhMarkdownFile
+        """
+        self.name.setText(play.name)
+        self.vaultPath.setText(str(play.localPath))
 
     def reset(self):
-        self.label.setText("")
+        self.name.setText("")
+        self.vaultPath.setText("")
 
 
-class OLAGameListWidget(QWidget):
-    def __init__(self, layout):
+class OLASharedGameListWidget(QWidget):
+    def __init__(self, initialRow, layout):
         super().__init__()
         self.setLayout(layout)
 
         self.lines = []
         for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
             self.lines.append([])
-            self.lines[idx].append(OLAGameLine(layout))
-            layout.addWidget(self.lines[idx][0])
-        layout.addStretch()
+            self.lines[idx].append(OLAGameLine(idx + initialRow, layout))
 
 
-class OLAGameSessions(OLAGameListWidget):
+class OLAGameSessions(OLASharedGameListWidget):
     def __init__(self):
-        super().__init__(QVBoxLayout())
+        super().__init__(0, QGridLayout())
         OLAGui.SESSIONS = self
 
     def loadSessions(self):
@@ -191,12 +197,12 @@ class OLAGameSessions(OLAGameListWidget):
             self.lines[current][0].reset()
 
 
-class OLAObsidianAssistant(OLAGameListWidget):
+class OLAObsidianAssistant(OLASharedGameListWidget):
     def __init__(self):
-        layout = QVBoxLayout()
+        layout = QGridLayout()
         label = QLabel("Obsidian vault not parsed")
         layout.addWidget(label)
-        super().__init__(layout)
+        super().__init__(1, layout)
 
         OLAGui.ASSISTANT = self
         self.label = label
@@ -210,7 +216,7 @@ class OLAObsidianAssistant(OLAGameListWidget):
             for play in playing:
                 # TODO : test if matching filter
                 if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
-                    self.lines[current][0].setPlaying(play)
+                    self.lines[current][0].setPlaying(OLABackend.VAULT.PLAY[play])
                     current = current + 1
         else:
             logging.debug("OLAGameSessions: no playing session to load")

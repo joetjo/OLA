@@ -18,11 +18,12 @@ class MhMarkdownFile:
 
     # name : String
     # path : Path from PathLib
-    def __init__(self, name, path):
+    def __init__(self, name, path, vaultLenPath):
         # String
         self.name = name
         # WindowsPath ( from pathLib )
         self.path = path
+        self.localPath = str(path)[vaultLenPath:]
         self.tags = []
         self.tagsComment = dict()
         self.loadTags()
