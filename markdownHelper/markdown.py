@@ -26,16 +26,18 @@ from markdownHelper.report import MhReport
 #    ( Sample provided in example.markdownHelper.json )
 #
 class MarkdownHelper:
-    def __init__(self, vault=None):
+    def __init__(self, vault=None, playtag="#PLAY/INPROGRESS"):
         self.SETUP = GhSetup('markdownHelper')
         if vault is not None:
             self.VAULT = vault
         else:
             self.VAULT = self.SETUP.getBloc("global")["base_folder"]
+        self.playtag = playtag
         self.IGNORE = self.SETUP.getBloc("global")["ignore"]
         self.REPORTS = self.SETUP.getBloc("global")["reports"]
         self.SUBCONTENT = self.SETUP.getBloc("global")["shared_contents"]
         self.FILES = dict()
+        self.PLAY = dict()
         self.SORTED_FILES = dict()
         self.TAGS = dict()
 
@@ -57,6 +59,8 @@ class MarkdownHelper:
                     logging.debug("MDR | {}>>>> comments {}".format(shift, mdfile.tagsComment))
                 for tag in mdfile.tags:
                     self.TAGS[tag] = tag
+                    if tag == self.playtag:
+                        self.PLAY[key] = mdfile
 
         # Loop on sub folder
         for entry in folder.iterdir():

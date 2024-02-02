@@ -148,24 +148,30 @@ class OLAGameLine(QWidget):
     def setSession(self, session):
         self.label.setText(session.getName())
 
+    def setPlaying(self, playing):
+        self.label.setText(playing)
+
     def reset(self):
         self.label.setText("")
 
 
-class OLAGameSessions(QWidget):
-    def __init__(self):
+class OLAGameListWidget(QWidget):
+    def __init__(self, layout):
         super().__init__()
-        OLAGui.SESSIONS = self
-
-        layout = QVBoxLayout()
         self.setLayout(layout)
 
-        self.sessions = []
+        self.lines = []
         for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
-            self.sessions.append([])
-            self.sessions[idx].append(OLAGameLine(layout))
-            layout.addWidget(self.sessions[idx][0])
+            self.lines.append([])
+            self.lines[idx].append(OLAGameLine(layout))
+            layout.addWidget(self.lines[idx][0])
         layout.addStretch()
+
+
+class OLAGameSessions(OLAGameListWidget):
+    def __init__(self):
+        super().__init__(QVBoxLayout())
+        OLAGui.SESSIONS = self
 
     def loadSessions(self):
         sessions = OLABackend.SBSGL.procmgr.getSessions()
@@ -176,27 +182,41 @@ class OLAGameSessions(QWidget):
             for session in sessions:
                 # TODO : test if matching filter
                 if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
-                    self.sessions[current][0].setSession(session)
+                    self.lines[current][0].setSession(session)
                     current = current + 1
         else:
             logging.debug("OLAGameSessions: no session to load")
 
         for idx in range(current, OLAGuiSetup.VISIBLE_SESSION_COUNT):
-            self.sessions[current][0].reset()
+            self.lines[current][0].reset()
 
 
-class OLAObsidianAssistant(QWidget):
+class OLAObsidianAssistant(OLAGameListWidget):
     def __init__(self):
-        super().__init__()
-        OLAGui.ASSISTANT = self
-
         layout = QVBoxLayout()
-        self.setLayout(layout)
+        label = QLabel("Obsidian vault not parsed")
+        layout.addWidget(label)
+        super().__init__(layout)
 
-        self.label = QLabel("Obsidian vault not parsed")
-        layout.addWidget(self.label)
+        OLAGui.ASSISTANT = self
+        self.label = label
 
-        layout.addStretch()
+    def loadPlaying(self):
+        playing = OLABackend.VAULT.PLAY
+        count = len(playing)
+        current = 0
+        if count > 0:
+            logging.debug("OLAGameSessions:  Loading {} play in progress :".format(count))
+            for play in playing:
+                # TODO : test if matching filter
+                if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
+                    self.lines[current][0].setPlaying(play)
+                    current = current + 1
+        else:
+            logging.debug("OLAGameSessions: no playing session to load")
+
+        for idx in range(current, OLAGuiSetup.VISIBLE_SESSION_COUNT):
+            self.lines[current][0].reset()
 
     def vaultReportInProgress(self):
         self.label.setText("Vault report generation in progress")
@@ -205,7 +225,9 @@ class OLAObsidianAssistant(QWidget):
         self.label.setText("Vault loading in progress")
 
     def vaultParsed(self):
-        self.label.setText("Vault: {} files, {} tags".format(len(OLABackend.VAULT.SORTED_FILES), len(OLABackend.VAULT.TAGS)))
+        self.label.setText("Vault: {} files, {} tags, {} in progress"
+                           .format(len(OLABackend.VAULT.SORTED_FILES), len(OLABackend.VAULT.TAGS), len(OLABackend.VAULT.PLAY)))
+        self.loadPlaying()
 
 
 class OLATabPanel(QTabWidget):
