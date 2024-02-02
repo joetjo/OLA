@@ -198,6 +198,9 @@ class OLAObsidianAssistant(QWidget):
 
         layout.addStretch()
 
+    def vaultReportInProgress(self):
+        self.label.setText("Vault report generation in progress")
+
     def vaultParsingInProgress(self):
         self.label.setText("Vault loading in progress")
 
@@ -298,7 +301,7 @@ class OLAApplication(QApplication):
         self.threadpool.start(mdgen)
 
     def startReporting(self):
-        OLAGui.ASSISTANT.vaultParsingInProgress()
+        OLAGui.ASSISTANT.vaultReportInProgress()
         mdgen = MdReportGenerator()
         mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
         mdgen.signals.md_last_report.connect(self.mdReportsStarted)

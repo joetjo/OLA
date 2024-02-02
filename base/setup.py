@@ -11,7 +11,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
+import logging
 from pathlib import Path
 
 from base.jsonstore import GhStorage
@@ -35,7 +35,7 @@ class GhSetup(GhStorage):
                 self.save()
                 self.setup = self.data()['global']
 
-            print("GhSetup: Configuration loaded")
+            logging.info("GhSetup: Configuration loaded")
         else:
             super(GhSetup, self).__init__(appname, content)
 
