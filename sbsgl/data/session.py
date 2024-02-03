@@ -139,6 +139,12 @@ class SessionList:
                 return session
         return None
 
+    def findSessionBySheet(self, name):
+        for session in self.sessions:
+            if session.getSheet() == name:
+                return session
+        return None
+
     def renameSession(self, name, new_name):
         self.findSessionByName(name).name = new_name
         self.findJsonSessionEntryByName(name)[0] = new_name

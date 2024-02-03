@@ -13,6 +13,8 @@
 #   limitations under the License.
 
 import logging
+import os
+import subprocess
 
 from PySide6.QtCore import QRunnable, Slot, QObject, Signal
 
@@ -23,6 +25,12 @@ from markdownHelper.markdown import MarkdownHelper
 class OLABackend:
     SBSGL = None
     VAULT = None
+    THPOOL = None
+
+
+class LauncherSignals(QObject):
+    ok = Signal()
+    ko = Signal()
 
 
 class MdReportGeneratorSignals(QObject):
@@ -36,9 +44,9 @@ class FileUsageGeneratorSignals(QObject):
 
 class SbSGLSignals(QObject):
     refresh_finished = Signal()
-    refresh_done = Signal(object, object, object)  # TODO NOT USED Listener
-    game_started = Signal(object)  # TODO NOT USED Listener
-    game_ended = Signal(object)  # TODO NOT USED Listener
+    refresh_done = Signal(object, object, object)
+    game_started = Signal(object)
+    game_ended = Signal(object)
 
 
 class MdReportGenerator(QRunnable):
@@ -88,3 +96,25 @@ class SgSGLProcessScanner(QRunnable):
             OLABackend.SBSGL.procmgr.refresh()
         finally:
             self.signals.refresh_finished.emit()
+
+
+class SgSGLLauncher(QRunnable):
+    def __init__(self, label, exe, cwd=os.getcwd()):
+        super().__init__()
+        self.label = label
+        self.exe = exe
+        self.cwd = cwd
+        self.signals = LauncherSignals()
+
+    @Slot()  # QtCore.Slot
+    def run(self):
+        signalSend = False
+        try:
+            subprocess.run(self.exe, cwd=self.cwd)
+            self.signals.ok.emit()
+            signalSend = True
+        except FileNotFoundError:
+            logging.error("Unable to launch {} missing executable {} in folder {}".format(self.label, self.exe, self.cwd))
+        finally:
+            if not signalSend:
+                self.signals.ko.emit()

@@ -19,4 +19,11 @@ Interesting external Sources :
 - Thread : https://www.pythonguis.com/tutorials/multithreading-pyside6-applications-qthreadpool/
 - Process : https://www.pythonguis.com/tutorials/pyside6-qprocess-external-programs/
 ---
-- Logging : https://docs.python.org/3/howto/logging.html ( detail : https://docs.python.org/3/library/logging.html )
+- Logging : https://docs.pyhon.org/3/howto/logging.html ( detail : https://docs.python.org/3/library/logging.html )
+---
+Obsidian link:
+https://help.obsidian.md/Extending+Obsidian/Obsidian+URI
+
+``obsidian://open?path=%2Fhome%2Fuser%2Fmy%20vault%2Fpath%2Fto%2Fmy%20note``
+
+This will look for any vault that contains the path /home/user/my vault/path/to/my note. Then, the rest of the path is passed to the file parameter. For example, if a vault exists at /home/user/my vault, then this would be equivalent to file parameter set to path/to/my note.

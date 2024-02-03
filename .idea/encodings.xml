@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/buildLauncher.bat" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/joystick.ico" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/about-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/clear-search-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/close-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/closed-sign-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/document-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/edit-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/esc-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/file-explorer-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/menu-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/none-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/not-applicable-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/play-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/plus-math-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/refresh-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/remove-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/remove-edit-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/search-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/shop-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/switch-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/void-16.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/website-16.png" charset="UTF-8" />
+    <file url="PROJECT" charset="windows-1252" />
+  </component>
+</project>

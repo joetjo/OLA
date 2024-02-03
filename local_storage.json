@@ -23,26 +23,26 @@
             "sheet": ""
         },
         "Control": {
-            "duration": "676.567723",
-            "last_duration": "440.006146",
-            "last_session": "1706718031.1123636",
+            "duration": "696.566458",
+            "last_duration": "19.998735",
+            "last_session": "1706943911.8845377",
             "note": "",
             "www": "",
             "tips": "",
             "type": "",
             "status": "",
-            "sheet": ""
+            "sheet": "Control"
         },
         "RoseOfSegunda": {
-            "duration": "193.01230299999997",
-            "last_duration": "12.399528",
-            "last_session": "1620067629.973435",
+            "duration": "496.40476299999995",
+            "last_duration": "76.633977",
+            "last_session": "1706949040.8812973",
             "note": "",
             "www": "https://blackcrosstaylor.itch.io/tros",
             "tips": "blackcross-taylor.com/index.php/guides",
             "type": "",
             "status": "IN PROGRESS",
-            "sheet": ""
+            "sheet": "The rose of Segunda"
         },
         "TheWitcher3": {
             "duration": "571.5086640000001",
@@ -56,9 +56,9 @@
             "sheet": ""
         },
         "TheWitcher2": {
-            "duration": "119.10325",
-            "last_duration": "3.82963",
-            "last_session": "1646481863.2353122",
+            "duration": "139.022706",
+            "last_duration": "19.919456",
+            "last_session": "1706943731.8820546",
             "note": "",
             "www": "",
             "tips": "",
@@ -97,7 +97,7 @@
             "tips": "ytdyfyhfghd",
             "type": "RPG",
             "status": "IN PROGRESS",
-            "sheet": "C:/Users/nicol/Documents/GitHub/gList2/Some stat....md"
+            "sheet": "Baldurs Gate 3"
         },
         "full_game.motherless": {
             "duration": "3860.101692",
@@ -109,9 +109,29 @@
             "sheet": "",
             "type": "",
             "status": ""
+        },
+        "crashpad_handler": {
+            "duration": "5619.949055",
+            "last_duration": "5619.949055",
+            "last_session": "1706897034.794659",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "sheet": "Persona 4 Gold",
+            "type": "",
+            "status": ""
         }
     },
     "last_sessions": [
+        [
+            "RoseOfSegunda",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
+            "renpy",
+            "",
+            "ITCHIO",
+            "",
+            ""
+        ],
         [
             "Control",
             "C:\\Users\\nicol\\PycharmProjects\\Ola\\tests\\jeux\\games\\Control\\Control.exe",
@@ -122,18 +142,27 @@
             ""
         ],
         [
-            "full_game.motherless",
-            "J:\\Jeux\\VNA\\ml\\full_game.motherless.exe",
-            "full_game.motherless",
+            "TheWitcher2",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher2\\tw2.exe",
+            "tw2",
             "",
             "",
             "",
             ""
         ],
         [
-            "TheWitcher2",
-            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher2\\tw2.exe",
-            "tw2",
+            "crashpad_handler",
+            "J:\\Jeux\\steamapps\\common\\Persona 4 Golden\\crashdat\\bin\\crashpad_handler.exe",
+            "crashpad_handler",
+            "",
+            "",
+            "",
+            ""
+        ],
+        [
+            "full_game.motherless",
+            "J:\\Jeux\\VNA\\ml\\full_game.motherless.exe",
+            "full_game.motherless",
             "",
             "",
             "",
@@ -174,15 +203,6 @@
             "EPIC",
             "C:/Users/nicol/PycharmProjects/jopLauncher/tests/jeux/games/Borderland2/Launcher.exe",
             "tests\\jeux\\games\\Borderland2\\borderland2.exe"
-        ],
-        [
-            "RoseOfSegunda",
-            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
-            "renpy",
-            "",
-            "ITCHIO",
-            "",
-            ""
         ],
         [
             "Assassins Creed - JoProd Arrival",

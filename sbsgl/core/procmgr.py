@@ -263,6 +263,9 @@ class ProcMgr:
             logging.debug("{} - Warning : Game {} not found (ok if 1st run only)".format(context, name))
             return None
 
+    def findSessionBySheetName(self, sheetName):
+        return self.sessions.findSessionBySheet(sheetName)
+
     # Returns all games with the token in their name within the storage
     def searchInStorage(self, token):
         result = SessionList()
