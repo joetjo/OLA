@@ -29,7 +29,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.03 alpha 1"
+    VERSION = "2024.02.03 alpha 2"
     PREVIOUS = ""
 
 
@@ -398,8 +398,12 @@ class OLASharedGameListWidget(QWidget):
             return True
 
     def sheetMatchFilter(self, sheet):
-        return OLAGui.FILTER.type is None or OLAGui.FILTER.type in sheet.types
-
+        if OLAGui.FILTER.type is None :
+            return True
+        for t in sheet.types:
+            if t.startswith(OLAGui.FILTER.type):
+                return True
+        return False
 
 class OLAGameSessions(OLASharedGameListWidget):
     def __init__(self):
