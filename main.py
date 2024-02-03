@@ -12,25 +12,24 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import sys
 import logging
-from datetime import datetime, timedelta
+import sys
+from datetime import datetime
 
 from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
     QVBoxLayout, \
-    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog
+    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox
 
 from base.formatutil import FormatUtil
-from base.osutil import OSUtil
 from resources.resources import Icons
 from sbsgl.sbsgl import SBSGL
 from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScanner, OLABackend
 
 
 class OLAVersionInfo:
-    VERSION = "2024.next.1"
+    VERSION = "2024.02.03 alpha 1"
     PREVIOUS = ""
 
 
@@ -50,7 +49,13 @@ class OLAGuiSetup:
     PROCESS_SCANNER_TIMER = 20 * 1000
     GAME_NAME_MIN_WIDTH = 150
     VISIBLE_SESSION_COUNT = 20
-    STYLE_QLABEL_TITLE="QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
+    VISIBLE_TYPE_COUNT = 15
+    STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
+
+
+class OLAFilter:
+    def __init__(self):
+        self.type = None
 
 
 class OLAGui:
@@ -59,10 +64,10 @@ class OLAGui:
     PLAYING_PANEL = None
     SESSIONS = None
     ASSISTANT = None
+    FILTER = OLAFilter()
 
 
 class OLAToolbar(QToolBar):
-
     def __init__(self, name):
         super().__init__(name)
         self.setIconSize(QSize(24, 24))
@@ -101,7 +106,7 @@ class OLAStatusBar(QStatusBar):
         self.showMessage("{} | {}".format(datetime.now().strftime("%H:%M:%S"), message))
 
 
-class OLAPlayingPanel(QGroupBox):
+class OLAPlayingPanel(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -143,15 +148,42 @@ class OLAPlayingPanel(QGroupBox):
 
         self.layout().addWidget(leftPanel)
 
+        # Middle
+        self.layout().addStretch()
+
         # TODO RIGHT PANEL - Search and filtering
-        rightPanel = QWidget()
-        rightPanel.setLayout(leftPanelLayout)
+        rightPanel = QGroupBox()
+        rightPanelLayout = QGridLayout()
+        rightPanel.setLayout(rightPanelLayout)
+
+        self.filterType = QComboBox()
+        self.filterType.setMaxVisibleItems(OLAGuiSetup.VISIBLE_TYPE_COUNT)
+        self.filterType.currentTextChanged.connect(self.applyFilter)
+        rightPanelLayout.addWidget(QLabel("#Type (Obsidian)"), 0, 0)
+        rightPanelLayout.addWidget(QLabel(":"), 0, 1)
+        rightPanelLayout.addWidget(self.filterType, 0, 2)
 
         self.layout().addWidget(rightPanel)
 
-        self.layout().addStretch()
+    def applyFilter(self):
+        OLAGui.FILTER.type = self.filterType.currentText()
+        if len(OLAGui.FILTER.type) == 0:
+            OLAGui.FILTER.type = None
+        OLAGui.ASSISTANT.vaultParsed()
+        OLAGui.SESSIONS.loadSessions()
 
-    def refresh(self):
+    def refreshVault(self):
+        currentType = self.filterType.currentText()
+        self.filterType.clear()
+        self.filterType.addItem("")
+        self.filterType.addItems(OLABackend.VAULT.TYPES)
+        self.filterType.setCurrentText(currentType)
+        count = len(OLABackend.VAULT.TYPES) + 1
+        if count > OLAGuiSetup.VISIBLE_TYPE_COUNT:
+            count = OLAGuiSetup.VISIBLE_TYPE_COUNT
+        self.filterType.setMaxVisibleItems(count)
+
+    def refreshSBSGL(self):
         game = OLABackend.SBSGL.procmgr.getCurrentGame()
         if game is not None:
             if game.getName() != self.rawName:
@@ -321,6 +353,8 @@ class OLAGameLine(QWidget):
         self.vaultPath = None
         self.platform.setPixmap(Icons.VOID)
         self.name.setText("")
+        self.playDuration.setText("")
+        self.playLastDuration.setText("")
         self.bVault.setVisible(False)
         self.bPop.setVisible(False)
         self.bStart.setVisible(False)
@@ -351,6 +385,21 @@ class OLASharedGameListWidget(QWidget):
             self.lines.append([])
             self.lines[idx].append(OLAGameLine(idx + 1, layout, linkVault=linkVault))
 
+    def sessionMatchFilter(self, session):
+        if OLAGui.FILTER.type is not None:
+            if session.getSheet() is None:
+                return True
+            else:
+                try:
+                    return self.sheetMatchFilter(OLABackend.VAULT.SHEETS[session.getSheet()])
+                except KeyError:
+                    return True
+        else:
+            return True
+
+    def sheetMatchFilter(self, sheet):
+        return OLAGui.FILTER.type is None or OLAGui.FILTER.type in sheet.types
+
 
 class OLAGameSessions(OLASharedGameListWidget):
     def __init__(self):
@@ -365,10 +414,10 @@ class OLAGameSessions(OLASharedGameListWidget):
         if count > 0:
             logging.debug("OLAGameSessions:  Loading {} sessions :".format(count))
             for session in sessions:
-                # TODO : test if matching filter
-                if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
-                    self.lines[current][0].setSession(session)
-                    current = current + 1
+                if self.sessionMatchFilter(session):
+                    if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
+                        self.lines[current][0].setSession(session)
+                        current = current + 1
         else:
             logging.debug("OLAGameSessions: no session to load")
 
@@ -392,15 +441,16 @@ class OLAObsidianAssistant(OLASharedGameListWidget):
         if count > 0:
             logging.debug("OLAGameSessions:  Loading {} play in progress :".format(count))
             for play in playing:
-                # TODO : test if matching filter
-                if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
-                    self.lines[current][0].setPlaying(OLABackend.VAULT.PLAY[play])
-                    current = current + 1
+                sheet = OLABackend.VAULT.PLAY[play]
+                if self.sheetMatchFilter(sheet):
+                    if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
+                        self.lines[current][0].setPlaying(sheet)
+                        current = current + 1
         else:
             logging.debug("OLAGameSessions: no playing session to load")
 
         for idx in range(current, OLAGuiSetup.VISIBLE_SESSION_COUNT):
-            self.lines[current][0].reset()
+            self.lines[idx][0].reset()
 
     def vaultReportInProgress(self):
         self.col1.setText("Vault report generation in progress")
@@ -483,9 +533,11 @@ class OLAApplication(QApplication):
         self.scanInProgress = False
 
     def start(self):
+
         OLABackend.SBSGL = SBSGL()
         self.startProcessCheck()
         OLAGui.ASSISTANT.vaultParsed()
+        OLAGui.PLAYING_PANEL.refreshVault()
         self.main.show()
         self.exec()
 
@@ -520,7 +572,7 @@ class OLAApplication(QApplication):
 
     def scanFinished(self):
         self.scanInProgress = False
-        OLAGui.PLAYING_PANEL.refresh()
+        OLAGui.PLAYING_PANEL.refreshSBSGL()
         OLAGui.SESSIONS.loadSessions()
         OLAGui.MAIN.setStatus("Game process scan done")
 
@@ -539,6 +591,7 @@ class OLAApplication(QApplication):
         self.main.setStatus("Vault parsed")
         OLAGui.ASSISTANT.vaultParsed()
         OLAGui.SESSIONS.loadSessions()
+        OLAGui.PLAYING_PANEL.refreshVault()
 
     def mdReportsGenerated(self):
         self.main.setStatus("Vault reports Generated")
