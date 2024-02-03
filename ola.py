@@ -15,6 +15,7 @@
 import logging
 import sys
 from datetime import datetime
+from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QAction
@@ -38,9 +39,16 @@ class OLASetup:
     LOG_FILENAME = "ola.log"
 
 
-logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%H:%M:%S', filename=OLASetup.LOG_FILENAME, filemode='w', level=OLASetup.LOG_LEVEL)
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    print("Starting in packaged mode (temp folder {})".format(Path(sys._MEIPASS)))
 
-print("Obsidian Launcher Assistant - logging initialized (log file: {})".format(OLASetup.LOG_FILENAME))
+stdout = logging.StreamHandler(stream=sys.stdout)
+fmt = logging.Formatter("%(asctime)s %(message)s")
+stdout.setFormatter(fmt)
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logger.addHandler(stdout)
 
 
 class OLAGuiSetup:
@@ -398,12 +406,13 @@ class OLASharedGameListWidget(QWidget):
             return True
 
     def sheetMatchFilter(self, sheet):
-        if OLAGui.FILTER.type is None :
+        if OLAGui.FILTER.type is None:
             return True
         for t in sheet.types:
             if t.startswith(OLAGui.FILTER.type):
                 return True
         return False
+
 
 class OLAGameSessions(OLASharedGameListWidget):
     def __init__(self):
