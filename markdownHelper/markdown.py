@@ -39,6 +39,7 @@ class MarkdownHelper:
         self.SUBCONTENT = self.SETUP.getBloc("global")["shared_contents"]
         self.FILES = dict()
         self.PLAY = dict()
+        self.SHEETS = dict()
         self.SORTED_FILES = dict()
         self.TAGS = dict()
 
@@ -62,6 +63,7 @@ class MarkdownHelper:
                     self.TAGS[tag] = tag
                     if tag == self.playtag:
                         self.PLAY[key] = mdfile
+                    self.SHEETS[key] = mdfile
 
         # Loop on sub folder
         for entry in folder.iterdir():

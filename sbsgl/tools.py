@@ -25,6 +25,7 @@ from markdownHelper.markdown import MarkdownHelper
 class OLABackend:
     SBSGL = None
     VAULT = None
+    VAULT_READY = False
     THPOOL = None
 
 
@@ -66,6 +67,7 @@ class MdReportGenerator(QRunnable):
             else:
                 OLABackend.VAULT.parseVault()
                 logging.info("Parse Vault finished")
+                OLABackend.VAULT_READY = True
         finally:
             self.signals.md_report_generation_finished.emit()
 

@@ -3,6 +3,8 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/buildLauncher.bat" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/joystick.ico" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/Patreon.png" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/res/Review.png" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/res/about-16.png" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/res/clear-search-16.png" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/res/close-16.png" charset="UTF-8" />

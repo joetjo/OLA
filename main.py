@@ -28,6 +28,7 @@ from resources.resources import Icons
 from sbsgl.sbsgl import SBSGL
 from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScanner, OLABackend
 
+
 class OLAVersionInfo:
     VERSION = "2024.next.1"
     PREVIOUS = ""
@@ -73,13 +74,13 @@ class OLAToolbar(QToolBar):
 
         bGen = QAction("Generate vault reports", self)
         bGen.setStatusTip("Generate Markdown report and file usage")
-        bGen.setIcon(Icons.SMALL_DOCUMENT)
+        bGen.setIcon(Icons.REPORT)
         bGen.triggered.connect(OLAGui.APP.startReporting)
         self.addAction(bGen)
 
         bGen = QAction("Load obsidian vault", self)
         bGen.setStatusTip("Parse content of Obsidian vault")
-        bGen.setIcon(Icons.FOLDER)
+        bGen.setIcon(Icons.IMPORT)
         bGen.triggered.connect(OLAGui.APP.parseVault)
         self.addAction(bGen)
 
@@ -169,16 +170,20 @@ class OLAGameLine(QWidget):
         self.vaultPath = None
         self.session = None
         self.sheet = None
+        self.sheetFile = None
         self.linkVault = linkVault
 
+        self.platform = QLabel()
+        layout.addWidget(self.platform, row, 0)
+
         self.name = QLabel()
-        layout.addWidget(self.name, row, 0)
+        layout.addWidget(self.name, row, 1)
 
         self.playDuration = QLabel()
-        layout.addWidget(self.playDuration, row, 1)
+        layout.addWidget(self.playDuration, row, 2)
 
         self.playLastDuration = QLabel()
-        layout.addWidget(self.playLastDuration, row, 2)
+        layout.addWidget(self.playLastDuration, row, 3)
 
         bPanel = QWidget()
         bPanel.setLayout(QHBoxLayout())
@@ -213,7 +218,7 @@ class OLAGameLine(QWidget):
         bPanel.layout().addWidget(self.bPop)
         self.bPop.setVisible(False)
 
-        layout.addWidget(bPanel, row, 3)
+        layout.addWidget(bPanel, row, 4)
 
     def popMenu(self):
         pass  # TODO remove, exclude ...
@@ -237,25 +242,43 @@ class OLAGameLine(QWidget):
             self.session.getGameInfo()['sheet'] = text
         OLABackend.SBSGL.procmgr.storage.save()
 
-    def setSession(self, session):
+    def setSession(self, session, sheetAlreadySet=None):
         """
         :param: session: sbsbl.data.session
         """
         self.session = session
-        self.sheet = session.getGameInfo()['sheet']
-        if len(self.sheet) > 0:
+        sessionSheet = session.getGameInfo()['sheet']
+        if sheetAlreadySet:
+            if self.sheet != sessionSheet:
+                self.session.getGameInfo()['sheet'] = self.sheet
+                OLABackend.SBSGL.procmgr.storage.save()
+        elif len(sessionSheet) > 0:
+            self.sheet = sessionSheet
             self.name.setText(self.sheet)
+            if OLABackend.VAULT_READY:
+                self.sheetFile = OLABackend.VAULT.SHEETS[self.sheet]
         else:
             self.name.setText(session.getName())
+        self.applyPlatform()
         self.playDuration.setText(FormatUtil.formatDuration(session.getGameInfo()['duration']))
         self.playLastDuration.setText(FormatUtil.formatDuration(session.getGameInfo()['last_duration']))
         self.bVault.setVisible(True)
         self.bPop.setVisible(True)
-        self.bVault.setEnabled(len(self.sheet) > 0)
+        self.bVault.setEnabled(self.sheet is not None and len(self.sheet) > 0)
         self.bStart.setVisible(True)
         self.bStart.setEnabled(True)
         if self.linkVault:
             self.bLink.setVisible(True)
+
+    def applyPlatform(self):
+        icon = Icons.QUESTION
+        if self.sheetFile is not None:
+            size = len(self.sheetFile.platforms)
+            if size == 1:
+                icon = Icons.loadIcons(self.sheetFile.platforms[0])
+            elif size > 1:
+                icon = Icons.MANY
+        self.platform.setPixmap(icon)
 
     def setPlaying(self, play):
         """
@@ -263,16 +286,24 @@ class OLAGameLine(QWidget):
         """
         self.vaultPath = str(play.path).replace(" ", "%20").replace("\\", "%2F")
         self.name.setText(play.name)
+        self.sheetFile = play
+        self.sheet = play.name
         session = OLABackend.SBSGL.procmgr.findSessionBySheetName(play.name)
         if session is None:
             self.bVault.setVisible(True)
             self.bStart.setVisible(True)
             self.bStart.setEnabled(False)
             self.bPop.setVisible(True)
+            self.applyPlatform()
         else:
-            self.setSession(session)
+            self.setSession(session, sheetAlreadySet=True)
 
     def reset(self):
+        self.sheetFile = None
+        self.sheet = None
+        self.session = None
+        self.vaultPath = None
+        self.platform.setPixmap(Icons.VOID)
         self.name.setText("")
         self.bVault.setVisible(False)
         self.bPop.setVisible(False)
@@ -287,14 +318,15 @@ class OLASharedGameListWidget(QWidget):
         layout = QGridLayout()
         self.setLayout(layout)
 
+        layout.addWidget(QLabel(), 0, 0)
         self.col1 = QLabel()
         if title is None:
             self.col1.setText("Game")
         else:
             self.col1.setText(title)
-        layout.addWidget(self.col1, 0, 0)
-        layout.addWidget(QLabel("Total play time"), 0, 1)
-        layout.addWidget(QLabel("Last play duration"), 0, 2)
+        layout.addWidget(self.col1, 0, 1)
+        layout.addWidget(QLabel("Total play time"), 0, 2)
+        layout.addWidget(QLabel("Last play duration"), 0, 3)
 
         self.lines = []
         for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
@@ -428,9 +460,9 @@ class OLAApplication(QApplication):
         self.scanInProgress = False
 
     def start(self):
-        self.parseVault()
         OLABackend.SBSGL = SBSGL()
         self.startProcessCheck()
+        OLAGui.ASSISTANT.vaultParsed()
         self.main.show()
         self.exec()
 
@@ -491,7 +523,11 @@ class OLAApplication(QApplication):
     def fileUsageGenerated(self):
         self.main.setStatus("File usage Generated")
 
+
 logging.info("OLAApplication - starting application execution")
 app = OLAApplication(sys.argv, OLAVersionInfo.VERSION)
+# Blocking parsing of vault or display will be wrong
+mdgen = MdReportGenerator(report=False)
+mdgen.run()
 app.start()
 logging.info("OLAApplication - application terminated")

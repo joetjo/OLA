@@ -26,6 +26,8 @@ class MhMarkdownFile:
         self.localPath = str(path)[vaultLenPath:]
         self.tags = []
         self.tagsComment = dict()
+        self.platforms = []
+        self.types = []
         self.loadTags()
         self.matchTag = None
 
@@ -48,7 +50,12 @@ class MhMarkdownFile:
                 # Extract all tags
                 rawTags = re.findall(r"#[\w|/_-]+[\s\S]", line)
                 for tag in rawTags:
-                    self.tags.append(tag.rstrip())
+                    stag = tag.rstrip()
+                    self.tags.append(stag)
+                    if stag.startswith("#PLATFORM"):
+                        self.platforms.append(stag[10:])
+                    if stag.startswith("#Type"):
+                        self.types.append(stag[6:])
 
     def getTagComment(self, tag):
         try:

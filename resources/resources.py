@@ -28,6 +28,8 @@ class Icons:
     START = None
     EXIT = None
     REFRESH = None
+    REPORT = None
+    IMPORT = None
     SMALL_DOCUMENT = None
     DOCUMENT = None
     CLEAR = None
@@ -39,6 +41,9 @@ class Icons:
     VOID = None
     PLAY = None
     RUNNING = None
+    MANY = None
+
+    CACHE = dict()
 
     @staticmethod
     def initIcons():
@@ -48,7 +53,7 @@ class Icons:
         Icons.FOLDER = QPixmap(resource_path("file-explorer-16.png"))
         Icons.USER = QPixmap(resource_path("user.png"))
         Icons.PENCIL = QPixmap(resource_path("pencil.png"))
-        Icons.QUESTION = QPixmap(resource_path("question.png"))
+        Icons.QUESTION = QPixmap(resource_path("question-mark-16.png"))
         Icons.START = QPixmap(resource_path("start.png"))
         Icons.EXIT = QPixmap(resource_path("close-16.png"))
         Icons.REFRESH = QPixmap(resource_path("refresh-16.png"))
@@ -63,3 +68,15 @@ class Icons:
         Icons.VOID = QPixmap(resource_path("void-16.png"))
         Icons.PLAY = QPixmap(resource_path("play-16.png"))
         Icons.RUNNING = QPixmap(resource_path("void-16.png"))
+        Icons.REPORT = QPixmap(resource_path("report-24.png"))
+        Icons.IMPORT = QPixmap(resource_path("import-file-24.png"))
+        Icons.MANY = QPixmap(resource_path("many-16.png"))
+
+    @staticmethod
+    def loadIcons(iconName):
+        try:
+            return Icons.CACHE[iconName]
+        except KeyError:
+            icon = QPixmap(resource_path("{}.png".format(iconName)))
+            Icons.CACHE[iconName] = icon
+            return icon
