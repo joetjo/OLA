@@ -18,6 +18,7 @@ import subprocess
 
 from PySide6.QtCore import QRunnable, Slot, QObject, Signal
 
+from base.osutil import OSUtil
 from diskAnalyser.DiskAnalyser import DiskAnalyser
 from markdownHelper.markdown import MarkdownHelper
 
@@ -27,6 +28,17 @@ class OLABackend:
     VAULT = None
     VAULT_READY = False
     THPOOL = None
+
+    @staticmethod
+    def openInVault(fullpath=None, sheetName=None):
+        if fullpath is None:
+            path = "{}%2F{}".format(OLABackend.VAULT.VAULT.replace(" ", "%20").replace("\\", "%2F"),
+                                    sheetName).replace(" ", "%20")
+        else:
+            path = fullpath
+        url = "obsidian://open?path={}".format(path)
+        logging.info("opening {}".format(url))
+        OSUtil.systemOpen(url)
 
 
 class LauncherSignals(QObject):

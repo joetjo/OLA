@@ -106,6 +106,8 @@ class OLAPlayingPanel(QGroupBox):
 
         OLAGui.PLAYING_PANEL = self
 
+        self.sheet = None
+        self.rawName = None
         self.setLayout(QHBoxLayout())
 
         # LEFT PANEL - Current Game
@@ -122,6 +124,12 @@ class OLAPlayingPanel(QGroupBox):
         self.game = QLabel("")
         self.game.setMinimumWidth(OLAGuiSetup.GAME_NAME_MIN_WIDTH)
         leftPanelLayout.addWidget(self.game, 0, 3)
+        self.bVault = QPushButton("")
+        self.bVault.setStatusTip("Open in obsidian Vault")
+        self.bVault.setIcon(Icons.OBSIDIAN)
+        self.bVault.clicked.connect(self.openInVault)
+        self.bVault.setVisible(False)
+        leftPanelLayout.addWidget(self.bVault, 0, 4)
 
         self.ptimeIcon = QLabel()
         self.ptimeIcon.setPixmap(Icons.VOID)
@@ -145,22 +153,34 @@ class OLAPlayingPanel(QGroupBox):
     def refresh(self):
         game = OLABackend.SBSGL.procmgr.getCurrentGame()
         if game is not None:
-            if game.getName() != self.game.text():
-                self.game.setText(game.getName())
+            if game.getName() != self.rawName:
+                self.rawName = game.getName()
+                self.sheet = game.process.getStoreEntry()["sheet"]
+                if len(self.sheet) == 0:
+                    self.sheet = None
+                    self.game.setText(game.getName())
+                else:
+                    self.game.setText(self.sheet)
                 self.gameIcon.setPixmap(Icons.PLAY)
                 current_time = datetime.now()
                 formatted_time = current_time.strftime('%H:%M:%S')
                 self.ptime.setText(formatted_time)
                 self.ptimeIcon.setPixmap(Icons.RUNNING)
+                self.bVault.setVisible(True)
         elif self.game.text() != "":
             self.gameIcon.setPixmap(Icons.VOID)
             self.game.setText("")
             self.ptimeIcon.setPixmap(Icons.VOID)
             self.ptime.setText("")
+            self.bVault.setVisible(False)
+            self.sheet = None
 
     def gameLaunchFailure(self):
         self.game.setText("")
         self.game.setPixmap(Icons.KO)
+
+    def openInVault(self):
+        OLABackend.openInVault(sheetName=self.sheet)
 
 
 class OLAGameLine(QWidget):
@@ -227,12 +247,7 @@ class OLAGameLine(QWidget):
         OLABackend.SBSGL.launchGame(self.session, OLAGui.APP)
 
     def openInVault(self):
-        if self.vaultPath is None:
-            self.vaultPath = "{}%2F{}".format(OLABackend.VAULT.VAULT.replace(" ", "%20").replace("\\", "%2F"),
-                                              self.sheet).replace(" ", "%20")
-        url = "obsidian://open?path={}".format(self.vaultPath)
-        logging.info("opening {}".format(url))
-        OSUtil.systemOpen(url)
+        OLABackend.openInVault(fullpath=self.vaultPath, sheetName=self.sheet)
 
     def setVaultName(self):
         text, ok = QInputDialog.getText(self, "Obsidian sheet name",
