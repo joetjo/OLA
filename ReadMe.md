@@ -18,8 +18,11 @@ Interesting external Sources :
 - PySide6 tutorial : https://www.pythonguis.com/pyside6-tutorial/
 - Thread : https://www.pythonguis.com/tutorials/multithreading-pyside6-applications-qthreadpool/
 - Process : https://www.pythonguis.com/tutorials/pyside6-qprocess-external-programs/
----
+- style: https://doc.qt.io/qt-6/stylesheet-reference.html
+- ---
 - Logging : https://docs.pyhon.org/3/howto/logging.html ( detail : https://docs.python.org/3/library/logging.html )
+---
+- resources : https://icons8.com/icons
 ---
 Obsidian link:
 https://help.obsidian.md/Extending+Obsidian/Obsidian+URI

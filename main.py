@@ -50,6 +50,7 @@ class OLAGuiSetup:
     PROCESS_SCANNER_TIMER = 20 * 1000
     GAME_NAME_MIN_WIDTH = 150
     VISIBLE_SESSION_COUNT = 20
+    STYLE_QLABEL_TITLE="QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
 
 
 class OLAGui:
@@ -335,10 +336,12 @@ class OLASharedGameListWidget(QWidget):
 
         layout.addWidget(QLabel(), 0, 0)
         self.col1 = QLabel()
+        self.col1.setMinimumWidth(300)
         if title is None:
             self.col1.setText("Game")
         else:
             self.col1.setText(title)
+        self.col1.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
         layout.addWidget(self.col1, 0, 1)
         layout.addWidget(QLabel("Total play time"), 0, 2)
         layout.addWidget(QLabel("Last play duration"), 0, 3)
@@ -351,12 +354,13 @@ class OLASharedGameListWidget(QWidget):
 
 class OLAGameSessions(OLASharedGameListWidget):
     def __init__(self):
-        super().__init__(linkVault=True)
+        super().__init__(title="loading...", linkVault=True)
         OLAGui.SESSIONS = self
 
     def loadSessions(self):
         sessions = OLABackend.SBSGL.procmgr.getSessions()
         count = len(sessions)
+        self.col1.setText("Game ( {} sessions )".format(count))
         current = 0
         if count > 0:
             logging.debug("OLAGameSessions:  Loading {} sessions :".format(count))
