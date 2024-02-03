@@ -373,7 +373,11 @@ class OLAGameSessions(OLASharedGameListWidget):
             logging.debug("OLAGameSessions: no session to load")
 
         for idx in range(current, OLAGuiSetup.VISIBLE_SESSION_COUNT):
-            self.lines[current][0].reset()
+            self.lines[idx][0].reset()
+
+    def reset(self):
+        for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
+            self.lines[idx][0].reset()
 
 
 class OLAObsidianAssistant(OLASharedGameListWidget):
@@ -534,6 +538,7 @@ class OLAApplication(QApplication):
     def mdParsed(self):
         self.main.setStatus("Vault parsed")
         OLAGui.ASSISTANT.vaultParsed()
+        OLAGui.SESSIONS.loadSessions()
 
     def mdReportsGenerated(self):
         self.main.setStatus("Vault reports Generated")
