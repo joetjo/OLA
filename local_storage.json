@@ -34,9 +34,9 @@
             "sheet": "Control"
         },
         "RoseOfSegunda": {
-            "duration": "575.322844",
-            "last_duration": "19.983095",
-            "last_session": "1706974708.8023279",
+            "duration": "581.112401",
+            "last_duration": "5.789557",
+            "last_session": "1707048997.3035333",
             "note": "",
             "www": "https://blackcrosstaylor.itch.io/tros",
             "tips": "blackcross-taylor.com/index.php/guides",
@@ -124,6 +124,15 @@
     },
     "last_sessions": [
         [
+            "RoseOfSegunda",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
+            "renpy",
+            "",
+            "ITCHIO",
+            "",
+            ""
+        ],
+        [
             "TheWitcher3",
             "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher3\\tw3.exe",
             "tw3",
@@ -138,15 +147,6 @@
             "Control",
             "",
             "STEAM",
-            "",
-            ""
-        ],
-        [
-            "RoseOfSegunda",
-            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
-            "renpy",
-            "",
-            "ITCHIO",
             "",
             ""
         ],

@@ -56,11 +56,11 @@ class OLAGuiSetup:
     POSX = 350
     POSY = 1440
     PROCESS_SCANNER_TIMER = 20 * 1000
-    GAME_NAME_MIN_WIDTH = 150
-    GAME_NAME_MAX_WIDTH = 250
+    GAME_NAME_MIN_WIDTH = 200
     TAG_MIN_WIDTH = 60
     VISIBLE_SESSION_COUNT = 20
     PAGE_VISIBLE_COUNT = 5
+    PAGE_COUNT_WIDTH = 40
     PAGE_BUTTON_SIZE = 20
     VISIBLE_TYPE_COUNT = 15
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
@@ -182,7 +182,8 @@ class OLAPlayingPanel(QWidget):
         leftPanelLayout.addWidget(QLabel(":"), 0, 2)
         self.game = QLabel("")
         self.game.setMinimumWidth(OLAGuiSetup.GAME_NAME_MIN_WIDTH)
-        self.game.setMaximumWidth(OLAGuiSetup.GAME_NAME_MAX_WIDTH)
+        self.game.setMaximumWidth(OLAGuiSetup.GAME_NAME_MIN_WIDTH)
+        self.game.setFixedWidth(OLAGuiSetup.GAME_NAME_MIN_WIDTH)
         leftPanelLayout.addWidget(self.game, 0, 3)
         self.bVault = QPushButton("")
         self.bVault.setStatusTip("Open in obsidian Vault")
@@ -488,7 +489,7 @@ class OLASharedGameListWidget(QWidget):
         self.page.setEditable(True)
         self.page.setCurrentText("1")
         pagePanelLayout.addWidget(self.page)
-        self.page.setMinimumWidth(5)
+        self.page.setMinimumWidth(OLAGuiSetup.PAGE_COUNT_WIDTH)
 
         self.pageCount = QLabel("")
         pagePanelLayout.addWidget(self.pageCount)
@@ -553,7 +554,7 @@ class OLASharedGameListWidget(QWidget):
                 self.currentPage = requested
                 self.reload()
         except ValueError:
-            self.page.setCurrentText(self.currentPage)
+            self.page.setCurrentText(str(self.currentPage))
 
     def setPageCount(self, count):
         currentCount = self.currentPageCount
@@ -561,18 +562,56 @@ class OLASharedGameListWidget(QWidget):
         if self.currentPageCount != count / OLAGuiSetup.VISIBLE_SESSION_COUNT:
             self.currentPageCount = self.currentPageCount + 1
         self.pageCount.setText("/{}".format(self.currentPageCount))
-        if self.currentPageCount > currentCount:
-            for page in range(currentCount + 1, self.currentPageCount+1):
-                self.page.addItems(str(page))
-        elif self.currentPageCount < currentCount:
-            for page in range(self.currentPageCount + 1, currentCount+1):
-                self.page.removeItem(str(page))
+        if self.currentPageCount != currentCount:
+            self.page.clear()
+            for page in range(1, self.currentPageCount + 1):
+                self.page.addItem(str(page))
         self.page.setCurrentText(str(self.currentPage))
         self.bBack.setEnabled(self.currentPage > 1)
         self.bFront.setEnabled(self.currentPage < self.currentPageCount)
 
     def reload(self):
         pass  # To be overridden
+
+    def loadTitle(self, count):
+        pass
+
+    def matchFilter(self, data):
+        pass
+
+    def setData(self, gameLine, data):
+        pass
+
+    def load(self, rawList):
+        if self.filter is not None and self.filter.value is not None:
+            selList = []
+            for data in rawList:
+                if self.matchFilter(data):
+                    selList.append(data)
+                else:
+                    logging.info("OLAGameSessions: {} exclude by filter".format(data))
+        else:
+            selList = rawList
+        count = len(selList)
+        self.setPageCount(count)
+        self.col1.setText(self.loadTitle(count))
+
+        checkedCount = 0
+        checkedCountToStart = (self.currentPage - 1) * OLAGuiSetup.VISIBLE_SESSION_COUNT
+        currentDisplayed = 0
+        if count > 0:
+            for data in selList:
+                checkedCount = checkedCount + 1
+                if checkedCount > checkedCountToStart and currentDisplayed < OLAGuiSetup.VISIBLE_SESSION_COUNT:
+                    self.setData(self.lines[currentDisplayed][0], data)
+                    currentDisplayed = currentDisplayed + 1
+
+        for idx in range(currentDisplayed, OLAGuiSetup.VISIBLE_SESSION_COUNT):
+            self.lines[idx][0].reset()
+
+    def reset(self):
+        for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
+            self.lines[idx][0].reset()
 
 
 class OLAGameSessions(OLASharedGameListWidget):
@@ -581,76 +620,53 @@ class OLAGameSessions(OLASharedGameListWidget):
         OLAGui.SESSIONS = self
 
     def loadSessions(self):
-        sessions = OLABackend.SBSGL.procmgr.getSessions()
-        count = len(sessions)
-        self.setPageCount(count)
-        self.col1.setText("Game ( {} sessions )".format(count))
-        checkedCount = 0
-        checkedCountToStart = (self.currentPage-1) * OLAGuiSetup.VISIBLE_SESSION_COUNT
-        currentDisplayed = 0
-        if count > 0:
-            logging.debug("OLAGameSessions:  Loading {} sessions :".format(count))
-            for session in sessions:
-                if self.sessionMatchFilter(session):
-                    checkedCount = checkedCount + 1
-                    if checkedCount > checkedCountToStart and currentDisplayed < OLAGuiSetup.VISIBLE_SESSION_COUNT:
-                        self.lines[currentDisplayed][0].setSession(session)
-                        currentDisplayed = currentDisplayed + 1
-                else:
-                    logging.info("OLAGameSessions: {} exclude by filter".format(session.getName()))
-        else:
-            logging.debug("OLAGameSessions: no session to load")
+        self.load(OLABackend.SBSGL.procmgr.getSessions())
 
-        for idx in range(currentDisplayed, OLAGuiSetup.VISIBLE_SESSION_COUNT):
-            self.lines[idx][0].reset()
+    def loadTitle(self, count):
+        return "Game ( {} sessions )".format(count)
+
+    def matchFilter(self, data):
+        return self.sessionMatchFilter(data)
+
+    def setData(self, gameLine, data):
+        gameLine.setSession(data)
 
     def reload(self):
         self.loadSessions()
-
-    def reset(self):
-        for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
-            self.lines[idx][0].reset()
 
 
 class OLAObsidianAssistant(OLASharedGameListWidget):
     def __init__(self):
         super().__init__(OLAGui.ASSISTANT_TAB_NAME, title="Obsidian vault not parsed")
         OLAGui.ASSISTANT = self
+        self.title = "Obsidian files not parsed"
 
     def loadPlaying(self):
-        playing = OLABackend.VAULT.PLAY
-        count = len(playing)
-        checkedCount = 0
-        checkedCountToStart = (self.currentPage-1) * OLAGuiSetup.VISIBLE_SESSION_COUNT
-        currentDisplayed = 0
-        if count > 0:
-            logging.debug("OLAGameSessions:  Loading {} play in progress :".format(count))
-            for play in playing:
-                sheet = OLABackend.VAULT.PLAY[play]
-                if self.sheetMatchFilter(sheet):
-                    checkedCount = checkedCount + 1
-                    if checkedCount > checkedCountToStart and currentDisplayed < OLAGuiSetup.VISIBLE_SESSION_COUNT:
-                        self.lines[currentDisplayed][0].setPlaying(sheet)
-                        currentDisplayed = currentDisplayed + 1
-        else:
-            logging.debug("OLAGameSessions: no playing session to load")
-        self.setPageCount(count)
+        self.load(OLABackend.VAULT.PLAY)
 
-        for idx in range(currentDisplayed, OLAGuiSetup.VISIBLE_SESSION_COUNT):
-            self.lines[idx][0].reset()
+    def loadTitle(self, count):
+        return "{}, {} displayed)".format(self.title, count)
+
+    def matchFilter(self, data):
+        return self.sheetMatchFilter(OLABackend.VAULT.PLAY[data])
+
+    def setData(self, gameLine, data):
+        gameLine.setPlaying(OLABackend.VAULT.PLAY[data])
 
     def reload(self):
         self.loadPlaying()
 
     def vaultReportInProgress(self):
-        self.col1.setText("Vault report generation in progress")
+        self.title = "Vault report generation in progress"
+        self.col1.setText(self.title)
 
     def vaultParsingInProgress(self):
-        self.col1.setText("Vault loading in progress")
+        self.title = "Vault loading in progress"
+        self.col1.setText(self.title)
 
     def vaultParsed(self):
-        self.col1.setText("Vault: {} files, {} tags, {} in progress"
-                          .format(len(OLABackend.VAULT.SORTED_FILES), len(OLABackend.VAULT.TAGS), len(OLABackend.VAULT.PLAY)))
+        self.title = "Vault: {} files, {} tags".format(len(OLABackend.VAULT.SORTED_FILES), len(OLABackend.VAULT.TAGS))
+        self.col1.setText(self.title)
         self.loadPlaying()
 
 
