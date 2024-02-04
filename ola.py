@@ -17,9 +17,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-import pyautogui
-from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt, QPoint
-from PySide6.QtGui import QAction
+from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
+from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
     QVBoxLayout, \
     QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu
@@ -336,9 +335,8 @@ class OLAGameLine(QWidget):
 
         layout.addWidget(bPanel, row, 4)
 
-    def popMenu(self, event):
-        pos = pyautogui.position()
-        self.menu.exec(QPoint(int(pos.x), int(pos.y)))
+    def popMenu(self):
+        self.menu.exec(QCursor.pos())
 
     def doExclude(self):
         pass
