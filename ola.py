@@ -13,6 +13,7 @@
 #   limitations under the License.
 
 import logging
+import pathlib
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -52,8 +53,8 @@ logger.addHandler(stdout)
 
 
 class OLAGuiSetup:
-    POSX = 400
-    POSY = 1500
+    POSX = 350
+    POSY = 1440
     PROCESS_SCANNER_TIMER = 20 * 1000
     GAME_NAME_MIN_WIDTH = 150
     TAG_MIN_WIDTH = 60
@@ -390,7 +391,7 @@ class OLAGameLine(QWidget):
         self.bPop.setVisible(True)
         self.bVault.setEnabled(self.sheet is not None and len(self.sheet) > 0)
         self.bStart.setVisible(True)
-        self.bStart.setEnabled(True)
+        self.bStart.setEnabled(pathlib.Path(self.session.getPath()).is_file())
         if self.sessionMode:
             self.bLink.setVisible(True)
 
