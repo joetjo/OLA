@@ -272,14 +272,14 @@ class OLAPlayingPanel(QWidget):
 
 
 class OLAGameLine(QWidget):
-    def __init__(self, row, layout, linkVault=False):
+    def __init__(self, row, layout, sessionMode=False):
         super().__init__()
 
         self.vaultPath = None
         self.session = None
         self.sheet = None
         self.sheetFile = None
-        self.linkVault = linkVault
+        self.sessionMode = sessionMode
 
         self.platform = QLabel()
         layout.addWidget(self.platform, row, 0)
@@ -304,7 +304,7 @@ class OLAGameLine(QWidget):
         bPanel.layout().addWidget(self.bVault)
         self.bVault.setVisible(False)
 
-        if linkVault:
+        if sessionMode:
             self.bLink = QPushButton("")
             self.bLink.setStatusTip("Name in obsidian Vault")
             self.bLink.setIcon(Icons.PENCIL)
@@ -326,7 +326,7 @@ class OLAGameLine(QWidget):
         self.bPop.setVisible(False)
 
         self.menu = QMenu(self)
-        if linkVault:
+        if sessionMode:
             self.menu.addAction("Exclude").triggered.connect(self.doExclude)
             self.menu.addAction("Remove").triggered.connect(self.doRemove)
             self.menu.addAction("Open Folder").triggered.connect(self.openFolder)
@@ -391,8 +391,8 @@ class OLAGameLine(QWidget):
         self.bVault.setEnabled(self.sheet is not None and len(self.sheet) > 0)
         self.bStart.setVisible(True)
         self.bStart.setEnabled(True)
-        if self.linkVault:
-            self.bLink.setVisible(False)
+        if self.sessionMode:
+            self.bLink.setVisible(True)
 
     def applyPlatform(self):
         icon = Icons.QUESTION
@@ -434,12 +434,12 @@ class OLAGameLine(QWidget):
         self.bVault.setVisible(False)
         self.bPop.setVisible(False)
         self.bStart.setVisible(False)
-        if self.linkVault:
+        if self.sessionMode:
             self.bLink.setVisible(False)
 
 
 class OLASharedGameListWidget(QWidget):
-    def __init__(self, name, title=None, linkVault=False):
+    def __init__(self, name, title=None, sessionMode=False):
         super().__init__()
         self.name = name
         layout = QGridLayout()
@@ -460,7 +460,7 @@ class OLASharedGameListWidget(QWidget):
         self.lines = []
         for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
             self.lines.append([])
-            self.lines[idx].append(OLAGameLine(idx + 1, layout, linkVault=linkVault))
+            self.lines[idx].append(OLAGameLine(idx + 1, layout, sessionMode=sessionMode))
         self.filter = self.filter = OLAGui.PLAYING_PANEL.filters[name]
 
     def sessionMatchFilter(self, session):
@@ -492,7 +492,7 @@ class OLASharedGameListWidget(QWidget):
 
 class OLAGameSessions(OLASharedGameListWidget):
     def __init__(self):
-        super().__init__(OLAGui.SESSIONS_TAB_NAME, title="loading...", linkVault=True)
+        super().__init__(OLAGui.SESSIONS_TAB_NAME, title="loading...", sessionMode=True)
         OLAGui.SESSIONS = self
 
     def loadSessions(self):
