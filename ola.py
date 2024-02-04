@@ -58,7 +58,9 @@ class OLAGuiSetup:
     PROCESS_SCANNER_TIMER = 20 * 1000
     GAME_NAME_MIN_WIDTH = 150
     TAG_MIN_WIDTH = 60
-    VISIBLE_SESSION_COUNT = 20
+    VISIBLE_SESSION_COUNT = 10
+    PAGE_VISIBLE_COUNT = 5
+    PAGE_BUTTON_SIZE = 20
     VISIBLE_TYPE_COUNT = 15
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
     POSSIBLE_FILTER = ["#Type", "#PLAY"]
@@ -115,7 +117,7 @@ class OLAStatusBar(QStatusBar):
 
 
 class OLAFilter(QGroupBox):
-    def __init__(self, tag, listener, defaultValue=""):
+    def __init__(self, tag, listener, defaultValue=None):
         super().__init__()
         self.tag = tag
         self.value = defaultValue
@@ -298,12 +300,6 @@ class OLAGameLine(QWidget):
         bPanel.setLayout(QHBoxLayout())
         bPanel.layout().setContentsMargins(0, 0, 0, 0)
         bPanel.layout().addStretch()
-        self.bVault = QPushButton("")
-        self.bVault.setStatusTip("Open in obsidian Vault")
-        self.bVault.setIcon(Icons.OBSIDIAN)
-        self.bVault.clicked.connect(self.openInVault)
-        bPanel.layout().addWidget(self.bVault)
-        self.bVault.setVisible(False)
 
         if sessionMode:
             self.bLink = QPushButton("")
@@ -312,6 +308,13 @@ class OLAGameLine(QWidget):
             self.bLink.clicked.connect(self.setVaultName)
             bPanel.layout().addWidget(self.bLink)
             self.bLink.setVisible(False)
+
+        self.bVault = QPushButton("")
+        self.bVault.setStatusTip("Open in obsidian Vault")
+        self.bVault.setIcon(Icons.OBSIDIAN)
+        self.bVault.clicked.connect(self.openInVault)
+        bPanel.layout().addWidget(self.bVault)
+        self.bVault.setVisible(False)
 
         self.bStart = QPushButton("")
         self.bStart.setStatusTip("Start game")
@@ -326,6 +329,8 @@ class OLAGameLine(QWidget):
         bPanel.layout().addWidget(self.bPop)
         self.bPop.setVisible(False)
 
+        layout.addWidget(bPanel, row, 4)
+
         self.menu = QMenu(self)
         if sessionMode:
             self.menu.addAction("Exclude").triggered.connect(self.doExclude)
@@ -333,8 +338,6 @@ class OLAGameLine(QWidget):
             self.menu.addAction("Open Folder").triggered.connect(self.openFolder)
         else:
             self.menu.addAction("Copy Name").triggered.connect(self.copySheetName)
-
-        layout.addWidget(bPanel, row, 4)
 
     def popMenu(self):
         self.menu.exec(QCursor.pos())
@@ -443,6 +446,9 @@ class OLASharedGameListWidget(QWidget):
     def __init__(self, name, title=None, sessionMode=False):
         super().__init__()
         self.name = name
+        self.currentPage = 1
+        self.currentPageCount = 1
+
         layout = QGridLayout()
         self.setLayout(layout)
 
@@ -458,6 +464,44 @@ class OLASharedGameListWidget(QWidget):
         layout.addWidget(QLabel("Total play time"), 0, 2)
         layout.addWidget(QLabel("Last play duration"), 0, 3)
 
+        #
+        # PAGINATION
+        #
+        pagePanel = QWidget()
+        pagePanelLayout = QHBoxLayout()
+        pagePanelLayout.setContentsMargins(0, 0, 0, 0)
+        pagePanelLayout.addStretch()
+        pagePanel.setLayout(pagePanelLayout)
+
+        self.bBack = QPushButton("<")
+        self.bBack.setMaximumWidth(OLAGuiSetup.PAGE_BUTTON_SIZE)
+        pagePanelLayout.addWidget(self.bBack)
+        self.bBack.clicked.connect(self.doBack)
+        self.bBack.setEnabled(False)
+
+        self.page = QComboBox()
+        self.page.setMaxVisibleItems(OLAGuiSetup.PAGE_VISIBLE_COUNT)
+        self.page.currentTextChanged.connect(self.pageSelected)
+        self.page.addItems("1")
+        self.page.setEditable(True)
+        self.page.setCurrentText("1")
+        pagePanelLayout.addWidget(self.page)
+        self.page.setMinimumWidth(5)
+
+        self.pageCount = QLabel("")
+        pagePanelLayout.addWidget(self.pageCount)
+
+        self.bFront = QPushButton(">")
+        self.bFront.setMaximumWidth(OLAGuiSetup.PAGE_BUTTON_SIZE)
+        pagePanelLayout.addWidget(self.bFront)
+        self.bFront.clicked.connect(self.doFront)
+        self.bFront.setEnabled(False)
+
+        layout.addWidget(pagePanel, 0, 4)
+
+        #
+        # LINES
+        #
         self.lines = []
         for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
             self.lines.append([])
@@ -490,6 +534,44 @@ class OLASharedGameListWidget(QWidget):
                 return True
         return False
 
+    def doBack(self):
+        if self.currentPage > 1:
+            self.currentPage = self.currentPage - 1
+        self.reload()
+
+    def doFront(self):
+        if self.currentPage < self.currentPageCount:
+            self.currentPage = self.currentPage + 1
+        self.reload()
+
+    def pageSelected(self):
+        try:
+            requested = int(self.page.currentText())
+            if 1 < requested < self.currentPageCount and requested != self.currentPage:
+                self.currentPage = requested
+                self.reload()
+        except ValueError:
+            self.page.setCurrentText(self.currentPage)
+
+    def setPageCount(self, count):
+        currentCount = self.currentPageCount
+        self.currentPageCount = int(count / OLAGuiSetup.VISIBLE_SESSION_COUNT)
+        if self.currentPageCount != count / OLAGuiSetup.VISIBLE_SESSION_COUNT:
+            self.currentPageCount = self.currentPageCount + 1
+        self.pageCount.setText("/{}".format(self.currentPageCount))
+        if self.currentPageCount > currentCount:
+            for page in range(currentCount + 1, self.currentPageCount+1):
+                self.page.addItems(str(page))
+        elif self.currentPageCount < currentCount:
+            for page in range(self.currentPageCount + 1, currentCount+1):
+                self.page.removeItem(str(page))
+        self.page.setCurrentText(str(self.currentPage))
+        self.bBack.setEnabled(self.currentPage > 1)
+        self.bFront.setEnabled(self.currentPage < self.currentPageCount)
+
+    def reload(self):
+        pass  # To be overridden
+
 
 class OLAGameSessions(OLASharedGameListWidget):
     def __init__(self):
@@ -499,20 +581,29 @@ class OLAGameSessions(OLASharedGameListWidget):
     def loadSessions(self):
         sessions = OLABackend.SBSGL.procmgr.getSessions()
         count = len(sessions)
+        self.setPageCount(count)
         self.col1.setText("Game ( {} sessions )".format(count))
-        current = 0
+        checkedCount = 0
+        checkedCountToStart = (self.currentPage-1) * OLAGuiSetup.VISIBLE_SESSION_COUNT
+        currentDisplayed = 0
         if count > 0:
             logging.debug("OLAGameSessions:  Loading {} sessions :".format(count))
             for session in sessions:
                 if self.sessionMatchFilter(session):
-                    if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
-                        self.lines[current][0].setSession(session)
-                        current = current + 1
+                    checkedCount = checkedCount + 1
+                    if checkedCount > checkedCountToStart and currentDisplayed < OLAGuiSetup.VISIBLE_SESSION_COUNT:
+                        self.lines[currentDisplayed][0].setSession(session)
+                        currentDisplayed = currentDisplayed + 1
+                else:
+                    logging.info("OLAGameSessions: {} exclude by filter".format(session.getName()))
         else:
             logging.debug("OLAGameSessions: no session to load")
 
-        for idx in range(current, OLAGuiSetup.VISIBLE_SESSION_COUNT):
+        for idx in range(currentDisplayed, OLAGuiSetup.VISIBLE_SESSION_COUNT):
             self.lines[idx][0].reset()
+
+    def reload(self):
+        self.loadSessions()
 
     def reset(self):
         for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
@@ -527,20 +618,27 @@ class OLAObsidianAssistant(OLASharedGameListWidget):
     def loadPlaying(self):
         playing = OLABackend.VAULT.PLAY
         count = len(playing)
-        current = 0
+        checkedCount = 0
+        checkedCountToStart = (self.currentPage-1) * OLAGuiSetup.VISIBLE_SESSION_COUNT
+        currentDisplayed = 0
         if count > 0:
             logging.debug("OLAGameSessions:  Loading {} play in progress :".format(count))
             for play in playing:
                 sheet = OLABackend.VAULT.PLAY[play]
                 if self.sheetMatchFilter(sheet):
-                    if current < OLAGuiSetup.VISIBLE_SESSION_COUNT:
-                        self.lines[current][0].setPlaying(sheet)
-                        current = current + 1
+                    checkedCount = checkedCount + 1
+                    if checkedCount > checkedCountToStart and currentDisplayed < OLAGuiSetup.VISIBLE_SESSION_COUNT:
+                        self.lines[currentDisplayed][0].setPlaying(sheet)
+                        currentDisplayed = currentDisplayed + 1
         else:
             logging.debug("OLAGameSessions: no playing session to load")
+        self.setPageCount(count)
 
-        for idx in range(current, OLAGuiSetup.VISIBLE_SESSION_COUNT):
+        for idx in range(currentDisplayed, OLAGuiSetup.VISIBLE_SESSION_COUNT):
             self.lines[idx][0].reset()
+
+    def reload(self):
+        self.loadPlaying()
 
     def vaultReportInProgress(self):
         self.col1.setText("Vault report generation in progress")
