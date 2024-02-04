@@ -32,7 +32,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.04 alpha 7"
+    VERSION = "2024.02.04 alpha 8"
     PREVIOUS = ""
 
 
@@ -343,6 +343,7 @@ class OLAGameLine(QWidget):
             self.menu.addAction("Exclude").triggered.connect(self.doExclude)
             self.menu.addAction("Remove").triggered.connect(self.doRemove)
             self.menu.addAction("Open Folder").triggered.connect(self.openFolder)
+            self.menu.addAction("Copy Name").triggered.connect(self.copyPathName)
         else:
             self.menu.addAction("Copy Name").triggered.connect(self.copySheetName)
 
@@ -379,6 +380,9 @@ class OLAGameLine(QWidget):
     def copySheetName(self):
         QApplication.clipboard().setText(self.sheet)
 
+    def copyPathName(self):
+        QApplication.clipboard().setText(self.name.text())
+
     def startGame(self):
         OLABackend.SBSGL.launchGame(self.session, OLAGui.APP)
 
@@ -389,9 +393,12 @@ class OLAGameLine(QWidget):
         pass
 
     def setVaultName(self):
+        val = self.sheet
+        if val is None or len(val) == 0:
+            val = self.name.text()
         text, ok = QInputDialog.getText(self, "Obsidian sheet name",
                                         "name:", QLineEdit.Normal,
-                                        self.sheet)
+                                        val)
         if ok and text:
             self.session.getGameInfo()['sheet'] = text
         OLABackend.SBSGL.procmgr.storage.save()
@@ -669,7 +676,7 @@ class OLAObsidianAssistant(OLASharedGameListWidget):
         self.title = "Obsidian files not parsed"
 
     def loadPlaying(self):
-        self.load(sorted(OLABackend.VAULT.PLAY, key=lambda x:x.lastModif, reverse=True))
+        self.load(sorted(OLABackend.VAULT.PLAY, key=lambda x: x.lastModif, reverse=True))
 
     def loadTitle(self, count):
         return "{}, {} displayed)".format(self.title, count)
@@ -735,11 +742,12 @@ class OLATabPanel(QTabWidget):
         OLAGui.SESSIONS.reload()
         OLAGui.ASSISTANT.reload()
 
+
 class OLAMainWindow(QMainWindow):
     def __init__(self, version):
         super().__init__()
         OLAGui.MAIN = self
-        self.setWindowTitle("Obsidian Launcher Assistant - {}".format(version))
+        self.setWindowTitle("Obsidian Launcher Assistant [SBSGL] - {}".format(version))
 
         self.move(OLAGuiSetup.POSX, OLAGuiSetup.POSY)
 
