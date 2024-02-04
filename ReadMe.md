@@ -13,7 +13,10 @@ Why not an obsidian plugin ?
 Python allows to do more easily.
 and Obsidian is a great tool ! but it should do what it handles the best.
 
-Interesting external Sources :
+# Issues :
+- Emulator not managed ( LEGUI for example )
+
+# Interesting external Sources :
 
 - PySide6 tutorial : https://www.pythonguis.com/pyside6-tutorial/
 - Thread : https://www.pythonguis.com/tutorials/multithreading-pyside6-applications-qthreadpool/

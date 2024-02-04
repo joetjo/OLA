@@ -14,6 +14,7 @@
 
 import logging
 import pathlib
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -22,7 +23,7 @@ from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
     QVBoxLayout, \
-    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu
+    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox
 
 from base.formatutil import FormatUtil
 from resources.resources import Icons
@@ -76,6 +77,7 @@ class OLAGui:
     SESSIONS_TAB_NAME = "Sessions"
     ASSISTANT = None
     ASSISTANT_TAB_NAME = "Obsidian Sheets"
+    EXCLUDED_TAB_NAME = "Excluded launchers"
 
 
 class OLAToolbar(QToolBar):
@@ -336,6 +338,7 @@ class OLAGameLine(QWidget):
 
         self.menu = QMenu(self)
         if sessionMode:
+            self.menu.addAction("Setup Launcher").triggered.connect(self.doSetupLauncher)
             self.menu.addAction("Exclude").triggered.connect(self.doExclude)
             self.menu.addAction("Remove").triggered.connect(self.doRemove)
             self.menu.addAction("Open Folder").triggered.connect(self.openFolder)
@@ -346,22 +349,43 @@ class OLAGameLine(QWidget):
         self.menu.exec(QCursor.pos())
 
     def doExclude(self):
-        pass
+        msgBox = QMessageBox()
+        msgBox.setText("Confirm Exclusion")
+        msgBox.setInformativeText("Game data will be deleted and it could be restored through the excluded game tab?")
+        msgBox.setStandardButtons(QMessageBox.Save | QMessageBox.Cancel)
+        msgBox.setDefaultButton(QMessageBox.Cancel)
+        ret = msgBox.exec_()
+        if ret == QMessageBox.Save:
+            OLABackend.SBSGL.procmgr.ignore(self.session.getName())
+            OLAGui.TAB_PANEL.reload()
 
     def doRemove(self):
-        pass
+        msgBox = QMessageBox()
+        msgBox.setText("Confirm Removal")
+        msgBox.setInformativeText("Game data will be deleted, no possible rollback?")
+        msgBox.setStandardButtons(QMessageBox.Save | QMessageBox.Cancel)
+        msgBox.setDefaultButton(QMessageBox.Cancel)
+        ret = msgBox.exec_()
+        if ret == QMessageBox.Save:
+            OLABackend.SBSGL.procmgr.remove(self.session.getName())
+            OLAGui.TAB_PANEL.reload()
 
     def openFolder(self):
-        pass
+        if self.session is not None:
+            logging.info("Open explorer on {}".format(self.session.getPath()))
+            subprocess.Popen("explorer /select, \"{}\"".format(self.session.getPath()))
 
     def copySheetName(self):
-        pass
+        QApplication.clipboard().setText(self.sheet)
 
     def startGame(self):
         OLABackend.SBSGL.launchGame(self.session, OLAGui.APP)
 
     def openInVault(self):
         OLABackend.openInVault(fullpath=self.vaultPath, sheetName=self.sheet)
+
+    def doSetupLauncher(self):
+        pass
 
     def setVaultName(self):
         text, ok = QInputDialog.getText(self, "Obsidian sheet name",
@@ -370,6 +394,7 @@ class OLAGameLine(QWidget):
         if ok and text:
             self.session.getGameInfo()['sheet'] = text
         OLABackend.SBSGL.procmgr.storage.save()
+        OLAGui.TAB_PANEL.reload()
 
     def setSession(self, session, sheetAlreadySet=None):
         """
@@ -385,7 +410,10 @@ class OLAGameLine(QWidget):
             self.sheet = sessionSheet
             self.name.setText(self.sheet)
             if OLABackend.VAULT_READY:
-                self.sheetFile = OLABackend.VAULT.SHEETS[self.sheet]
+                try:
+                    self.sheetFile = OLABackend.VAULT.SHEETS[self.sheet]
+                except KeyError:
+                    self.sheetFile = None
         else:
             self.sheet = None
             self.sheetFile = None
@@ -668,6 +696,15 @@ class OLAObsidianAssistant(OLASharedGameListWidget):
         self.loadPlaying()
 
 
+class OLAExcludedGame(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setLayout(QVBoxLayout())
+        self.layout().addWidget(QLabel("NOT AVAILABLE - EDIT THE STORAGE ON YOUR OWN !!!"))
+        self.layout().addStretch()
+
+
 class OLATabPanel(QTabWidget):
 
     def __init__(self):
@@ -681,6 +718,7 @@ class OLATabPanel(QTabWidget):
         self.tabsName = []
         self.declareTab(OLAGameSessions(), OLAGui.SESSIONS_TAB_NAME)
         self.declareTab(OLAObsidianAssistant(), OLAGui.ASSISTANT_TAB_NAME)
+        self.declareTab(OLAExcludedGame(), OLAGui.EXCLUDED_TAB_NAME)
 
         self.currentChanged.connect(self.tabSelected)
 
@@ -692,6 +730,9 @@ class OLATabPanel(QTabWidget):
     def tabSelected(self):
         OLAGui.PLAYING_PANEL.activateFilter(self.tabsName[self.currentIndex()])
 
+    def reload(self):
+        OLAGui.SESSIONS.reload()
+        OLAGui.ASSISTANT.reload()
 
 class OLAMainWindow(QMainWindow):
     def __init__(self, version):
