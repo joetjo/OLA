@@ -127,6 +127,8 @@ class OLAFilter(QGroupBox):
         self.value = defaultValue
         self.filterValue = None
 
+        self.searchToken = None
+
         layout = QGridLayout()
         self.setLayout(layout)
 
@@ -140,8 +142,25 @@ class OLAFilter(QGroupBox):
             layout.addWidget(tagLabel, 0, 0)
             layout.addWidget(QLabel(":"), 0, 1)
             layout.addWidget(self.filterValue, 0, 2)
-        else:
-            layout.addWidget(QLabel("No filter selected"), 0, 0)
+
+        if listener is not None:
+            layout.addWidget(QLabel("Search"), 1, 0)
+            layout.addWidget(QLabel(":"), 1, 1)
+            self.search = QLineEdit()
+            self.search.setMinimumWidth(10)
+            self.search.editingFinished.connect(listener)
+            layout.addWidget(self.search, 1, 2)
+
+    def isFiltering(self):
+        return self.value is not None or self.searchToken is not None
+
+    def onLoad(self):
+        self.value = self.filterValue.currentText()
+        if len (self.value) == 0:
+            self.value = None
+        self.searchToken = self.search.text()
+        if len(self.searchToken) == 0:
+            self.searchToken = None
 
     def setValues(self):
         if self.tag is not None:
@@ -548,6 +567,8 @@ class OLASharedGameListWidget(QWidget):
         self.filter = self.filter = OLAGui.PLAYING_PANEL.filters[name]
 
     def sessionMatchFilter(self, session):
+        if self.filter is not None and self.filter.searchToken is not None and not self.filter.searchToken in session.getName():
+            return False
         if self.filter is not None and self.filter.value is not None:
             if session.getSheet() is None:
                 return True
@@ -560,6 +581,8 @@ class OLASharedGameListWidget(QWidget):
             return True
 
     def sheetMatchFilter(self, sheet):
+        if self.filter is not None and self.filter.searchToken is not None and not self.filter.searchToken in sheet.name:
+            return False
         if self.filter.value is None:
             return True
         if self.filter.tag == OLAGuiSetup.POSSIBLE_FILTER[0]:
@@ -610,16 +633,18 @@ class OLASharedGameListWidget(QWidget):
         pass  # To be overridden
 
     def loadTitle(self, count):
-        pass
+        pass  # To be overridden
 
     def matchFilter(self, data):
-        pass
+        pass  # To be overridden
 
     def setData(self, gameLine, data):
-        pass
+        pass  # To be overridden
 
     def load(self, rawList):
-        if self.filter is not None and self.filter.value is not None:
+        if self.filter is not None:
+            self.filter.onLoad()
+        if self.filter is not None and self.filter.isFiltering():
             selList = []
             for data in rawList:
                 if self.matchFilter(data):
