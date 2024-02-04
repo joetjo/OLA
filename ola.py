@@ -31,7 +31,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.04 alpha 4"
+    VERSION = "2024.02.04 alpha 5"
     PREVIOUS = ""
 
 
@@ -57,8 +57,9 @@ class OLAGuiSetup:
     POSY = 1440
     PROCESS_SCANNER_TIMER = 20 * 1000
     GAME_NAME_MIN_WIDTH = 150
+    GAME_NAME_MAX_WIDTH = 250
     TAG_MIN_WIDTH = 60
-    VISIBLE_SESSION_COUNT = 10
+    VISIBLE_SESSION_COUNT = 20
     PAGE_VISIBLE_COUNT = 5
     PAGE_BUTTON_SIZE = 20
     VISIBLE_TYPE_COUNT = 15
@@ -181,6 +182,7 @@ class OLAPlayingPanel(QWidget):
         leftPanelLayout.addWidget(QLabel(":"), 0, 2)
         self.game = QLabel("")
         self.game.setMinimumWidth(OLAGuiSetup.GAME_NAME_MIN_WIDTH)
+        self.game.setMaximumWidth(OLAGuiSetup.GAME_NAME_MAX_WIDTH)
         leftPanelLayout.addWidget(self.game, 0, 3)
         self.bVault = QPushButton("")
         self.bVault.setStatusTip("Open in obsidian Vault")
