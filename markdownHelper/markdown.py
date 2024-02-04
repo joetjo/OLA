@@ -42,8 +42,10 @@ class MarkdownHelper:
         self.SHEETS = dict()
         self.SORTED_FILES = dict()
         self.TAGS = dict()
-        self.TYPES_UNSORTED = set()
-        self.TYPES = []
+        self.TYPE_TAGS_UNSORTED = set()
+        self.TYPE_TAGS = []
+        self.PLAY_TAGS_UNSORTED = set()
+        self.PLAY_TAGS = []
 
     # folder: Path
     # shift: String ( String length provide the indentation level )
@@ -71,7 +73,9 @@ class MarkdownHelper:
                 if playInProgress:
                     for tag in mdfile.tags:
                         if tag.startswith("#Type/"):
-                            self.TYPES_UNSORTED.add(tag[6:])
+                            self.TYPE_TAGS_UNSORTED.add(tag[6:])
+                        if tag.startswith("#PLAY/"):
+                            self.PLAY_TAGS_UNSORTED.add(tag[6:])
 
         # Loop on sub folder
         for entry in folder.iterdir():
@@ -90,8 +94,11 @@ class MarkdownHelper:
         for key in sorted(self.FILES):
             self.SORTED_FILES[key] = self.FILES[key]
 
-        for t in sorted(self.TYPES_UNSORTED):
-            self.TYPES.append(t)
+        for t in sorted(self.TYPE_TAGS_UNSORTED):
+            self.TYPE_TAGS.append(t)
+
+        for t in sorted(self.PLAY_TAGS_UNSORTED):
+            self.PLAY_TAGS.append(t)
 
     def generateAllReports(self, signal, reload=False):
         try:

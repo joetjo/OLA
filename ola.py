@@ -57,23 +57,22 @@ class OLAGuiSetup:
     POSY = 1500
     PROCESS_SCANNER_TIMER = 20 * 1000
     GAME_NAME_MIN_WIDTH = 150
+    TAG_MIN_WIDTH = 60
     VISIBLE_SESSION_COUNT = 20
     VISIBLE_TYPE_COUNT = 15
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
-
-
-class OLAFilter:
-    def __init__(self):
-        self.type = None
+    POSSIBLE_FILTER = ["#Type", "#PLAY"]
 
 
 class OLAGui:
     APP = None
     MAIN = None
+    TAB_PANEL = None
     PLAYING_PANEL = None
     SESSIONS = None
+    SESSIONS_TAB_NAME = "Sessions"
     ASSISTANT = None
-    FILTER = OLAFilter()
+    ASSISTANT_TAB_NAME = "Obsidian Sheets"
 
 
 class OLAToolbar(QToolBar):
@@ -113,6 +112,48 @@ class OLAStatusBar(QStatusBar):
 
     def set(self, message):
         self.showMessage("{} | {}".format(datetime.now().strftime("%H:%M:%S"), message))
+
+
+class OLAFilter(QGroupBox):
+    def __init__(self, tag, listener, defaultValue=""):
+        super().__init__()
+        self.tag = tag
+        self.value = defaultValue
+        self.filterValue = None
+
+        layout = QGridLayout()
+        self.setLayout(layout)
+
+        if tag is not None:
+            self.filterValue = QComboBox()
+            self.filterValue.setMaxVisibleItems(OLAGuiSetup.VISIBLE_TYPE_COUNT)
+            self.filterValue.currentTextChanged.connect(listener)
+            self.filterValue.setCurrentText(self.value)
+            tagLabel = QLabel("{}".format(self.tag))
+            tagLabel.setMinimumWidth(OLAGuiSetup.TAG_MIN_WIDTH)
+            layout.addWidget(tagLabel, 0, 0)
+            layout.addWidget(QLabel(":"), 0, 1)
+            layout.addWidget(self.filterValue, 0, 2)
+        else:
+            layout.addWidget(QLabel("No filter selected"), 0, 0)
+
+    def setValues(self):
+        if self.tag is not None:
+            if self.tag == OLAGuiSetup.POSSIBLE_FILTER[0]:
+                choices = OLABackend.VAULT.TYPE_TAGS
+            elif self.tag == OLAGuiSetup.POSSIBLE_FILTER[1]:
+                choices = OLABackend.VAULT.PLAY_TAGS
+            else:
+                choices = ["{} not supported".format(self.tag)]
+            currentValue = self.filterValue.currentText()
+            self.filterValue.clear()
+            self.filterValue.addItem("")
+            self.filterValue.addItems(choices)
+            self.filterValue.setCurrentText(currentValue)
+            count = len(choices) + 1
+            if count > OLAGuiSetup.VISIBLE_TYPE_COUNT:
+                count = OLAGuiSetup.VISIBLE_TYPE_COUNT
+            self.filterValue.setMaxVisibleItems(count)
 
 
 class OLAPlayingPanel(QWidget):
@@ -160,37 +201,43 @@ class OLAPlayingPanel(QWidget):
         # Middle
         self.layout().addStretch()
 
-        # TODO RIGHT PANEL - Search and filtering
-        rightPanel = QGroupBox()
-        rightPanelLayout = QGridLayout()
-        rightPanel.setLayout(rightPanelLayout)
+        # Search and filtering
+        self.defaultFilter = OLAFilter(None, None)
+        self.filters = dict()
+        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1], self.applyFilter)
+        self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[0], self.applyFilter)
+        self.filter = self.defaultFilter
 
-        self.filterType = QComboBox()
-        self.filterType.setMaxVisibleItems(OLAGuiSetup.VISIBLE_TYPE_COUNT)
-        self.filterType.currentTextChanged.connect(self.applyFilter)
-        rightPanelLayout.addWidget(QLabel("#Type (Obsidian)"), 0, 0)
-        rightPanelLayout.addWidget(QLabel(":"), 0, 1)
-        rightPanelLayout.addWidget(self.filterType, 0, 2)
+        self.layout().addWidget(self.defaultFilter)
+        self.layout().addWidget(self.filters[OLAGui.SESSIONS_TAB_NAME])
+        self.filters[OLAGui.SESSIONS_TAB_NAME].setVisible(False)
+        self.layout().addWidget(self.filters[OLAGui.ASSISTANT_TAB_NAME])
+        self.filters[OLAGui.ASSISTANT_TAB_NAME].setVisible(False)
 
-        self.layout().addWidget(rightPanel)
+    def activateFilter(self, tabName):
+        selectedFilter = None
+        for k, f in self.filters.items():
+            if k == tabName:
+                selectedFilter = f
+            else:
+                f.setVisible(False)
+        if selectedFilter is None:
+            selectedFilter = self.defaultFilter
+        else:
+            self.defaultFilter.setVisible(False)
+        selectedFilter.setVisible(True)
+        self.filter = selectedFilter
 
     def applyFilter(self):
-        OLAGui.FILTER.type = self.filterType.currentText()
-        if len(OLAGui.FILTER.type) == 0:
-            OLAGui.FILTER.type = None
+        self.filter.value = self.filter.filterValue.currentText()
+        if len(self.filter.value) == 0:
+            self.filter.value = None
         OLAGui.ASSISTANT.vaultParsed()
         OLAGui.SESSIONS.loadSessions()
 
     def refreshVault(self):
-        currentType = self.filterType.currentText()
-        self.filterType.clear()
-        self.filterType.addItem("")
-        self.filterType.addItems(OLABackend.VAULT.TYPES)
-        self.filterType.setCurrentText(currentType)
-        count = len(OLABackend.VAULT.TYPES) + 1
-        if count > OLAGuiSetup.VISIBLE_TYPE_COUNT:
-            count = OLAGuiSetup.VISIBLE_TYPE_COUNT
-        self.filterType.setMaxVisibleItems(count)
+        for k, f in self.filters.items():
+            f.setValues()
 
     def refreshSBSGL(self):
         game = OLABackend.SBSGL.procmgr.getCurrentGame()
@@ -280,10 +327,12 @@ class OLAGameLine(QWidget):
         self.bPop.setVisible(False)
 
         self.menu = QMenu(self)
-        self.menu.addAction("Exclude").triggered.connect(self.doExclude)
-        self.menu.addAction("Remove").triggered.connect(self.doRemove)
-        self.menu.addAction("Open Folder").triggered.connect(self.openFolder)
-        self.menu.addAction("Copy Name").triggered.connect(self.copySheetName)
+        if linkVault:
+            self.menu.addAction("Exclude").triggered.connect(self.doExclude)
+            self.menu.addAction("Remove").triggered.connect(self.doRemove)
+            self.menu.addAction("Open Folder").triggered.connect(self.openFolder)
+        else:
+            self.menu.addAction("Copy Name").triggered.connect(self.copySheetName)
 
         layout.addWidget(bPanel, row, 4)
 
@@ -391,8 +440,9 @@ class OLAGameLine(QWidget):
 
 
 class OLASharedGameListWidget(QWidget):
-    def __init__(self, title=None, linkVault=False):
+    def __init__(self, name, title=None, linkVault=False):
         super().__init__()
+        self.name = name
         layout = QGridLayout()
         self.setLayout(layout)
 
@@ -412,9 +462,10 @@ class OLASharedGameListWidget(QWidget):
         for idx in range(0, OLAGuiSetup.VISIBLE_SESSION_COUNT):
             self.lines.append([])
             self.lines[idx].append(OLAGameLine(idx + 1, layout, linkVault=linkVault))
+        self.filter = self.filter = OLAGui.PLAYING_PANEL.filters[name]
 
     def sessionMatchFilter(self, session):
-        if OLAGui.FILTER.type is not None:
+        if self.filter is not None and self.filter.value is not None:
             if session.getSheet() is None:
                 return True
             else:
@@ -426,17 +477,23 @@ class OLASharedGameListWidget(QWidget):
             return True
 
     def sheetMatchFilter(self, sheet):
-        if OLAGui.FILTER.type is None:
+        if self.filter.value is None:
             return True
-        for t in sheet.types:
-            if t.startswith(OLAGui.FILTER.type):
+        if self.filter.tag == OLAGuiSetup.POSSIBLE_FILTER[0]:
+            tags = sheet.type_tags
+        elif self.filter.tag == OLAGuiSetup.POSSIBLE_FILTER[1]:
+            tags = sheet.play_tags
+        else:
+            return True
+        for t in tags:
+            if t.startswith(self.filter.value):
                 return True
         return False
 
 
 class OLAGameSessions(OLASharedGameListWidget):
     def __init__(self):
-        super().__init__(title="loading...", linkVault=True)
+        super().__init__(OLAGui.SESSIONS_TAB_NAME, title="loading...", linkVault=True)
         OLAGui.SESSIONS = self
 
     def loadSessions(self):
@@ -464,7 +521,7 @@ class OLAGameSessions(OLASharedGameListWidget):
 
 class OLAObsidianAssistant(OLASharedGameListWidget):
     def __init__(self):
-        super().__init__(title="Obsidian vault not parsed")
+        super().__init__(OLAGui.ASSISTANT_TAB_NAME, title="Obsidian vault not parsed")
         OLAGui.ASSISTANT = self
 
     def loadPlaying(self):
@@ -501,12 +558,25 @@ class OLATabPanel(QTabWidget):
 
     def __init__(self):
         super().__init__()
+        OLAGui.TAB_PANEL = self
 
         self.setTabPosition(QTabWidget.North)
-        self.setMovable(True)
+        self.setMovable(False)
 
-        self.addTab(OLAGameSessions(), "Sessions")
-        self.addTab(OLAObsidianAssistant(), "Assistant")
+        self.tabs = []
+        self.tabsName = []
+        self.declareTab(OLAGameSessions(), OLAGui.SESSIONS_TAB_NAME)
+        self.declareTab(OLAObsidianAssistant(), OLAGui.ASSISTANT_TAB_NAME)
+
+        self.currentChanged.connect(self.tabSelected)
+
+    def declareTab(self, widget, name):
+        self.tabs.append(widget)
+        self.tabsName.append(name)
+        self.addTab(widget, name)
+
+    def tabSelected(self):
+        OLAGui.PLAYING_PANEL.activateFilter(self.tabsName[self.currentIndex()])
 
 
 class OLAMainWindow(QMainWindow):
@@ -566,7 +636,7 @@ class OLAApplication(QApplication):
         self.scanInProgress = False
 
     def start(self):
-
+        OLAGui.TAB_PANEL.tabSelected()
         OLABackend.SBSGL = SBSGL()
         self.startProcessCheck()
         OLAGui.ASSISTANT.vaultParsed()

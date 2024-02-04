@@ -27,7 +27,8 @@ class MhMarkdownFile:
         self.tags = []
         self.tagsComment = dict()
         self.platforms = []
-        self.types = []
+        self.type_tags = []
+        self.play_tags = []
         self.loadTags()
         self.matchTag = None
 
@@ -55,7 +56,9 @@ class MhMarkdownFile:
                     if stag.startswith("#PLATFORM"):
                         self.platforms.append(stag[10:])
                     if stag.startswith("#Type"):
-                        self.types.append(stag[6:])
+                        self.type_tags.append(stag[6:])
+                    if stag.startswith("#PLAY"):
+                        self.play_tags.append(stag[6:])
 
     def getTagComment(self, tag):
         try:
