@@ -11,6 +11,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+import os.path
 import re
 
 
@@ -24,6 +25,7 @@ class MhMarkdownFile:
         # WindowsPath ( from pathLib )
         self.path = path
         self.localPath = str(path)[vaultLenPath:]
+        self.lastModif = os.path.getmtime(path)
         self.tags = []
         self.tagsComment = dict()
         self.platforms = []

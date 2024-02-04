@@ -31,7 +31,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.04 alpha 5"
+    VERSION = "2024.02.04 alpha 6"
     PREVIOUS = ""
 
 
@@ -588,8 +588,6 @@ class OLASharedGameListWidget(QWidget):
             for data in rawList:
                 if self.matchFilter(data):
                     selList.append(data)
-                else:
-                    logging.info("OLAGameSessions: {} exclude by filter".format(data))
         else:
             selList = rawList
         count = len(selList)
@@ -642,16 +640,16 @@ class OLAObsidianAssistant(OLASharedGameListWidget):
         self.title = "Obsidian files not parsed"
 
     def loadPlaying(self):
-        self.load(OLABackend.VAULT.PLAY)
+        self.load(sorted(OLABackend.VAULT.PLAY, key=lambda x:x.lastModif, reverse=True))
 
     def loadTitle(self, count):
         return "{}, {} displayed)".format(self.title, count)
 
     def matchFilter(self, data):
-        return self.sheetMatchFilter(OLABackend.VAULT.PLAY[data])
+        return self.sheetMatchFilter(data)
 
     def setData(self, gameLine, data):
-        gameLine.setPlaying(OLABackend.VAULT.PLAY[data])
+        gameLine.setPlaying(data)
 
     def reload(self):
         self.loadPlaying()

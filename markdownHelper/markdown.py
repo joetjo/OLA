@@ -38,7 +38,7 @@ class MarkdownHelper:
         self.REPORTS = self.SETUP.getBloc("global")["reports"]
         self.SUBCONTENT = self.SETUP.getBloc("global")["shared_contents"]
         self.FILES = dict()
-        self.PLAY = dict()
+        self.PLAY = []
         self.SHEETS = dict()
         self.SORTED_FILES = dict()
         self.TAGS = dict()
@@ -67,7 +67,7 @@ class MarkdownHelper:
                 for tag in mdfile.tags:
                     self.TAGS[tag] = tag
                     if tag == self.playtag:
-                        self.PLAY[key] = mdfile
+                        self.PLAY.append(mdfile)
                         playInProgress = True
                     self.SHEETS[key] = mdfile
                 if playInProgress:
