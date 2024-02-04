@@ -30,7 +30,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.03 alpha 3"
+    VERSION = "2024.02.04 alpha 4"
     PREVIOUS = ""
 
 
@@ -381,6 +381,7 @@ class OLAGameLine(QWidget):
                 self.sheetFile = OLABackend.VAULT.SHEETS[self.sheet]
         else:
             self.sheet = None
+            self.sheetFile = None
             self.name.setText(session.getName())
         self.applyPlatform()
         self.playDuration.setText(FormatUtil.formatDuration(session.getGameInfo()['duration']))
