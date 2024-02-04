@@ -17,11 +17,12 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
+import pyautogui
+from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt, QPoint
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
     QVBoxLayout, \
-    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox
+    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu
 
 from base.formatutil import FormatUtil
 from resources.resources import Icons
@@ -273,16 +274,34 @@ class OLAGameLine(QWidget):
         self.bStart.setVisible(False)
 
         self.bPop = QPushButton("")
-        self.bPop.setStatusTip("Start game")
         self.bPop.setIcon(Icons.POPMENU)
         self.bPop.clicked.connect(self.popMenu)
         bPanel.layout().addWidget(self.bPop)
         self.bPop.setVisible(False)
 
+        self.menu = QMenu(self)
+        self.menu.addAction("Exclude").triggered.connect(self.doExclude)
+        self.menu.addAction("Remove").triggered.connect(self.doRemove)
+        self.menu.addAction("Open Folder").triggered.connect(self.openFolder)
+        self.menu.addAction("Copy Name").triggered.connect(self.copySheetName)
+
         layout.addWidget(bPanel, row, 4)
 
-    def popMenu(self):
-        pass  # TODO remove, exclude ...
+    def popMenu(self, event):
+        pos = pyautogui.position()
+        self.menu.exec(QPoint(int(pos.x), int(pos.y)))
+
+    def doExclude(self):
+        pass
+
+    def doRemove(self):
+        pass
+
+    def openFolder(self):
+        pass
+
+    def copySheetName(self):
+        pass
 
     def startGame(self):
         OLABackend.SBSGL.launchGame(self.session, OLAGui.APP)
