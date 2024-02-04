@@ -32,7 +32,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.04 alpha 6"
+    VERSION = "2024.02.04 alpha 7"
     PREVIOUS = ""
 
 
@@ -66,6 +66,7 @@ class OLAGuiSetup:
     VISIBLE_TYPE_COUNT = 15
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
     POSSIBLE_FILTER = ["#Type", "#PLAY"]
+    DEFAULT_SESSION_FILTER = "INPROGRESS"
 
 
 class OLAGui:
@@ -150,7 +151,7 @@ class OLAFilter(QGroupBox):
                 choices = OLABackend.VAULT.PLAY_TAGS
             else:
                 choices = ["{} not supported".format(self.tag)]
-            currentValue = self.filterValue.currentText()
+            currentValue = self.value
             self.filterValue.clear()
             self.filterValue.addItem("")
             self.filterValue.addItems(choices)
@@ -211,7 +212,7 @@ class OLAPlayingPanel(QWidget):
         # Search and filtering
         self.defaultFilter = OLAFilter(None, None)
         self.filters = dict()
-        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1], self.applyFilter)
+        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1], self.applyFilter, defaultValue=OLAGuiSetup.DEFAULT_SESSION_FILTER)
         self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[0], self.applyFilter)
         self.filter = self.defaultFilter
 
