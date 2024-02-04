@@ -31,7 +31,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.03 alpha 2"
+    VERSION = "2024.02.03 alpha 3"
     PREVIOUS = ""
 
 
@@ -218,8 +218,8 @@ class OLAPlayingPanel(QWidget):
             self.sheet = None
 
     def gameLaunchFailure(self):
-        self.game.setText("")
-        self.game.setPixmap(Icons.KO)
+        self.game.setText("Game not available")
+        self.gameIcon.setPixmap(Icons.KO)
 
     def openInVault(self):
         OLABackend.openInVault(sheetName=self.sheet)
@@ -333,6 +333,7 @@ class OLAGameLine(QWidget):
             if OLABackend.VAULT_READY:
                 self.sheetFile = OLABackend.VAULT.SHEETS[self.sheet]
         else:
+            self.sheet = None
             self.name.setText(session.getName())
         self.applyPlatform()
         self.playDuration.setText(FormatUtil.formatDuration(session.getGameInfo()['duration']))
@@ -343,7 +344,7 @@ class OLAGameLine(QWidget):
         self.bStart.setVisible(True)
         self.bStart.setEnabled(True)
         if self.linkVault:
-            self.bLink.setVisible(True)
+            self.bLink.setVisible(False)
 
     def applyPlatform(self):
         icon = Icons.QUESTION

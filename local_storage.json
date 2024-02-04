@@ -23,9 +23,9 @@
             "sheet": ""
         },
         "Control": {
-            "duration": "696.566458",
-            "last_duration": "19.998735",
-            "last_session": "1706943911.8845377",
+            "duration": "699.373205",
+            "last_duration": "2.806747",
+            "last_session": "1707029965.9353464",
             "note": "",
             "www": "",
             "tips": "",
@@ -45,9 +45,9 @@
             "sheet": "The rose of Segunda"
         },
         "TheWitcher3": {
-            "duration": "571.5086640000001",
-            "last_duration": "8.489118",
-            "last_session": "1620127640.2617931",
+            "duration": "577.120849",
+            "last_duration": "5.612185",
+            "last_session": "1707030429.7870471",
             "note": "",
             "www": "",
             "tips": "",
@@ -124,11 +124,11 @@
     },
     "last_sessions": [
         [
-            "RoseOfSegunda",
-            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
-            "renpy",
-            "",
-            "ITCHIO",
+            "TheWitcher3",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher3\\tw3.exe",
+            "tw3",
+            "ALauncher",
+            "GOG",
             "",
             ""
         ],
@@ -138,6 +138,15 @@
             "Control",
             "",
             "STEAM",
+            "",
+            ""
+        ],
+        [
+            "RoseOfSegunda",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
+            "renpy",
+            "",
+            "ITCHIO",
             "",
             ""
         ],
@@ -183,15 +192,6 @@
             "tw2",
             "",
             "",
-            "",
-            ""
-        ],
-        [
-            "TheWitcher3",
-            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher3\\tw3.exe",
-            "tw3",
-            "ALauncher",
-            "GOG",
             "",
             ""
         ],
