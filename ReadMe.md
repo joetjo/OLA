@@ -8,17 +8,31 @@ Then this Assistant will help you to
 - start usual stuff
 - generate reports from obsidian
 
+It includes my previous project:
+- SBSGL Simple But Smart Game Launcher
+- Markdown Helpers ( Generate md report from markdown file hierarchy like Obsidian vault )
+
 Why not an obsidian plugin ?
 - because obsidian is a web application that do not deal in the bast way to local process execution for security concerns.
 Python allows to do more easily.
 and Obsidian is a great tool ! but it should do what it handles the best.
 
 # Issues :
+- No user documentation at all curently 
+- Fresh start without existing SBSGL / Markdown config will probably failed 
 - Emulator not managed ( LEGUI for example - popup menu added by empty, is this the right way to do it )
 - Excluded game not managed ( tab added but not implemented )
 - Stop scanning game while report generation is in progress ( access to VAULT my be invalid )
 
-# Interesting external Sources :
+
+_Version 2024.02 Alpha 8:_ 
+![gui](screen.png "Last sessions launched tab")
+
+# Dev corner  
+
+Not documented currently
+
+## Interesting external Sources :
 
 - PySide6 tutorial : https://www.pythonguis.com/pyside6-tutorial/
 - Thread : https://www.pythonguis.com/tutorials/multithreading-pyside6-applications-qthreadpool/

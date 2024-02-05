@@ -99,17 +99,6 @@
             "status": "IN PROGRESS",
             "sheet": "Baldurs Gate 3"
         },
-        "full_game.motherless": {
-            "duration": "3860.101692",
-            "last_duration": "3860.101692",
-            "last_session": "1706705848.5423274",
-            "note": "",
-            "www": "",
-            "tips": "",
-            "sheet": "",
-            "type": "",
-            "status": ""
-        },
         "crashpad_handler": {
             "duration": "5619.949055",
             "last_duration": "5619.949055",
@@ -163,15 +152,6 @@
             "crashpad_handler",
             "J:\\Jeux\\steamapps\\common\\Persona 4 Golden\\crashdat\\bin\\crashpad_handler.exe",
             "crashpad_handler",
-            "",
-            "",
-            "",
-            ""
-        ],
-        [
-            "full_game.motherless",
-            "J:\\Jeux\\VNA\\ml\\full_game.motherless.exe",
-            "full_game.motherless",
             "",
             "",
             "",
