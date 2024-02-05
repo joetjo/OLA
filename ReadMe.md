@@ -23,7 +23,8 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 - Emulator not managed ( LEGUI for example - popup menu added by empty, is this the right way to do it )
 - Excluded game not managed ( tab added but not implemented )
 - Stop scanning game while report generation is in progress ( access to VAULT my be invalid )
-
+- About panel and third party references
+- add a tab with the report generated ( appears while generation is in progress )
 
 _Version 2024.02 Alpha 8:_ 
 ![gui](screen.png "Last sessions launched tab")

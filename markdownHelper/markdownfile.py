@@ -57,7 +57,7 @@ class MhMarkdownFile:
                     self.tags.append(stag)
                     if stag.startswith("#PLATFORM"):
                         self.platforms.append(stag[10:])
-                    if stag.startswith("#Type"):
+                    if stag.startswith("#TYPE"):
                         self.type_tags.append(stag[6:])
                     if stag.startswith("#PLAY"):
                         self.play_tags.append(stag[6:])

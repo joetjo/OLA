@@ -65,7 +65,7 @@ class OLAGuiSetup:
     PAGE_BUTTON_SIZE = 20
     VISIBLE_TYPE_COUNT = 15
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
-    POSSIBLE_FILTER = ["#Type", "#PLAY"]
+    POSSIBLE_FILTER = ["#TYPE", "#PLAY"]
     DEFAULT_SESSION_FILTER = "INPROGRESS"
 
 

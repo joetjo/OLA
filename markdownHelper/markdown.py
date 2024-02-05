@@ -72,7 +72,7 @@ class MarkdownHelper:
                     self.SHEETS[key] = mdfile
                 if playInProgress:
                     for tag in mdfile.tags:
-                        if tag.startswith("#Type/"):
+                        if tag.startswith("#TYPE/"):
                             self.TYPE_TAGS_UNSORTED.add(tag[6:])
                         if tag.startswith("#PLAY/"):
                             self.PLAY_TAGS_UNSORTED.add(tag[6:])
