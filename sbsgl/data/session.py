@@ -11,6 +11,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+import pathlib
 
 # Map Json storage for a session
 from base.jsonstore import GhStorage
@@ -23,6 +24,7 @@ class Session:
         self.json = json
         self.json[2] = ProcessInfo.removeGameExtension(self.json[2])
         self.game_info = game_info
+        self.installed = pathlib.Path(self.getPath()).is_file()
 
     def getName(self):
         return self.json[0]

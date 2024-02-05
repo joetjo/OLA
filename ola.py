@@ -13,7 +13,6 @@
 #   limitations under the License.
 
 import logging
-import pathlib
 import subprocess
 import sys
 from datetime import datetime
@@ -23,7 +22,7 @@ from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
     QVBoxLayout, \
-    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox
+    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox
 
 from base.formatutil import FormatUtil
 from resources.resources import Icons
@@ -32,7 +31,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02 alpha 9"
+    VERSION = "2024.02 alpha 10"
     PREVIOUS = ""
 
 
@@ -121,7 +120,7 @@ class OLAStatusBar(QStatusBar):
 
 
 class OLAFilter(QGroupBox):
-    def __init__(self, tag, listener, defaultValue=None):
+    def __init__(self, tag, listener, defaultValue=None, linkListener=None):
         super().__init__()
         self.tag = tag
         self.value = defaultValue
@@ -143,6 +142,14 @@ class OLAFilter(QGroupBox):
             layout.addWidget(QLabel(":"), 0, 1)
             layout.addWidget(self.filterValue, 0, 2)
 
+        if linkListener is not None:
+            linkLabel = QLabel()
+            linkLabel.setPixmap(Icons.QUESTION)
+            layout.addWidget(linkLabel, 0, 3)
+            self.linkSelector = QCheckBox()
+            self.linkSelector.stateChanged.connect(linkListener)
+            layout.addWidget(self.linkSelector, 0, 4)
+
         if listener is not None:
             layout.addWidget(QLabel("Search"), 1, 0)
             layout.addWidget(QLabel(":"), 1, 1)
@@ -151,12 +158,20 @@ class OLAFilter(QGroupBox):
             self.search.editingFinished.connect(listener)
             layout.addWidget(self.search, 1, 2)
 
+        if linkListener is not None:
+            installLabel = QLabel()
+            installLabel.setPixmap(Icons.PLAY)
+            layout.addWidget(installLabel, 1, 3)
+            self.installSelector = QCheckBox()
+            self.installSelector.stateChanged.connect(linkListener)
+            layout.addWidget(self.installSelector, 1, 4)
+
     def isFiltering(self):
         return self.value is not None or self.searchToken is not None
 
     def onLoad(self):
         self.value = self.filterValue.currentText()
-        if len (self.value) == 0:
+        if len(self.value) == 0:
             self.value = None
         self.searchToken = self.search.text()
         if len(self.searchToken) == 0:
@@ -231,7 +246,7 @@ class OLAPlayingPanel(QWidget):
         # Search and filtering
         self.defaultFilter = OLAFilter(None, None)
         self.filters = dict()
-        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1], self.applyFilter, defaultValue=OLAGuiSetup.DEFAULT_SESSION_FILTER)
+        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1], self.applyFilter, defaultValue=OLAGuiSetup.DEFAULT_SESSION_FILTER, linkListener=self.applyCheck)
         self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[0], self.applyFilter)
         self.filter = self.defaultFilter
 
@@ -260,6 +275,11 @@ class OLAPlayingPanel(QWidget):
         if len(self.filter.value) == 0:
             self.filter.value = None
         OLAGui.ASSISTANT.vaultParsed()
+        OLAGui.SESSIONS.loadSessions()
+
+    def applyCheck(self):
+        OLAGui.SESSIONS.showUnlink = self.filters[OLAGui.SESSIONS_TAB_NAME].linkSelector.isChecked()
+        OLAGui.SESSIONS.showOnlyInstalled = self.filters[OLAGui.SESSIONS_TAB_NAME].installSelector.isChecked()
         OLAGui.SESSIONS.loadSessions()
 
     def refreshVault(self):
@@ -452,7 +472,7 @@ class OLAGameLine(QWidget):
         self.bPop.setVisible(True)
         self.bVault.setEnabled(self.sheet is not None and len(self.sheet) > 0)
         self.bStart.setVisible(True)
-        self.bStart.setEnabled(pathlib.Path(self.session.getPath()).is_file())
+        self.bStart.setEnabled(session.installed)
         if self.sessionMode:
             self.bLink.setVisible(True)
 
@@ -506,6 +526,8 @@ class OLASharedGameListWidget(QWidget):
         self.name = name
         self.currentPage = 1
         self.currentPageCount = 1
+        self.showUnlink = False
+        self.showOnlyInstalled = False
 
         layout = QGridLayout()
         self.setLayout(layout)
@@ -567,21 +589,29 @@ class OLASharedGameListWidget(QWidget):
         self.filter = self.filter = OLAGui.PLAYING_PANEL.filters[name]
 
     def sessionMatchFilter(self, session):
-        if self.filter is not None and self.filter.searchToken is not None and not self.filter.searchToken in session.getName():
+        sheetUnset = len(session.getSheet()) == 0
+        if not self.showUnlink and sheetUnset:
             return False
-        if self.filter is not None and self.filter.value is not None:
-            if session.getSheet() is None:
+        if self.showOnlyInstalled and not session.installed:
+            return False
+        if self.filter.searchToken is not None and not self.filter.searchToken in session.getName():
+            return False
+        if self.filter.value is not None:
+            if sheetUnset:
                 return True
             else:
                 try:
                     return self.sheetMatchFilter(OLABackend.VAULT.SHEETS[session.getSheet()])
                 except KeyError:
                     return True
+        # else: Filter.value is None / No Active Search
+        elif self.showUnlink and not sheetUnset:  # Ack to show only unlink session when show unlink selected and no filtering
+            return False
         else:
             return True
 
     def sheetMatchFilter(self, sheet):
-        if self.filter is not None and self.filter.searchToken is not None and not self.filter.searchToken in sheet.name:
+        if self.filter.searchToken is not None and not self.filter.searchToken in sheet.name:
             return False
         if self.filter.value is None:
             return True
@@ -642,9 +672,8 @@ class OLASharedGameListWidget(QWidget):
         pass  # To be overridden
 
     def load(self, rawList):
-        if self.filter is not None:
-            self.filter.onLoad()
-        if self.filter is not None and self.filter.isFiltering():
+        self.filter.onLoad()
+        if self.showUnlink or self.showOnlyInstalled or self.filter.isFiltering():
             selList = []
             for data in rawList:
                 if self.matchFilter(data):
@@ -674,7 +703,7 @@ class OLASharedGameListWidget(QWidget):
 
 
 class OLAGameSessions(OLASharedGameListWidget):
-    def __init__(self):
+    def __init__(self, ):
         super().__init__(OLAGui.SESSIONS_TAB_NAME, title="loading...", sessionMode=True)
         OLAGui.SESSIONS = self
 

@@ -25,8 +25,10 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 - Stop scanning game while report generation is in progress ( access to VAULT my be invalid )
 - About panel and third party references
 - add a tab with the report generated ( appears while generation is in progress )
+- on link vault, if empty value -> set field to None ( set to none on loading is empty )
+- pagination : after a search that change the content, reset pas display
 
-_Version 2024.02 Alpha 8:_ 
+_Version 2024.02 Alpha 9:_ 
 ![gui](screen.png "Last sessions launched tab")
 
 # Dev corner  
