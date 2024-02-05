@@ -280,7 +280,8 @@ class MhReportEntry:
 
         nextLevel = "{}#".format(self.level)
         if len(self.filteredFiles) > 0:
-            writer.writelines("{} {} ({})\n".format(self.level, self.title(), len(self.filteredFiles)))
+            currentTitle = "{} {} ({})\n".format(self.level, self.title(), len(self.filteredFiles))
+            # writer.writelines(currentTitle)  # this display a title for each hierarchy to the report, lot of titles
             titleToGenerate = True
 
             json_contents = self.getContents()
@@ -316,6 +317,7 @@ class MhReportEntry:
                         # Main line with entry found data
                         #                    writer.writelines("- [[{}]] {} {} \n".format(name, ctags, comment))
                         if self.commentTag is not None and titleToGenerate:
+                            writer.writelines(currentTitle)
                             writer.writelines("|{}|{}|{}|\n".format(self.labels.about, self.labels.tags, self.labels.comment))
                             writer.writelines("|----|----|-------|\n")
                             titleToGenerate = False
@@ -360,4 +362,5 @@ class MhReport:
                                    self.commentTag, self.showTags)
         logging.info("MDR | Generate report \"{}\" to {}".format(rootReport.title(), self.target()))
         with open(self.target(), 'w', encoding='utf-8') as writer:
+            writer.writelines("> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit*\n\n")  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
             rootReport.generate(writer)

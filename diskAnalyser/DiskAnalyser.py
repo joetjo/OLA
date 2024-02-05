@@ -180,9 +180,11 @@ class DiskAnalyser:
         logging.info("FUR | {} unique folders detected, {} unique files detected".format(len(self.allFolders.entries), len(self.allFiles.entries)))
 
         with open(self.REPORT_ALLFILES, 'w', encoding='utf-8') as writer:
+            writer.writelines("> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit*\n\n")  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
             self.allFolders.writeLeaf(writer, self.IGNORE_DUPLICATE)
 
         with open(self.REPORT_ERRORS, 'w', encoding='utf-8') as writer:
+            writer.writelines("> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit*\n")  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
             writer.writelines("\n> {} folders detected, {} files detected".format(self.globalStat.folderCount, self.globalStat.fileCount))
             writer.writelines("\n> {} unique folders detected, {} unique files detected".format(len(self.allFolders.entries), len(self.allFiles.entries)))
 

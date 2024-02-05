@@ -14,7 +14,9 @@ Python allows to do more easily.
 and Obsidian is a great tool ! but it should do what it handles the best.
 
 # Issues :
-- Emulator not managed ( LEGUI for example )
+- Emulator not managed ( LEGUI for example - popup menu added by empty, is this the right way to do it )
+- Excluded game not managed ( tab added but not implemented )
+- Stop scanning game while report generation is in progress ( access to VAULT my be invalid )
 
 # Interesting external Sources :
 
