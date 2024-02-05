@@ -109,9 +109,29 @@
             "sheet": "Persona 4 Gold",
             "type": "",
             "status": ""
+        },
+        "UnityCrashHandler64": {
+            "duration": "7280.053161",
+            "last_duration": "7280.053161",
+            "last_session": "1707170424.8288844",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "sheet": "",
+            "type": "",
+            "status": ""
         }
     },
     "last_sessions": [
+        [
+            "UnityCrashHandler64",
+            "J:\\Jeux\\steamapps\\common\\Slasta_COTM\\UnityCrashHandler64.exe",
+            "UnityCrashHandler64",
+            "",
+            "",
+            "",
+            ""
+        ],
         [
             "RoseOfSegunda",
             "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",

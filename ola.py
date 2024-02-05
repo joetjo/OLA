@@ -22,7 +22,7 @@ from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
     QVBoxLayout, \
-    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox
+    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollBar, QScrollArea
 
 from base.formatutil import FormatUtil
 from resources.resources import Icons
@@ -74,10 +74,12 @@ class OLAGui:
     TAB_PANEL = None
     PLAYING_PANEL = None
     SESSIONS = None
+    REPORTS = None
     SESSIONS_TAB_NAME = "Sessions"
     ASSISTANT = None
     ASSISTANT_TAB_NAME = "Obsidian Sheets"
     EXCLUDED_TAB_NAME = "Excluded launchers"
+    REPORTS_TAB_NAME = "Reports"
 
 
 class OLAToolbar(QToolBar):
@@ -271,8 +273,11 @@ class OLAPlayingPanel(QWidget):
         self.filter = selectedFilter
 
     def applyFilter(self):
-        self.filter.value = self.filter.filterValue.currentText()
-        if len(self.filter.value) == 0:
+        if self.filter.filterValue is not None:  # When reloading values after parsing Vault
+            self.filter.value = self.filter.filterValue.currentText()
+            if len(self.filter.value) == 0:
+                self.filter.value = None
+        else:
             self.filter.value = None
         OLAGui.ASSISTANT.vaultParsed()
         OLAGui.SESSIONS.loadSessions()
@@ -723,6 +728,66 @@ class OLAGameSessions(OLASharedGameListWidget):
         self.loadSessions()
 
 
+class OLAReportsLine(QWidget):
+    def __init__(self, row, layout, reportName, sheetPath):
+        super().__init__()
+
+        self.sheet = sheetPath
+
+        bPanel = QWidget()
+        bPanel.setLayout(QHBoxLayout())
+        bPanel.layout().setContentsMargins(0, 0, 0, 0)
+
+        report = QLabel(reportName)
+        report.setMinimumWidth(150)
+        report.setMaximumWidth(150)
+        bPanel.layout().addWidget(report)
+
+        sheet = QLabel(sheetPath)
+        sheet.setMinimumWidth(200)
+        sheet.setMaximumWidth(200)
+        bPanel.layout().addWidget(sheet)
+
+        bVault = QPushButton("")
+        bVault.setStatusTip("Open in obsidian Vault")
+        bVault.setIcon(Icons.OBSIDIAN)
+        bVault.clicked.connect(self.openReportInVault)
+        bPanel.layout().addWidget(bVault)
+        bPanel.layout().addStretch()
+
+        layout.addWidget(bPanel)
+
+    def openReportInVault(self):
+        OLABackend.openInVault(sheetName=self.sheet)
+
+
+class OLAReports(QWidget):
+    def __init__(self):
+        super().__init__()
+        OLAGui.REPORTS = self
+        self.reports = []
+
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(OLAGuiSetup.VISIBLE_SESSION_COUNT)
+        reportPanel = QWidget()
+        self.reportPanelLayout = QVBoxLayout()
+        reportPanel.setLayout(self.reportPanelLayout)
+        scroll.setWidget(reportPanel)
+
+        layout.addWidget(scroll)
+
+    def resetReports(self):
+        for report in self.reports:
+            report.delete()
+
+    def addReport(self, reportName, sheetPath):
+        row = len(self.reports)
+        self.reports.append(OLAReportsLine(row, self.reportPanelLayout, reportName, sheetPath))
+
+
 class OLAObsidianAssistant(OLASharedGameListWidget):
     def __init__(self):
         super().__init__(OLAGui.ASSISTANT_TAB_NAME, title="Obsidian vault not parsed")
@@ -780,6 +845,7 @@ class OLATabPanel(QTabWidget):
         self.tabsName = []
         self.declareTab(OLAGameSessions(), OLAGui.SESSIONS_TAB_NAME)
         self.declareTab(OLAObsidianAssistant(), OLAGui.ASSISTANT_TAB_NAME)
+        self.declareTab(OLAReports(), OLAGui.REPORTS_TAB_NAME)
         self.declareTab(OLAExcludedGame(), OLAGui.EXCLUDED_TAB_NAME)
 
         self.currentChanged.connect(self.tabSelected)
@@ -788,6 +854,10 @@ class OLATabPanel(QTabWidget):
         self.tabs.append(widget)
         self.tabsName.append(name)
         self.addTab(widget, name)
+
+    def clearAndShowReportsTab(self):
+        self.tabs[2].resetReports()
+        self.setCurrentIndex(2)
 
     def tabSelected(self):
         OLAGui.PLAYING_PANEL.activateFilter(self.tabsName[self.currentIndex()])
@@ -881,10 +951,11 @@ class OLAApplication(QApplication):
         self.threadpool.start(mdgen)
 
     def startReporting(self):
+        OLAGui.TAB_PANEL.clearAndShowReportsTab()
         OLAGui.ASSISTANT.vaultReportInProgress()
         mdgen = MdReportGenerator()
         mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
-        mdgen.signals.md_last_report.connect(self.mdReportsStarted)
+        mdgen.signals.md_last_report.connect(self.mdReportGenerated)
         self.threadpool.start(mdgen)
 
         filegen = FileUsageGenerator()
@@ -905,8 +976,9 @@ class OLAApplication(QApplication):
         self.main.setStatus("Failed to start game")
         OLAGui.PLAYING_PANEL.gameLaunchFailure()
 
-    def mdReportsStarted(self, reportName):
+    def mdReportGenerated(self, reportName, sheet):
         self.main.setStatus("Processing {}".format(reportName))
+        OLAGui.REPORTS.addReport(reportName, sheet)
 
     def mdParsed(self):
         self.main.setStatus("Vault parsed")

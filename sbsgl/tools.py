@@ -48,7 +48,7 @@ class LauncherSignals(QObject):
 
 class MdReportGeneratorSignals(QObject):
     md_report_generation_finished = Signal()
-    md_last_report = Signal(object)
+    md_last_report = Signal(object, object)
 
 
 class FileUsageGeneratorSignals(QObject):
