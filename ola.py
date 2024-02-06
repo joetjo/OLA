@@ -787,17 +787,14 @@ class OLAReports(QWidget):
 
         layout.addWidget(scroll)
 
-    def resetReports(self):
-        for report in self.reports.values():
-            report.deleteLater()
-        self.reports = dict()
-
     def reportAvailable(self, sheetPath):
         self.reports[sheetPath].enableVault()
 
     def setReports(self, sheetPaths):
+        self.reports["Readme"] = OLAReportLine(0, 0, self.reportPanelLayout, "Readme")
+        self.reports["Readme"].enableVault()
         row = 0
-        col = 0
+        col = 2
         for sheetPath in sheetPaths:
             self.reports[sheetPath] = OLAReportLine(row, col, self.reportPanelLayout, sheetPath)
             if col == 0:
@@ -862,23 +859,34 @@ class OLATabPanel(QTabWidget):
         self.setTabPosition(QTabWidget.North)
         self.setMovable(False)
 
-        self.tabs = []
+        self.tabs = dict()
+        self.tabsIndex = dict()
         self.tabsName = []
         self.declareTab(OLAGameSessions(), OLAGui.SESSIONS_TAB_NAME)
         self.declareTab(OLAObsidianAssistant(), OLAGui.ASSISTANT_TAB_NAME)
-        self.declareTab(OLAReports(), OLAGui.REPORTS_TAB_NAME)
         self.declareTab(OLAExcludedGame(), OLAGui.EXCLUDED_TAB_NAME)
 
         self.currentChanged.connect(self.tabSelected)
 
     def declareTab(self, widget, name):
-        self.tabs.append(widget)
+        self.tabsIndex[name] = len(self.tabs)
+        self.tabs[name] = widget
         self.tabsName.append(name)
         self.addTab(widget, name)
 
+    def removeTabByName(self, name):
+        try:
+            self.removeTab(self.tabsIndex[name])
+            del self.tabs[name]
+            del self.tabsIndex[name]
+            self.tabsName.remove(name)
+        except KeyError:
+            pass  # was not here
+
     def clearAndShowReportsTab(self):
-        self.tabs[2].resetReports()
-        self.setCurrentIndex(2)
+        self.removeTabByName(OLAGui.REPORTS_TAB_NAME)
+        self.declareTab(OLAReports(), OLAGui.REPORTS_TAB_NAME)
+        self.setCurrentIndex(self.tabsIndex[OLAGui.REPORTS_TAB_NAME])
 
     def tabSelected(self):
         OLAGui.PLAYING_PANEL.activateFilter(self.tabsName[self.currentIndex()])
