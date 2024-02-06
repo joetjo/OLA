@@ -48,7 +48,8 @@ class LauncherSignals(QObject):
 
 class MdReportGeneratorSignals(QObject):
     md_report_generation_finished = Signal()
-    md_last_report = Signal(object)
+    md_report_generation_starting = Signal(object)
+    md_last_report = Signal(object, object)
 
 
 class FileUsageGeneratorSignals(QObject):
@@ -74,7 +75,7 @@ class MdReportGenerator(QRunnable):
             logging.info("Starting Markdown report generation")
             OLABackend.VAULT = MarkdownHelper(vault="C:\\Users\\nicol\\Documents\\GitHub\\gList2")
             if self.report:
-                OLABackend.VAULT.generateAllReports(self.signals.md_last_report, reload=True)
+                OLABackend.VAULT.generateAllReports(self.signals.md_report_generation_starting, self.signals.md_last_report, reload=True)
                 logging.info("Generation Markdown report finished")
             else:
                 OLABackend.VAULT.parseVault()

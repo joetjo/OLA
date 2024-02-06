@@ -32,7 +32,7 @@ class MarkdownHelper:
             self.VAULT = vault
         else:
             self.VAULT = self.SETUP.getBloc("global")["base_folder"]
-        self.vaultLenPath = len(self.VAULT)+1
+        self.vaultLenPath = len(self.VAULT) + 1
         self.playtag = playtag
         self.IGNORE = self.SETUP.getBloc("global")["ignore"]
         self.REPORTS = self.SETUP.getBloc("global")["reports"]
@@ -100,17 +100,23 @@ class MarkdownHelper:
         for t in sorted(self.PLAY_TAGS_UNSORTED):
             self.PLAY_TAGS.append(t)
 
-    def generateAllReports(self, signal, reload=False):
+    def generateAllReports(self, signal_reports, signal_report, reload=False):
         try:
             if reload or len(self.SORTED_FILES) == 0:
                 self.parseVault()
 
             total = len(self.REPORTS)
+            reportTargets = []
+
+            for report in self.REPORTS:
+                reportTargets.append(report["target"])
+            signal_reports.emit(reportTargets)
+
             current = 1
             for report in self.REPORTS:
                 logging.info("MDR | Processing report \"{}\" {}/{}".format(report["title"], current, total))
-                signal.emit(report["title"])
                 current = current + 1
                 MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT).generate()
+                signal_report.emit(report["title"], report["target"])
         except Exception as e:
             raise
