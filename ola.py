@@ -31,7 +31,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02 alpha 10"
+    VERSION = "2024.02 alpha 11"
     PREVIOUS = ""
 
 
@@ -788,8 +788,9 @@ class OLAReports(QWidget):
         layout.addWidget(scroll)
 
     def resetReports(self):
-        for report in self.reports:
-            report.delete()
+        for report in self.reports.values():
+            report.deleteLater()
+        self.reports = dict()
 
     def reportAvailable(self, sheetPath):
         self.reports[sheetPath].enableVault()
