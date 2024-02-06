@@ -66,6 +66,7 @@ class OLAGuiSetup:
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
     POSSIBLE_FILTER = ["#TYPE", "#PLAY"]
     DEFAULT_SESSION_FILTER = "INPROGRESS"
+    DEFAULT_INSTALL_MODE_FILTER = True
     LINE_REPORTS_COUNT = 20
 
 
@@ -123,7 +124,7 @@ class OLAStatusBar(QStatusBar):
 
 
 class OLAFilter(QGroupBox):
-    def __init__(self, tag, listener, defaultValue=None, linkListener=None):
+    def __init__(self, tag, listener, defaultValue=None, defaultInstallMode=False, linkListener=None):
         super().__init__()
         self.tag = tag
         self.value = defaultValue
@@ -166,6 +167,8 @@ class OLAFilter(QGroupBox):
             installLabel.setPixmap(Icons.PLAY)
             layout.addWidget(installLabel, 1, 3)
             self.installSelector = QCheckBox()
+            if defaultInstallMode:
+                self.installSelector.setCheckState(Qt.CheckState.Checked)
             self.installSelector.stateChanged.connect(linkListener)
             layout.addWidget(self.installSelector, 1, 4)
 
@@ -249,7 +252,7 @@ class OLAPlayingPanel(QWidget):
         # Search and filtering
         self.defaultFilter = OLAFilter(None, None)
         self.filters = dict()
-        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1], self.applyFilter, defaultValue=OLAGuiSetup.DEFAULT_SESSION_FILTER, linkListener=self.applyCheck)
+        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1], self.applyFilter, defaultValue=OLAGuiSetup.DEFAULT_SESSION_FILTER, defaultInstallMode=OLAGuiSetup.DEFAULT_INSTALL_MODE_FILTER, linkListener=self.applyCheck)
         self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[0], self.applyFilter)
         self.filter = self.defaultFilter
 
@@ -533,7 +536,7 @@ class OLASharedGameListWidget(QWidget):
         self.currentPage = 1
         self.currentPageCount = 1
         self.showUnlink = False
-        self.showOnlyInstalled = False
+        self.showOnlyInstalled = OLAGuiSetup.DEFAULT_INSTALL_MODE_FILTER
 
         layout = QGridLayout()
         self.setLayout(layout)
@@ -730,7 +733,7 @@ class OLAGameSessions(OLASharedGameListWidget):
 
 
 class OLAReportLine(QWidget):
-    def __init__(self, row, col, layout, sheetPath):
+    def __init__(self, row, col, layout, sheetPath, customLabel=None):
         super().__init__()
 
         self.sheet = sheetPath
@@ -741,7 +744,10 @@ class OLAReportLine(QWidget):
         else:
             colUpdated = col
 
-        sheet = QLabel(sheetPath)
+        if customLabel is None:
+            sheet = QLabel(sheetPath)
+        else:
+            sheet = QLabel(customLabel)
         layout.addWidget(sheet, row, colUpdated)
 
         bPanel = QWidget()
@@ -791,7 +797,7 @@ class OLAReports(QWidget):
         self.reports[sheetPath].enableVault()
 
     def setReports(self, sheetPaths):
-        self.reports["Readme"] = OLAReportLine(0, 0, self.reportPanelLayout, "Readme")
+        self.reports["Readme"] = OLAReportLine(0, 0, self.reportPanelLayout, "Readme", customLabel="Readme (Reports page)")
         self.reports["Readme"].enableVault()
         row = 0
         col = 2

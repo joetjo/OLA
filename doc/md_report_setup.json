@@ -83,8 +83,8 @@
                 ]
             },
             {
-                "target": "reports_wish\\VNs_wish.md",
-                "title": "My wish list - VNs",
+                "target": "reports_wish\\VNAs_wish.md",
+                "title": "My wish list - VNAs",
                 "labelAbout" : "VN Wish List",
                 "path_condition": [ "1.Available",
                                     "2.To classify",
@@ -102,8 +102,8 @@
                 ],
                 "contents": [
                     {
-                        "title": "VNs",
-                        "tag_condition": [ "PLATFORM/Wish", "TYPE/VN" ],
+                        "title": "VNAs",
+                        "tag_condition": [ "PLATFORM/WISH", "TYPE/VNA" ],
                         "multi_condition" : "and",
                         "content_ref" : "contentByNext"
                     }
@@ -228,8 +228,7 @@
                     "title": "VNs in development",
                     "tag_condition": [
                       "DEV/DEV_IN_PROGRESS",
-                      "TYPE/VN",
-                      "PLATFORM/Patreon"
+                      "TYPE/VNA"
                     ],
                     "multi_condition": "and",
                     "contents": [
@@ -266,7 +265,7 @@
                   "contents": [
                       {
                           "title": "Episodic VNs Tested",
-                          "tag_condition": [ "DEV/DEV_IN_PROGRESS", "TYPE/VN", "PLATFORM/Patreon", "PLAY/TESTED" ],
+                          "tag_condition": [ "DEV/DEV_IN_PROGRESS", "TYPE/VNA", "PLAY/TESTED" ],
                           "multi_condition" : "and",
                           "content_ref" : "contentByNext"
                       }
@@ -358,10 +357,8 @@
                   {
                     "title": "All VNs (Patreon)",
                     "tag_condition": [
-                      "TYPE/VN",
-                      "PLATFORM/Patreon"
+                      "TYPE/VNA"
                     ],
-                    "multi_condition": "and",
                     "contents": [
                       {
                         "title": "VNs completed (available)",
@@ -687,7 +684,7 @@
                   {
                     "title": "All VNAs",
                     "tag_condition": [
-                      "TYPE/VN", "PLAY/INPROGRESS", "PLATFORM/Patreon"
+                      "TYPE/VNA", "PLAY/INPROGRESS"
                     ],
                     "multi_condition" : "and",
                     "content_ref": "contentByNext"
