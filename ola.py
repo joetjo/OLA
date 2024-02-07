@@ -13,6 +13,7 @@
 #   limitations under the License.
 
 import logging
+import os
 import subprocess
 import sys
 from datetime import datetime
@@ -31,7 +32,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02 alpha 11"
+    VERSION = "2024.02 alpha 12"
     PREVIOUS = ""
 
 
@@ -745,7 +746,9 @@ class OLAReportLine(QWidget):
             colUpdated = col
 
         if customLabel is None:
-            sheet = QLabel(sheetPath)
+            sname = os.path.basename(sheetPath)
+            sname = sname[0:len(sname)-3]
+            sheet = QLabel(sname)
         else:
             sheet = QLabel(customLabel)
         layout.addWidget(sheet, row, colUpdated)
@@ -805,6 +808,8 @@ class OLAReports(QWidget):
             self.reports[sheetPath] = OLAReportLine(row, col, self.reportPanelLayout, sheetPath)
             if col == 0:
                 col = 2
+            elif col == 2:
+                col = 5
             else:
                 row = row + 1
                 col = 0

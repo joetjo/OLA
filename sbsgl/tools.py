@@ -48,6 +48,7 @@ class LauncherSignals(QObject):
 
 class MdReportGeneratorSignals(QObject):
     md_report_generation_finished = Signal()
+    md_report_generation_failure = Signal(object)
     md_report_generation_starting = Signal(object)
     md_last_report = Signal(object, object)
 

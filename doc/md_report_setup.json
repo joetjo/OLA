@@ -544,7 +544,6 @@
           },
           "Some stats": {
             "target": "reports\\Stats.md",
-            "labelAbout": "Game",
             "path_ref": "game_available_and_in_development",
             "count": {
               "Game to classify": {
@@ -591,24 +590,24 @@
                 ]
               },
               "VN": {
-                "tag_condition": [
+                "tag_refs": [
                   "isVN"
                 ]
               },
               "VN Evaluated": {
-                "tag_condition": [
-                  "DONE",
+                "tag_refs": [
+                  "isDone",
                   "isVN"
                 ]
               },
               "Game in standby": {
                 "tag_condition": [
-                  "PLAY/Standby"
+                  "PLAY/STANDBY"
                 ]
               },
               "Game with alternative route": {
                 "tag_condition": [
-                  "PLAY/AltRoute"
+                  "PLAY/ALT_ROUTES"
                 ]
               },
               "Game suite": {
@@ -632,7 +631,7 @@
                 ]
               },
               "VN Missing Story Tag": {
-                "tag_condition": [
+                "tag_refs": [
                   "isVN"
                 ],
                 "tag_not_condition": [
@@ -640,7 +639,7 @@
                 ]
               },
               "VN Missing Art Tag": {
-                "tag_condition": [
+                "tag_refs": [
                   "isVN"
                 ],
                 "tag_not_condition": [
