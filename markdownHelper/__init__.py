@@ -13,7 +13,7 @@
 #   limitations under the License.
 import logging
 
-VERSION = "2.0.3"
+VERSION = "3.0.0"
 
 
 logging.info("MDR | Markdown Helper Version {}".format(VERSION))

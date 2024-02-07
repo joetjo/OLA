@@ -22,8 +22,10 @@ LONG_BLANK = "                                                                  
 ALLOWED_ATTRIBUTES = ["target",  # 1st level only: target file path
                       "title",  # mandatory on each bloc
                       "tag_condition",  # optional: tag list to filter content ( can be tag prefix )
-                      "path_condition",  # optional: name list that should be used in folder path
+                      "tag_refs",  # optional : references by name to tag list in shared data
                       "tag_not_condition",  # optional: tag list to filter content ( can be tag prefix ) ONLY IN COUNT BLOC
+                      "path_condition",  # optional: name list that should be used in folder path
+                      "path_ref",  # reference by name to a path condition in shared data
                       "path_not_condition",  # optional: name list that should be used in folder path ONLY IN COUNT BLOC
                       "condition_type",  # if "not" --> inverse the tag_condition or path condition
                       "multi_condition",  # "or" by default. can be set to "and"
@@ -33,7 +35,7 @@ ALLOWED_ATTRIBUTES = ["target",  # 1st level only: target file path
                       "else",  # optional: bloc to process all entries not selected by filter
                       "commentTag",  # a comment TAG is a tag that start at the beginning of the line and
                       # the text on the same line will be registered as a comment and shown in report.
-                      "showTags",  # tag that start by the requested string will be added to the line
+                      "showTags",  # ref to tag list to show (tag that start by the requested string will be added to the line)
                       "labelAbout",
                       "labelTags",
                       "labelComment"
@@ -47,6 +49,27 @@ class UnknownJSonAttribute(Exception):
         super().__init__(self.message.format(attName, ALLOWED_ATTRIBUTES, json))
 
 
+class UnknownPathRef(Exception):
+    def __init__(self, ref, json,
+                 message="Unknown path reference \"{}\" used, json bloc:\n{}"):
+        self.message = message
+        super().__init__(self.message.format(ref, json))
+
+
+class UnknownTagRefs(Exception):
+    def __init__(self, ref, json,
+                 message="Unknown tags reference \"{}\" used, json bloc:\n{}"):
+        self.message = message
+        super().__init__(self.message.format(ref, json))
+
+
+class UnknownInfoTafRef(Exception):
+    def __init__(self, ref, json,
+                 message="Unknown info tags reference \"{}\" used, json bloc:\n{}"):
+        self.message = message
+        super().__init__(self.message.format(ref, json))
+
+
 class UnknownContentRef(Exception):
     def __init__(self, ref, json,
                  message="Unknown content reference \"{}\" used, json bloc:\n{}"):
@@ -54,9 +77,56 @@ class UnknownContentRef(Exception):
         super().__init__(self.message.format(ref, json))
 
 
+class ReferenceUtil:
+
+    @staticmethod
+    def getPath(json, allSubContents):
+        try:
+            return json["path_condition"]
+        except KeyError:
+            try:
+                ref = json["path_ref"]
+                try:
+                    return allSubContents["paths"][ref]
+                except KeyError:
+                    raise UnknownPathRef(ref, allSubContents["paths"])
+            except KeyError:
+                return []
+
+    @staticmethod
+    def getTags(json, allSubContents):
+        try:
+            return json["tag_condition"]
+        except KeyError:
+            try:
+                refs = json["tag_refs"]
+                result = []
+                for ref in refs:
+                    try:
+                        tags = allSubContents["tags"][ref]
+                        for tag in tags:
+                            result.append(tag)
+                    except KeyError:
+                        raise UnknownTagRefs(refs, allSubContents["tags"])
+                return result
+            except KeyError:
+                return []
+
+    @staticmethod
+    def showTags(json, allSubContents):
+        try:
+            ref = json["showTags"]
+            try:
+                return allSubContents["info_tags"][ref]
+            except KeyError:
+                raise UnknownInfoTafRef(ref, allSubContents["paths"])
+        except KeyError:
+            return []
+
+
 class MhCountEntry:
 
-    def __init__(self, json, inputFiles):
+    def __init__(self, json, inputFiles, allSubContents):
         self.json = json
         self.inputFiles = inputFiles
         self.count = 0
@@ -66,20 +136,14 @@ class MhCountEntry:
                 raise UnknownJSonAttribute(key, json)
 
         # Setup content filter
-        try:
-            self.tags = self.json["tag_condition"]
-        except KeyError:
-            self.tags = []
+        self.tags = ReferenceUtil.getTags(json, allSubContents)
 
         try:
             self.not_tags = self.json["tag_not_condition"]
         except KeyError:
             self.not_tags = []
 
-        try:
-            self.paths = self.json["path_condition"]
-        except KeyError:
-            self.paths = []
+        self.paths = ReferenceUtil.getPath(self.json, allSubContents)
 
         try:
             self.not_paths = self.json["path_not_condition"]
@@ -144,15 +208,8 @@ class MhReportEntry:
                 raise UnknownJSonAttribute(key, json)
 
         # Setup content filter
-        try:
-            self.tags = self.json["tag_condition"]
-        except KeyError:
-            self.tags = []
-
-        try:
-            self.paths = self.json["path_condition"]
-        except KeyError:
-            self.paths = []
+        self.tags = ReferenceUtil.getTags(json, allSubContents)
+        self.paths = ReferenceUtil.getPath(self.json, allSubContents)
 
         try:
             self.inverseCondition = self.json["condition_type"]
@@ -253,8 +310,8 @@ class MhReportEntry:
     def generate(self, writer):
         if self.isVirtual:
             logging.debug("MDR |  | {} VIRTUAL [{}->{}] ({} {})".format(LONG_BLANK[0:len(self.level) * 2],
-                                                           len(self.inputFiles), len(self.filteredFiles), self.tags,
-                                                           self.paths))
+                                                                        len(self.inputFiles), len(self.filteredFiles), self.tags,
+                                                                        self.paths))
             if len(self.filteredFiles) > 0:
                 # virtual content that must be expanded !
                 for tag in sorted(self.mappingTags(self.tags, self.allTags)):
@@ -275,8 +332,8 @@ class MhReportEntry:
             return
 
         logging.debug("MDR |  | {} {} [{}->{} / {}] ({} {})".format(LONG_BLANK[0:len(self.level) * 2], self.title(),
-                                                       len(self.inputFiles), len(self.filteredFiles),
-                                                       len(self.elseFiles), self.tags, self.paths))
+                                                                    len(self.inputFiles), len(self.filteredFiles),
+                                                                    len(self.elseFiles), self.tags, self.paths))
 
         nextLevel = "{}#".format(self.level)
         if len(self.filteredFiles) > 0:
@@ -297,7 +354,7 @@ class MhReportEntry:
                 if json_count is not None:
                     writer.writelines("|What|Count|\n|-|-|")
                     for key, value in json_count.items():
-                        writer.writelines("\n| {} | {} |".format(key, MhCountEntry(value, self.filteredFiles).getCount()))
+                        writer.writelines("\n| {} | {} |".format(key, MhCountEntry(value, self.filteredFiles, self.allSubContents).getCount()))
                 else:
                     for name, file in self.filteredFiles.items():
                         comment = ""
@@ -349,10 +406,7 @@ class MhReport:
             self.commentTag = None
 
         # Setup show tags
-        try:
-            self.showTags = self.json["showTags"]
-        except KeyError:
-            self.showTags = None
+        self.showTags = ReferenceUtil.showTags(self.json, allSubContents )
 
     def target(self):
         return self.baseFolder + '/' + self.json["target"]
@@ -362,5 +416,6 @@ class MhReport:
                                    self.commentTag, self.showTags)
         logging.info("MDR | Generate report \"{}\" to {}".format(rootReport.title(), self.target()))
         with open(self.target(), 'w', encoding='utf-8') as writer:
-            writer.writelines("> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit*\n\n")  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
+            writer.writelines(
+                "> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit*\n\n")  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
             rootReport.generate(writer)

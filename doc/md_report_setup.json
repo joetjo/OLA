@@ -5,237 +5,244 @@
         "ignore" : [ ".git", ".obsidian", ".gitignore", ".gitattributes", "Readme.md",
             "_glist", "reports", "reports_episodic", "reports_next", "reports_play", "reports_wish"
         ],
-        "reports" : [
-            {
-                "target": "Editors.md",
-                "title": "Editors",
-                "path_condition":  [  "Editors" ],
-              "labelAbout" : "Game Editors",
-              "commentTag": "INFO",
-              "showTags": [
-                "EDTNOTE", "EDTTYPE"
-              ],
-              "contents": [
-                  {
-                      "title": "%TAGNAME%",
-                      "tag_condition": [
-                          "EDITOR/"
-                      ],
-                      "else": {
-                          "title": "Editor without flag"
-                      }
-                  }
-              ]
-            },
-            {
-                "target": "reports_wish\\RPGs_wish.md",
-                "title": "My wish list - RPGs",
-                "labelAbout" : "RPG Game Wish List",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress"
+        "reports" : {
+          "Editors": {
+            "target": "Editors.md",
+            "path_ref": "editors",
+            "commentTag": "INFO",
+            "showTags": "editorTags",
+            "contents": [
+              {
+                "title": "%TAGNAME%",
+                "tag_condition": "EDITOR",
+                "else": {
+                  "title": "Editor without flag"
+                }
+              }
+            ]
+          },
+          "My wish list - RPGs": {
+            "target": "reports_wish\\RPGs_wish.md",
+            "path_ref": "game_available",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "RPGs",
+                "tag_refs": [
+                  "isWishedGame",
+                  "isRPG"
                 ],
-              "commentTag" : "WISH",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "DEV",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "My wish list - VNs": {
+            "target": "reports_wish\\VNs_wish.md",
+            "path_ref": "game_available",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "VNs",
+                "tag_refs": [
+                  "isWishedGame",
+                  "isVN"
                 ],
-                "contents": [
-                    {
-                        "title": "RPGs",
-                        "tag_condition": [ "PLATFORM/Wish", "TYPE/RPG" ],
-                        "multi_condition" : "and",
-                        "content_ref" : "contentByNext"
-                    }
-                ]
-            },
-            {
-                "target": "reports_wish\\VNs_wish.md",
-                "title": "My wish list - VNs",
-                "labelAbout" : "VN Wish List",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress"],
-              "commentTag" : "WISH",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "DEV",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "My wish list - VNAs": {
+            "target": "reports_wish\\VNAs_wish.md",
+            "labelAbout": "VN Wish List",
+            "path_ref": "game_available",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "VNAs",
+                "tag_refs": [
+                  "isWishedGame",
+                  "isVNA"
                 ],
-                "contents": [
-                    {
-                        "title": "VNs",
-                        "tag_condition": [ "PLATFORM/Wish", "TYPE/VN" ],
-                        "multi_condition" : "and",
-                        "content_ref" : "contentByNext"
-                    }
-                ]
-            },
-            {
-                "target": "reports_wish\\VNAs_wish.md",
-                "title": "My wish list - VNAs",
-                "labelAbout" : "VN Wish List",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress"],
-              "commentTag" : "WISH",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "DEV",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "My wish list - Coops": {
+            "target": "reports_wish\\Coops_wish.md",
+            "path_ref": "game_available",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Coops",
+                "tag_refs": [
+                  "isWishedGame",
+                  "isCoop"
                 ],
-                "contents": [
-                    {
-                        "title": "VNAs",
-                        "tag_condition": [ "PLATFORM/WISH", "TYPE/VNA" ],
-                        "multi_condition" : "and",
-                        "content_ref" : "contentByNext"
-                    }
-                ]
-            },
-            {
-                "target": "reports_wish\\Coops_wish.md",
-                "title": "My wish list",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress"],
-              "commentTag" : "WISH",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "DEV",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "My wish list - Others": {
+            "target": "reports_wish\\Others_wish.md",
+            "labelAbout": "Game",
+            "path_ref": "game_available",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Wished Games",
+                "tag_refs": [
+                  "isWishedGame"
                 ],
-                "contents": [
-                    {
-                        "title": "Coops",
-                        "tag_condition": [ "PLATFORM/Wish", "TYPE/Coop" ],
-                        "multi_condition" : "and",
-                        "content_ref" : "contentByNext"
-                    }
-                ]
-            },
-            {
-                "target": "reports_wish\\Others_wish.md",
-                "title": "My wish list",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress"],
-              "commentTag" : "WISH",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "DEV",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
-                ],
-                "contents": [
-                    {
-                        "title": "Wished Games",
-                        "tag_condition": [ "PLATFORM/Wish" ],
-                        "contents" : [
-                          {
-                            "title" : "Other than RPGs or VNs",
-                            "tag_condition": [
-                              "TYPE/VN", "TYPE/RPG", "TYPE/Coop"
-                            ],
-                            "condition_type": "not",
-                            "content_ref" : "contentByNext"
-                          }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports_episodic\\VNs_dev.md",
-                "title": "Game in development",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"],
-              "commentTag" : "EDITOR/NOTE",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
-                ],
-                "contents": [
-                    {
-                        "title": "VNs",
-                        "tag_condition": [ "DEV/DEV_IN_PROGRESS", "TYPE/VN" ],
-                        "multi_condition" : "and",
-                        "contents" : [
-                          {
-                            "title" : "Standard VNs",
-                            "tag_condition": [ "PLATFORM/Patreon" ],
-                            "condition_type" : "not",
-                            "content_ref" : "contentByNext"
-                          }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports_episodic\\VNAs_dev.md",
-                "title": "Game in development",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"],
-                "commentTag" : "EDITOR/NOTE",
-                "showTags": [
-                    "PLATFORM",
-                    "PLAY",
-                    "CAT",
-                    "ART",
-                    "TYPE",
-                    "KEY"
-                  ],
                 "contents": [
                   {
-                    "title": "VNs in development",
-                    "tag_condition": [
-                      "DEV/DEV_IN_PROGRESS",
-                      "TYPE/VNA"
+                    "title": "Other than RPGs or VNs",
+                    "tag_refs": [
+                      "isVNorVNAorRPGorCoop"
                     ],
-                    "multi_condition": "and",
+                    "condition_type": "not",
+                    "content_ref": "contentByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "Game in development - VNs": {
+            "target": "reports_episodic\\VNs_dev.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "VNs - dev in progress",
+                "tag_refs": [
+                  "isDevInProgress",
+                  "isVN"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "Game in development - VNAs": {
+            "target": "reports_episodic\\VNAs_dev.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "VNs in development",
+                "tag_refs": [
+                  "isDevInProgress",
+                  "isVNA"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "title": "Episodic VNs not tested",
+                    "tag_refs": [
+                      "isTested"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "Game in development - VNAs Tested": {
+            "target": "reports_episodic\\VNAs-Tested_dev.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Episodic VNs Tested",
+                "tag_refs": [
+                  "isDevInProgress",
+                  "isVNA",
+                  "isTested"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "Game in development - KickStarted": {
+            "target": "reports_episodic\\Kicks.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "KickStarted Game",
+                "tag_refs": [
+                  "isDevInProgress",
+                  "isKickStarted"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "title": "Kickstarted game",
+                    "content_ref": "contentByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "Game in development - Early Access": {
+            "target": "reports_episodic\\Early.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Early Access Games",
+                "tag_refs": [
+                  "isDevInProgress",
+                  "isEarlyAccess"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "title": "Early Access Games development",
+                    "content_ref": "contentByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "Game Available - VNAs": {
+            "target": "reports_next\\VNAs_next.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All VNs (Patreon)",
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "contents": [
+                  {
+                    "title": "VNs completed (available)",
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
                     "contents": [
                       {
-                        "title": "Episodic VNs not tested",
-                        "tag_condition": [
-                          "PLAY/TESTED"
+                        "title": "VNs available not done",
+                        "tag_refs": [
+                          "isDone"
                         ],
                         "condition_type": "not",
                         "content_ref": "contentByNext"
@@ -243,361 +250,33 @@
                     ]
                   }
                 ]
-            },
-            {
-                "target": "reports_episodic\\VNAs-Tested_dev.md",
-                "title": "Game in development",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"],
-                "commentTag" : "EDITOR/NOTE",
-                "showTags": [
-                    "PLATFORM",
-                    "PLAY",
-                    "CAT",
-                    "ART",
-                    "TYPE",
-                    "KEY"
-                  ],
-                  "contents": [
-                      {
-                          "title": "Episodic VNs Tested",
-                          "tag_condition": [ "DEV/DEV_IN_PROGRESS", "TYPE/VNA", "PLAY/TESTED" ],
-                          "multi_condition" : "and",
-                          "content_ref" : "contentByNext"
-                      }
-                  ]
-            },
-            {
-                "target": "reports_episodic\\Kicks.md",
-                "title": "Game in development",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"],
-              "commentTag" : "EDITOR/NOTE",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
+              }
+            ]
+          },
+          "Game Available - VNs": {
+            "target": "reports_next\\VNs_next.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All VNs",
+                "tag_refs": [
+                  "isVN"
                 ],
-                "contents": [
-                    {
-                        "title": "VNs",
-                        "tag_condition": [ "DEV/DEV_IN_PROGRESS", "KICK" ],
-                        "multi_condition" : "and",
-                        "contents" : [
-                          {
-                            "title" : "Kickstarted game",
-                            "content_ref" : "contentByNext"
-                          }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports_episodic\\Early.md",
-                "title": "Game in development - Early Access",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"],
-              "commentTag" : "EDITOR/NOTE",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
-                ],
-                "contents": [
-                    {
-                        "title": "Early Access Games",
-                        "tag_condition": [ "DEV/DEV_IN_PROGRESS", "PRICE/EARLY_ACCESS_PAID" ],
-                        "multi_condition" : "and",
-                        "contents" : [
-                          {
-                            "title" : "Early Access Games development",
-                            "content_ref" : "contentByNext"
-                          }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports_next\\VNAs_next.md",
-                "title": "Game Available",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"],
-                "commentTag" : "NEXT",
-                "showTags": [
-                    "PLATFORM",
-                    "PLAY",
-                    "CAT",
-                    "ART",
-                    "TYPE",
-                    "KEY"
-                  ],
+                "multi_condition": "and",
                 "contents": [
                   {
-                    "title": "All VNs (Patreon)",
-                    "tag_condition": [
-                      "TYPE/VNA"
+                    "title": "VNs completed (available)",
+                    "tag_refs": [
+                      "isDevInProgress"
                     ],
+                    "condition_type": "not",
                     "contents": [
                       {
-                        "title": "VNs completed (available)",
-                        "tag_condition": [
-                          "DEV/DEV_IN_PROGRESS"
-                        ],
-                        "condition_type": "not",
-                        "contents": [
-                          {
-                            "title": "VNs available not done",
-                            "tag_condition": [ "DONE" ],
-                            "condition_type": "not",
-                            "content_ref": "contentByNext"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-            },
-            {
-                "target": "reports_next\\VNs_next.md",
-                "title": "Game Available",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"],
-                "commentTag" : "NEXT",
-                "showTags": [
-                    "PLATFORM",
-                    "PLAY",
-                    "CAT",
-                    "ART",
-                    "TYPE",
-                    "KEY"
-                  ],
-                "contents": [
-                  {
-                    "title": "All VNs",
-                    "tag_condition": [
-                      "TYPE/VN"
-                    ],
-                    "multi_condition": "and",
-                    "contents": [
-                      {
-                        "title": "VNs completed (available)",
-                        "tag_condition": [
-                          "DEV/DEV_IN_PROGRESS"
-                        ],
-                        "condition_type": "not",
-                        "contents": [
-                          {
-                            "title": "VNs completed (available) excluding Patreon",
-                            "tag_condition": [
-                              "PLATFORM/Patreon"
-                            ],
-                            "condition_type": "not",
-                            "contents": [
-                              {
-                                "title": "VNs available not done",
-                                "tag_condition": [ "DONE" ],
-                                "condition_type": "not",
-                                "content_ref": "contentByNext"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-            },
-            {
-                "target": "reports_next\\RPGs_next.md",
-                "title": "Game Available",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"
-                ],
-              "commentTag" : "NEXT",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "DEV",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
-                ],
-                "contents": [
-                    {
-                        "title": "RPGs",
-                        "tag_condition": [ "TYPE/RPG" ],
-                        "multi_condition" : "and",
-                        "contents": [
-                          {
-                            "title": "RPGs available",
-                            "tag_condition": [
-                              "DEV/DEV_IN_PROGRESS"
-                            ],
-                            "condition_type": "not",
-                            "contents": [
-                              {
-                                "title": "RPGs available not done",
-                                "tag_condition": [ "DONE" ],
-                                "condition_type": "not",
-                                "content_ref": "contentByNext"
-                              }
-                            ]
-                          }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports_next\\Coops_next.md",
-                "title": "Next Coop Game",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress"
-                ],
-              "commentTag" : "NEXT",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "DEV",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
-                ],
-                "contents": [
-                    {
-                        "title": "Coops",
-                        "tag_condition": [ "TYPE/Coop" ],
-                        "multi_condition" : "and",
-                        "contents": [
-                          {
-                            "title": "Coops available",
-                            "tag_condition": [
-                              "DEV/DEV_IN_PROGRESS"
-                            ],
-                            "condition_type": "not",
-                            "contents": [
-                              {
-                                "title": "Coops available not done",
-                                "tag_condition": [ "DONE" ],
-                                "condition_type": "not",
-                                "content_ref": "contentByNext"
-                              }
-                            ]
-                          }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports_next\\Others_next.md",
-                "title": "Other Next Game",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"
-                ],
-              "commentTag" : "NEXT",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "DEV",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
-                ],
-                "contents": [
-                    {
-                        "title" : "Other than RPGs or VNs",
-                        "tag_condition": [
-                          "TYPE/VN", "TYPE/RPG", "TYPE/Coop"
-                        ],
-                        "condition_type": "not",
-                        "contents": [
-                          {
-                            "title": "Others available",
-                            "tag_condition": [
-                              "DEV/DEV_IN_PROGRESS"
-                            ],
-                            "condition_type": "not",
-                            "contents": [
-                              {
-                                "title" : "Other Games not done",
-                                "tag_condition": [ "DONE" ],
-                                "condition_type": "not",
-                                "content_ref": "contentByNext"
-                              }
-                            ]
-                          }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports_play\\VNs_play.md",
-                "title": "VN - Playing",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress"],
-                "commentTag" : "PLAY/NOTE",
-                "showTags": [
-                    "PLATFORM",
-                    "PLAY",
-                    "CAT",
-                    "ART",
-                    "TYPE",
-                    "KEY"
-                  ],
-                "contents": [
-                  {
-                    "title": "All VNs",
-                    "tag_condition": [
-                      "TYPE/VN", "PLAY/INPROGRESS"
-                    ],
-                    "multi_condition" : "and",
-                    "contents": [
-                      {
-                        "title": "Standard VNs completed",
-                        "tag_condition": [
-                          "PLATFORM/Patreon"
+                        "title": "VNs available not done",
+                        "tag_refs": [
+                          "isDone"
                         ],
                         "condition_type": "not",
                         "content_ref": "contentByNext"
@@ -605,897 +284,398 @@
                     ]
                   }
                 ]
-            },
-            {
-                "target": "reports_play\\RPGs_play.md",
-                "title": "RPG - Playing",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"],
-                "commentTag" : "PLAY/NOTE",
-                "showTags": [
-                    "PLATFORM",
-                    "PLAY",
-                    "CAT",
-                    "ART",
-                    "TYPE",
-                    "KEY"
-                  ],
-                "contents": [
-                  {
-                    "title": "All RPGs",
-                    "tag_condition": [
-                      "TYPE/RPG", "PLAY/INPROGRESS"
-                    ],
-                    "multi_condition" : "and",
-                    "content_ref": "contentByNext"
-                  }
-                ]
-            },
-            {
-                "target": "reports_play\\Coops_play.md",
-                "title": "Coop - Playing",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress"],
-                "commentTag" : "PLAY/NOTE",
-                "showTags": [
-                    "PLATFORM",
-                    "PLAY",
-                    "CAT",
-                    "ART",
-                    "TYPE",
-                    "KEY"
-                  ],
-                "contents": [
-                  {
-                    "title": "All Coops",
-                    "tag_condition": [
-                      "TYPE/Coop", "PLAY/INPROGRESS"
-                    ],
-                    "multi_condition" : "and",
-                    "content_ref": "contentByNext"
-                  }
-                ]
-            },
-            {
-                "target": "reports_play\\VNAs_play.md",
-                "title": "VNA - Playing",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress"],
-                "commentTag" : "PLAY/NOTE",
-                "showTags": [
-                    "PLATFORM",
-                    "PLAY",
-                    "CAT",
-                    "ART",
-                    "TYPE",
-                    "KEY"
-                  ],
-                "contents": [
-                  {
-                    "title": "All VNAs",
-                    "tag_condition": [
-                      "TYPE/VNA", "PLAY/INPROGRESS"
-                    ],
-                    "multi_condition" : "and",
-                    "content_ref": "contentByNext"
-                  }
-                ]
-            },
-            {
-                "target": "reports_play\\Others_play.md",
-                "title": "Other Next Game",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "4.Wishlist (game available)\\Game sheets",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted"
+              }
+            ]
+          },
+          "Game Available - RPGs": {
+            "target": "reports_next\\RPGs_next.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "RPGs",
+                "tag_refs": [
+                  "isRPG"
                 ],
-              "commentTag" : "NEXT",
-              "showTags": [
-                  "PLATFORM",
-                  "PLAY",
-                  "DEV",
-                  "CAT",
-                  "ART",
-                  "TYPE",
-                  "KEY"
-                ],
+                "multi_condition": "and",
                 "contents": [
-                    {
-                        "title" : "Other than RPGs or VNs",
-                        "tag_condition": [
-                          "TYPE/VN", "TYPE/RPG", "TYPE/Coop"
+                  {
+                    "title": "RPGs available",
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents": [
+                      {
+                        "title": "RPGs available not done",
+                        "tag_refs": [
+                          "isDone"
                         ],
                         "condition_type": "not",
-                        "contents": [
-                          {
-                            "title": "Others available",
-                            "tag_condition": [
-                              "PLAY/INPROGRESS"
-                            ],
-                            "contents": [
-                              {
-                                "title" : "Other Games - playing",
-                                "content_ref": "contentByNext"
-                              }
-                            ]
-                          }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports\\ErrorSheetCreatedButEmpty.md",
-                "title": "To be completed",
-                "labelAbout" : "Game",
-                "labelTags" : "TYPE",
-                "path_condition":  [
-                    "_Incoming"
-                ]
-            },
-			{
-                "target": "reports\\ErrorMissingType.md",
-                "title": "Error Missing Type",
-                "path_condition": [ "1.Available",
-                                    "2.To classify" ],
-				"contents": [
-					{
-                        "title": "Missing Type",
-                        "tag_condition": [ "TYPE" ],
-                        "condition_type": "not"
-					}
-				]
-			},
-			{
-                "target": "reports\\ErrorMissingCategory.md",
-                "title": "Error Missing Category",
-                "path_condition": [ "1.Available",
-                                    "2.To classify" ],
-				"contents": [
-					{
-                        "title": "Missing Category",
-                        "tag_condition": [ "CAT" ],
-                        "condition_type": "not"
-					}
-				]
-			},
-			{
-                "target": "reports\\ErrorMissingStory.md",
-                "title": "Error Missing Story",
-                "path_condition": [ "1.Available",
-                                    "2.To classify" ],
-				"contents": [
-					{
-                        "title": "VN",
-                        "tag_condition": [ "TYPE/VN" ],
-                        "content_ref": "missingStory",
-                        "else": {
-                            "title": "Undefined TYPE",
-                            "tag_condition": [ "TYPE" ],
-                            "condition_type": "not",
-                            "content_ref": "missingStory",
-                            "else": {
-                             "title": "Others than VN",
-                             "content_ref": "missingStory"
-                            }
-                        }
-                    }
-				]
-			},
-            {
-                "target": "reports\\Stats.md",
-                "title": "Some stats",
-                "labelAbout" : "Game",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "5.Dev in progress",
-                                    "6.Kickstarted" ],
-                "count" : {
-                    "Game to classify" : {
-                      "path_condition": [ "2.To classify" ]
-                    },
-                    "Game available" : {
-                      "path_condition": [ "1.Available" ]
-                    },
-                    "Game Kick Started" : {
-                      "tag_condition": [ "KICK" ]
-                    },
-                    "Game Kick Started ( in development )" : {
-                      "path_condition": [ "6.Kickstarted" ],
-                      "tag_condition": [ "KICK" ]
-                    },
-                    "Game in development" : {
-                      "path_condition": [ "5.Dev in progress" ]
-                    },
-                    "Game Evaluated" : {
-                      "tag_condition": [ "DONE" ]
-                    },
-                    "Game Evaluated 1++" : {
-                      "tag_condition": [ "DONE/1" ]
-                    },
-                    "Game Available 1++" : {
-                      "path_condition": [ "1 ++" ]
-                    },
-                    "VN" : {
-                      "tag_condition": [ "TYPE/VN" ]
-                    },
-                    "VN Evaluated" : {
-                      "tag_condition": [ "DONE", "TYPE/VN" ]
-                    },
-                    "Game in standby" : {
-                      "tag_condition": [ "PLAY/Standby" ]
-                    },
-                    "Game with alternative route" : {
-                      "tag_condition": [ "PLAY/AltRoute" ]
-                    },
-                    "Game suite" : {
-                      "tag_condition": [ "PLAY/SUITE" ]
-                    },
-                    "Game Missing CAT Tag" : {
-                      "tag_not_condition": [ "TYPE" ]
-                    },
-                    "Game Missing Type Tag" : {
-                      "tag_not_condition": [ "CAT" ]
-                    },
-                    "Game Missing Story Tag" : {
-                      "tag_not_condition": [ "STORY" ]
-                    },
-                    "VN Missing Story Tag" : {
-                      "tag_condition": [ "TYPE/VN" ],
-                      "tag_not_condition": [ "STORY" ]
-                    },
-                    "VN Missing Art Tag" : {
-                      "tag_condition": [ "TYPE/VN" ],
-                      "tag_not_condition": [ "ART" ]
-                    }
+                        "content_ref": "contentByNext"
+                      }
+                    ]
                   }
+                ]
+              }
+            ]
+          },
+          "Next Coop Game": {
+            "target": "reports_next\\Coops_next.md",
+            "path_ref": "game_available",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Coops",
+                "tag_refs": [
+                  "isCoop"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "title": "Coops available",
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents": [
+                      {
+                        "title": "Coops available not done",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "content_ref": "contentByNext"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Other Next Game": {
+            "target": "reports_next\\Others_next.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Other than RPGs or VNs",
+                "tag_refs": [
+                  "isVNorVNAorRPGorCoop"
+                ],
+                "condition_type": "not",
+                "contents": [
+                  {
+                    "title": "Others available",
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents": [
+                      {
+                        "title": "Other Games not done",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "content_ref": "contentByNext"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "VN - Playing": {
+            "target": "reports_play\\VNs_play.md",
+            "path_ref": "game_available",
+            "commentTag": "PLAY/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All VNs",
+                "tag_refs": [
+                  "isVN",
+                  "isInProgress"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "RPG - Playing": {
+            "target": "reports_play\\RPGs_play.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "PLAY/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All RPGs",
+                "tag_refs": [ "isRPG", "isInProgress" ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "Coop - Playing": {
+            "target": "reports_play\\Coops_play.md",
+            "path_ref": "game_available",
+            "commentTag": "PLAY/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All Coops",
+                "tag_refs": [
+                  "isCoop",
+                  "isInProgress"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "VNA - Playing": {
+            "target": "reports_play\\VNAs_play.md",
+            "path_ref": "game_available",
+            "commentTag": "PLAY/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All VNAs",
+                "tag_refs": [
+                  "isVNA",
+                  "isInProgress"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "Other Next Game": {
+            "target": "reports_play\\Others_play.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Other than RPGs or VNs",
+                "tag_refs": [
+                  "isVNorVNAorRPGorCoop"
+                ],
+                "condition_type": "not",
+                "contents": [
+                  {
+                    "title": "Others available",
+                    "tag_refs": [
+                      "isInProgress"
+                    ],
+                    "contents": [
+                      {
+                        "title": "Other Games - playing",
+                        "content_ref": "contentByNext"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "To be completed": {
+            "target": "reports\\ErrorSheetCreatedButEmpty.md",
+            "labelAbout": "Game",
+            "labelTags": "TYPE",
+            "path_condition": [
+              "_Incoming"
+            ]
+          },
+          "Error Missing Type": {
+            "target": "reports\\ErrorMissingType.md",
+            "path_ref": "game_owned",
+            "contents": [
+              {
+                "title": "Missing Type",
+                "tag_condition": [
+                  "TYPE"
+                ],
+                "condition_type": "not"
+              }
+            ]
+          },
+          "Error Missing Category": {
+            "target": "reports\\ErrorMissingCategory.md",
+            "path_ref": "game_owned",
+            "contents": [
+              {
+                "title": "Missing Category",
+                "tag_condition": [
+                  "CAT"
+                ],
+                "condition_type": "not"
+              }
+            ]
+          },
+          "Error Missing Story": {
+            "target": "reports\\ErrorMissingStory.md",
+            "path_ref": "game_owned",
+            "contents": [
+              {
+                "title": "VN",
+                "tag_refs": [
+                  "isVN"
+                ],
+                "content_ref": "missingStory",
+                "else": {
+                  "title": "Undefined TYPE",
+                  "tag_condition": [
+                    "STORY"
+                  ],
+                  "condition_type": "not",
+                  "content_ref": "missingStory",
+                  "else": {
+                    "title": "Others than VN",
+                    "content_ref": "missingStory"
+                  }
+                }
+              }
+            ]
+          },
+          "Some stats": {
+            "target": "reports\\Stats.md",
+            "labelAbout": "Game",
+            "path_ref": "game_available_and_in_development",
+            "count": {
+              "Game to classify": {
+                "path_condition": [
+                  "2.To classify"
+                ]
+              },
+              "Game available": {
+                "path_condition": [
+                  "1.Available"
+                ]
+              },
+              "Game Kick Started": {
+                "tag_condition": [
+                  "KICK"
+                ]
+              },
+              "Game Kick Started ( in development )": {
+                "path_condition": [
+                  "6.Kickstarted"
+                ],
+                "tag_condition": [
+                  "KICK"
+                ]
+              },
+              "Game in development": {
+                "path_condition": [
+                  "5.Dev in progress"
+                ]
+              },
+              "Game Evaluated": {
+                "tag_condition": [
+                  "DONE"
+                ]
+              },
+              "Game Evaluated 1++": {
+                "tag_condition": [
+                  "DONE/1"
+                ]
+              },
+              "Game Available 1++": {
+                "path_condition": [
+                  "1 ++"
+                ]
+              },
+              "VN": {
+                "tag_condition": [
+                  "isVN"
+                ]
+              },
+              "VN Evaluated": {
+                "tag_condition": [
+                  "DONE",
+                  "isVN"
+                ]
+              },
+              "Game in standby": {
+                "tag_condition": [
+                  "PLAY/Standby"
+                ]
+              },
+              "Game with alternative route": {
+                "tag_condition": [
+                  "PLAY/AltRoute"
+                ]
+              },
+              "Game suite": {
+                "tag_condition": [
+                  "PLAY/SUITE"
+                ]
+              },
+              "Game Missing CAT Tag": {
+                "tag_not_condition": [
+                  "TYPE"
+                ]
+              },
+              "Game Missing Type Tag": {
+                "tag_not_condition": [
+                  "CAT"
+                ]
+              },
+              "Game Missing Story Tag": {
+                "tag_not_condition": [
+                  "STORY"
+                ]
+              },
+              "VN Missing Story Tag": {
+                "tag_condition": [
+                  "isVN"
+                ],
+                "tag_not_condition": [
+                  "STORY"
+                ]
+              },
+              "VN Missing Art Tag": {
+                "tag_condition": [
+                  "isVN"
+                ],
+                "tag_not_condition": [
+                  "ART"
+                ]
+              }
             }
-        ],
-        "old_reports" : [
-            {
-                "target": "reports\\1.EvaluatedGames.md",
-                "title": "Evaluated Games",
-                "labelAbout" : "Game",
-                "labelTags" : "TYPE",
-                "commentTag" : "DONE",
-                "showTags": [
-                  "ART",
-                  "CAT",
-                  "KEY",
-                  "DURATION",
-                  "PLATFORM",
-                  "PLAY"
-                ],
-                "path_condition": [ "1.Available" ],
-                "contents": [
-                    {
-                        "title": "Game done",
-                        "tag_condition": [ "DONE" ],
-                        "contents" : [
-                            {
-                                "title": "very good, hard to stop",
-                                "tag_condition": [
-                                    "DONE/1"
-                                ],
-                                "content_ref" : "contentByType"
-                            },
-                            {
-                                "title": "good, no regret",
-                                "tag_condition": [ "DONE/2" ],
-                                "content_ref" : "contentByType"
-                            },
-                            {
-                                "title": "interesting, but...",
-                                "tag_condition": [ "DONE/3" ],
-                                "content_ref" : "contentByType"
-                            },
-                            {
-                                "title": "bof",
-                                "tag_condition": [ "DONE/4" ],
-                                "content_ref" : "contentByType"
-                            },
-                            {
-                                "title" : "trash or default are preventing taking pleasure",
-                                "tag_condition" : [ "DONE/GIVUP" ],
-                                "content_ref" : "contentByType"
-                            },
-							{
-								"title": "Undefined note",
-                                "content_ref" : "contentByType"
-							}
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports\\3.EvaluatedGamesReviewMode.md",
-                "title": "Evaluated Games ( Review mode )",
-                "labelAbout" : "Game",
-                "labelTags" : "Category",
-                "path_condition": [ "1.Available",
-                                    "2.To classify" ],
-                "commentTag" : "PRICE",
-                "showTags": [
-                  "ART",
-                  "TYPE",
-                  "KEY",
-                  "DURATION"
-                ],
-                "contents": [
-                  {
-                    "title": "Game done (review mode)",
-                    "tag_condition": [
-                      "PLATFORM/Review", "PLATFORM/REVIEW"
-                    ],
-                    "contents": [
-                      {
-                        "title": "Game done (review mode)",
-                        "tag_condition": [
-                          "DONE"
-                        ],
-                        "contents": [
-                          {
-                            "title": "very good, hard to stop",
-                            "tag_condition": [
-                              "DONE/1"
-                            ],
-                            "content_ref": "contentByCategory"
-                          },
-                          {
-                            "title": "good, no regret",
-                            "tag_condition": [
-                              "DONE/2"
-                            ],
-                            "content_ref": "contentByCategory"
-                          },
-                          {
-                            "title": "interesting, but...",
-                            "tag_condition": [
-                              "DONE/3"
-                            ],
-                            "content_ref": "contentByCategory"
-                          },
-                          {
-                            "title": "bof",
-                            "tag_condition": [
-                              "DONE/4"
-                            ],
-                            "content_ref": "contentByCategory"
-                          },
-                          {
-                            "title": "trash or default are preventing taking pleasure",
-                            "tag_condition": [
-                              "DONE/GIVUP"
-                            ],
-                            "content_ref": "contentByCategory"
-                          },
-                          {
-                            "title": "Undefined note"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-            },
-            {
-                "target": "reports\\2.EvaluatedGamesToClassify.md",
-                "title": "Evaluated Games to classify",
-                "labelAbout" : "Game",
-                "labelTags" : "TYPE",
-                "commentTag" : "DONE",
-                "showTags": [
-                  "ART",
-                  "CAT",
-                  "KEY",
-                  "DURATION",
-                  "PLATFORM"
-                ],
-                "path_condition": [ "2.To classify" ],
-                "contents": [
-                    {
-                        "title": "Game done",
-                        "tag_condition": [ "DONE" ],
-                        "contents" : [
-                            {
-                                "title": "very good, hard to stop",
-                                "tag_condition": [
-                                    "DONE/1"
-                                ],
-                                "content_ref" : "contentByType"
-                            },
-                            {
-                                "title": "good, no regret",
-                                "tag_condition": [ "DONE/2" ],
-                                "content_ref" : "contentByType"
-                            },
-                            {
-                                "title": "interesting, but...",
-                                "tag_condition": [ "DONE/3" ],
-                                "content_ref" : "contentByType"
-                            },
-                            {
-                                "title": "bof",
-                                "tag_condition": [ "DONE/4" ],
-                                "content_ref" : "contentByType"
-                            },
-                            {
-                                "title" : "trash or default are preventing taking pleasure",
-                                "tag_condition" : [ "DONE/GIVUP" ],
-                                "content_ref" : "contentByType"
-                            },
-							{
-								"title": "Undefined note",
-                                "content_ref" : "contentByType"
-							}
-                        ]
-                    }
-                ]
-            },
-            {
-              "target": "reports\\4.PotentialGamesCheckedByNoteTypeStory.md",
-              "title": "Potential games ( Note / Story )",
-              "labelAbout" : "Game",
-              "commentTag": "NEXT",
-              "showTags": [
-                "NEXT",
-                "DEV",
-                "ART",
-                "KEY",
-                "DURATION"
-              ],
-              "path_condition": [
-                "1.Available",
-                "2.To classify"
-              ],
-              "contents": [
-                    {
-                        "title": "Game to be done",
-                        "tag_condition": [
-                            "DONE",
-                            "PLAY/INPROGRESS"
-                        ],
-                        "condition_type": "not",
-                        "contents": [
-                            {
-                              "title": "To be done ASAP",
-                              "tag_condition": [
-                                "NEXT/1"
-                              ],
-                              "content_ref" : "contentByTypeTagByStoryType"
-                            },
-                            {
-                              "title": "To be done",
-                              "tag_condition": [
-                                "NEXT/2"
-                              ],
-                              "content_ref" : "contentByTypeTagByStoryType"
-                            },
-                            {
-                              "title": "To keep in mind",
-                              "tag_condition": [
-                                "NEXT/3"
-                              ],
-                              "content_ref" : "contentByTypeTagByStoryType"
-                            },
-                            {
-                              "title": "Potential (no priority)",
-                              "tag_condition": [
-                                "NEXT"
-                              ],
-                              "content_ref" : "contentByTypeTagByStoryType"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "Game to be restarted",
-                        "tag_condition": [
-                            "PLAY/STANDBY", "PLAY/ALT_ROUTES"
-                        ],
-                        "contents": [
-                                {
-                                  "title": "To be done ASAP",
-                                  "tag_condition": [
-                                    "NEXT/1"
-                                  ],
-                                  "content_ref" : "contentByTypeTagByStoryType"
-                                },
-                                {
-                                  "title": "To be done",
-                                  "tag_condition": [
-                                    "NEXT/2"
-                                  ],
-                                "content_ref" : "contentByTypeTagByStoryType"
-                                },
-                                {
-                                  "title": "To keep in mind",
-                                  "tag_condition": [
-                                    "NEXT/3"
-                                  ],
-                                  "content_ref" : "contentByTypeTagByStoryType"
-                                },
-                                {
-                                  "title": "Potential (no priority)",
-                                  "tag_condition": [
-                                    "NEXT"
-                                  ],
-                                  "content_ref" : "contentByTypeTagByStoryType"
-                                }
-                            ]
-                    }
-                ]
-            },
-            {
-                "target": "reports\\4.PotentialGamesCheckByTypeStory.md",
-                "title": "Potential games ( Type / Story )",
-                "path_condition":  [  "1.Available",
-                                      "2.To classify" ],
-              "labelAbout" : "Game",
-              "commentTag": "NEXT",
-              "showTags": [
-                "NEXT",
-                "DEV",
-                "ART",
-                "KEY",
-                "DURATION"
-              ],
-                "contents": [
-                    {
-                        "title": "Game to be done",
-                        "tag_condition": [
-                            "DONE",
-                            "NEXT"
-                        ],
-                        "condition_type": "not",
-                        "contents": [
-                            {
-                                "title": "%TAGNAME%",
-                                "tag_condition": [
-                                    "CAT/"
-                                ],
-                                "contents": [
-                                    {
-                                        "title": "%TAGNAME%",
-                                        "tag_condition": [
-                                            "TYPE/"
-                                        ],
-                                        "else": {
-                                            "title": "Game without type"
-                                        }
-                                    }
-                                ],
-                                "else": {
-                                    "title": "Game without category"
-                                }
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports\\4.PotentialVNsCheckByTypeStory.md",
-                "title": "Potential VN ( Type / Story )",
-                "path_condition":  [  "1.Available",
-                                      "2.To classify" ],
-              "labelAbout" : "Game",
-              "commentTag": "NEXT",
-              "showTags": [
-                "DEV",
-                "ART",
-                "KEY",
-                "DURATION"
-              ],
-                "contents": [
-                  {
-                     "title" : "VNs",
-                     "condition_type": "not",
-                     "tag_condition": [ "DONE",
-                                        "TYPE/Arcade",
-                                        "TYPE/RPG",
-                                        "TYPE/Simulation",
-                                        "CAT/STORY-ACTION",
-                                        "TYPE/VN/ACTION",
-                                        "TYPE/Coop"
-                     ],
-                     "contents": [
-                        {
-                            "title": "%TAGNAME%",
-                            "tag_condition": [
-                                "TYPE/"
-                            ],
-                           "contents": [
-                              {
-                                "title": "To be done ASAP",
-                                "tag_condition": [
-                                  "NEXT/1"
-                                ]
-                              },
-                              {
-                                "title": "To be done",
-                                "tag_condition": [
-                                  "NEXT/2"
-                                ]
-                              },
-                              {
-                                "title": "To keep in mind",
-                                "tag_condition": [
-                                  "NEXT/3"
-                                ]
-                              },
-                              {
-                                "title": "Maybe yes, maybe not",
-                                "tag_condition": [
-                                  "NEXT/4"
-                                ]
-                              },
-                             {
-                                "title": "no priority defined"
-                             }
-
-                           ],
-                           "else": {
-                               "title": "Sheet without type"
-                           }
-                        }
-                     ]
-                  }
-                ]
-            },
-            {
-                "target": "reports\\DevInProgressGame.md",
-                "title": "My games",
-                "labelAbout" : "Game",
-                "labelTags" : "TYPE",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "5.Dev in progress\\Game sheets",
-                                    "6.Kickstarted"],
-              "commentTag" : "EDITOR/NOTE",
-              "showTags": [
-                  "DATE",
-                  "PLATFORM",
-                  "ART",
-                  "TYPE",
-                  "KEY",
-                  "DURATION"
-                ],
-                "contents": [
-                    {
-                        "title": "Development in progress",
-                        "tag_condition": [ "DEV" ],
-                        "contents" : [
-                          {
-                              "title": "Already owned ( Kick or early access )",
-                              "tag_condition": [ "KICK", "PRICE/EARLY_ACCESS_PAID" ]
-                          },
-                          {
-                              "title": "Tested ( High expectation )",
-                              "tag_condition": [ "PLAY/EARLY_ACCESS" ],
-                              "content_ref" : "contentByPlatform"
-                          },
-                          {
-                            "title" : "Others",
-                            "content_ref" : "contentByPlatform"
-                          }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports\\PlayInProgressGame.md",
-                "title": "My games",
-                "labelAbout" : "Game",
-                "labelTags" : "TYPE",
-                "path_condition": [ "1.Available",
-                                    "2.To classify",
-                                    "5.Dev in progress\\Game sheets",
-                                    "6.Kickstarted"],
-              "commentTag" : "PLAY/NOTE",
-              "showTags": [
-                  "CAT",
-                  "KEY"
-                ],
-                "contents": [
-                    {
-                        "title": "in progress",
-                        "tag_condition": [ "PLAY/INPROGRESS" ],
-                        "contents" : [
-                          {
-                              "title": "Episodic delivery (dev in progress)",
-                              "tag_condition": [ "DEV", "PRICE/EARLY_ACCESS_PAID" ],
-                              "content_ref" : "contentByType"
-                          },
-                          {
-                            "title" : "Complete game",
-                            "content_ref" : "contentByType"
-                          }
-                        ]
-                    }
-                ]
-            },
-            {
-                "target": "reports\\5.GamesToBeContinuedByType.md",
-                "title": "Games to be continued",
-                "labelAbout" : "Game",
-                "labelTags" : "TYPE",
-                "path_condition":  [
-                    "1.Available",
-                    "2.To classify"
-                ],
-                "commentTag": "NEXT",
-                "showTags": [
-                  "DONE",
-                  "NEXT",
-                  "DEV",
-                  "ART",
-                  "KEY",
-                  "DURATION"
-                ],
-                "contents": [
-                  {
-                    "title": "Games still in development",
-                    "tag_condition": [
-                      "PLAY/WAITING_UPDATE"
-                    ],
-                    "content_ref" : "contentByType"
-                  },
-                  {
-                    "title": "Games with Alternative Route",
-                    "tag_condition": [
-                      "PLAY/ALT_ROUTES"
-                    ],
-                    "content_ref" : "contentByType"
-                  },
-                  {
-                    "title": "Games with Suite",
-                    "tag_condition": [
-                      "PLAY/SUITE"
-                    ],
-                    "content_ref" : "contentByType"
-                  },                  {
-                    "title": "Games in Standby",
-                    "tag_condition": [
-                      "PLAY/STANDBY"
-                    ],
-                    "content_ref" : "contentByType"
-                  },
-                  {
-                    "title": "Other game to be continued",
-                    "tag_condition": [
-                      "NEXT"
-                    ]
-                  }
-                ]
-            },
-			{
-                "target": "reports\\AllVNsByArt.md",
-                "title": "My Games",
-                "labelAbout" : "Game",
-                "path_condition":[  "1.Available",
-                                    "2.To classify" ],
-              "commentTag": "NEXT",
-              "showTags": [
-                  "DONE",
-                  "PLAY",
-                  "DEV",
-                  "TYPE",
-                  "KEY"
-                ],
-				"contents": [
-					{
-                        "title": "VNs",
-                        "tag_condition": [ "DONE", "PLAY/STANDBY", "PLAY/ALT_ROUTES" ],
-                        "condition_type": "not",
-                        "contents" : [
-                          {
-                            "title": "My VNs",
-                            "tag_condition": [
-                              "TYPE/VN"
-                            ],
-                            "content_ref": "contentByArtStyle"
-                          }
-                        ],
-                        "else" : {
-                            "title": "My VNs (Launched)",
-                            "contents" : [
-                              {
-                                "title": "My VNs",
-                                "tag_condition": [
-                                  "TYPE/VN"
-                                ],
-                                "contents" : [
-                                  {
-                                    "title": "My VNs (Tested)",
-                                    "tag_condition": [
-                                      "PLAY"
-                                    ],
-                                    "content_ref": "contentByArtStyle"
-                                  },
-                                  {
-                                    "title": "My VNs (Done)",
-                                    "tag_condition": [
-                                     "DONE"
-                                    ],
-                                    "content_ref": "contentByArtStyle"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-					}
-				]
-			},
-			{
-                "target": "reports\\AllVNsByType.md",
-                "title": "My Games",
-                "labelAbout" : "Game",
-                "path_condition": [  "1.Available",
-                                     "2.To classify" ],
-              "commentTag": "NEXT",
-              "showTags": [
-                  "DONE",
-                  "PLAY",
-                  "DEV",
-                  "TYPE",
-                  "KEY"
-                ],
-				"contents": [
-					{
-                        "title": "VNs",
-                        "tag_condition": [ "DONE", "PLAY/STANDBY", "PLAY/ALT_ROUTES" ],
-                        "condition_type": "not",
-                        "contents" : [
-                          {
-                            "title": "My VNs",
-                            "tag_condition": [
-                              "TYPE/VN"
-                            ],
-                            "content_ref": "contentByType"
-                          }
-                        ],
-                        "else" : {
-                            "title": "My VNs (Launched)",
-                            "contents" : [
-                              {
-                                "title": "My VNs",
-                                "tag_condition": [
-                                  "TYPE/VN"
-                                ],
-                                "contents" : [
-                                  {
-                                    "title": "My VNs (Tested)",
-                                    "tag_condition": [
-                                      "PLAY"
-                                    ],
-                                    "content_ref": "contentByType"
-                                  },
-                                  {
-                                    "title": "My VNs (Done)",
-                                    "tag_condition": [
-                                     "DONE"
-                                    ],
-                                    "content_ref": "contentByType"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-					}
-				]
-			}
-        ],
+          }
+        },
         "shared_contents" : {
+          "paths" : {
+            "game_owned": ["1.Available", "2.To classify" ],
+            "game_available" : ["1.Available","2.To classify","4.Wishlist (game available)\\Game sheets","5.Dev in progress"],
+            "game_available_and_in_development" : [ "1.Available", "2.To classify", "4.Wishlist (game available)\\Game sheets","5.Dev in progress", "6.Kickstarted"],
+            "editors" :  [  "Editors" ]
+          },
+          "tags" : {
+            "isEditor" : [ "EDITOR" ],
+            "isKickStarted" : [ "KICK" ],
+            "isEarlyAccess" : [ "PRICE/EARLY_ACCESS_PAID" ],
+            "isWishedGame" : [ "PLATFORM/Wish" ],
+            "isDevInProgress" : [ "DEV/DEV_IN_PROGRESS" ],
+            "isTested" : [ "PLAY/TESTED" ],
+            "isInProgress" : [ "PLAY/INPROGRESS" ],
+            "isDone" : [ "DONE" ],
+            "isRPG" : [ "TYPE/RPG" ],
+            "isVN" : [ "TYPE/VN" ],
+            "isVNA" : [ "TYPE/VNA" ],
+            "isCoop" : [ "TYPE/Coop" ],
+            "isVNorVNAorRPGorCoop" : [ "TYPE/RPG", "TYPE/VN", "TYPE/VNA", "TYPE/Coop"]
+          },
+          "info_tags" : {
+            "editorTags" : [ "EDTNOTE", "EDTTYPE" ],
+            "allGameTags" : [  "PLATFORM", "PLAY", "DEV", "CAT", "ART", "TYPE", "KEY"]
+          },
           "contentByCategory": [
                           {
                               "title": "%TAGNAME%",

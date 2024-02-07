@@ -108,15 +108,16 @@ class MarkdownHelper:
             total = len(self.REPORTS)
             reportTargets = []
 
-            for report in self.REPORTS:
+            for report in self.REPORTS.values():
                 reportTargets.append(report["target"])
             signal_reports.emit(reportTargets)
 
             current = 1
-            for report in self.REPORTS:
-                logging.info("MDR | Processing report \"{}\" {}/{}".format(report["title"], current, total))
+            for reportTitle, report in self.REPORTS.items():
+                logging.info("MDR | Processing report \"{}\" {}/{}".format(reportTitle, current, total))
                 current = current + 1
+                report["title"] = reportTitle
                 MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT).generate()
-                signal_report.emit(report["title"], report["target"])
+                signal_report.emit(reportTitle, report["target"])
         except Exception as e:
             raise
