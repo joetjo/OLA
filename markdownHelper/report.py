@@ -12,7 +12,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 import logging
-from datetime import datetime
 
 # Ugly but simple
 from markdownHelper.label import MhLabels
@@ -124,6 +123,41 @@ class ReferenceUtil:
             return []
 
 
+class MhReportSheet:
+    def __init__(self, title):
+        self.lines = [title]
+        self.lines.append("\n| Sheet | Filtering |\n")
+        self.lines.append("|-|-|\n")
+
+    @staticmethod
+    def toStr(label, values):
+        if values is not None and len(values) > 0:
+            result = "{}:".format(label)
+            for value in values:
+                result = "{} ``{}``".format(result, value)
+            return result
+        else:
+            return ""
+
+    def addTarget(self, title, name, commentTag):
+        self.lines.append("| {} : [[{}]] | comment tag: {} |\n".format(title, name, commentTag))
+
+    def addExpandBy(self, tags):
+        self.lines.append("| | > Expand by tag {} | \n".format(tags))
+
+    def addFiltering(self, tags, paths, isNot, isAnd):
+        logOperator = ""
+        if (tags is not None and len(tags) > 0) or (paths is not None and len(paths) > 0):
+            if len(isNot) > 0:
+                if len(isAnd) > 0:
+                    logOperator = " **NOT** **AND** "
+                else:
+                    logOperator = " **NOT** "
+            elif len(isAnd) > 0:
+                logOperator = " **AND** "
+            self.lines.append("| | {}{}{} |\n".format(logOperator, MhReportSheet.toStr("tags", tags), MhReportSheet.toStr("paths", paths)))
+
+
 class MhCountEntry:
 
     def __init__(self, json, inputFiles, allSubContents):
@@ -190,12 +224,13 @@ class MhCountEntry:
 class MhReportEntry:
 
     # inputFiles: dict of name, MhMarkdownFiles
-    def __init__(self, json, inputFiles, allTags, allSubContents, commentTag, showTags, labels=None, level="#"):
+    def __init__(self, json, inputFiles, allTags, allSubContents, reportSheet, commentTag, showTags, labels=None, level="#"):
         self.json = json
         self.level = level
         self.inputFiles = inputFiles
         self.allTags = allTags
         self.allSubContents = allSubContents
+        self.reportSheet = reportSheet
         self.commentTag = commentTag
         self.showTags = showTags
         if labels is None:
@@ -314,6 +349,8 @@ class MhReportEntry:
                                                                         self.paths))
             if len(self.filteredFiles) > 0:
                 # virtual content that must be expanded !
+                if self.reportSheet is not None:
+                    self.reportSheet.addExpandBy(self.tags)
                 for tag in sorted(self.mappingTags(self.tags, self.allTags)):
                     content = self.json.copy()
                     del content["else"]
@@ -321,11 +358,11 @@ class MhReportEntry:
                     content["tag_condition"] = [tag[1:]]  # and use the expanded tag to filer
                     if len(content["title"]) > 0:
                         MhReportEntry(content, self.filteredFiles.copy(), self.allTags,
-                                      self.allSubContents, self.commentTag, self.showTags, self.labels, self.level).generate(writer)
+                                      self.allSubContents, None, self.commentTag, self.showTags, self.labels, self.level).generate(writer)
             # Proceed to else of VIRTUAL block
             try:
                 MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
-                              self.allSubContents, self.commentTag, self.showTags, self.labels, self.level).generate(writer)
+                              self.allSubContents, self.reportSheet, self.commentTag, self.showTags, self.labels, self.level).generate(writer)
             except KeyError:
                 pass
 
@@ -339,13 +376,15 @@ class MhReportEntry:
         if len(self.filteredFiles) > 0:
             currentTitle = "{} {} ({})\n".format(self.level, self.title(), len(self.filteredFiles))
             # writer.writelines(currentTitle)  # this display a title for each hierarchy to the report, lot of titles
+            if self.reportSheet is not None:
+                self.reportSheet.addFiltering(self.tags, self.paths, self.inverseCondition, self.multiCondition)
             titleToGenerate = True
 
             json_contents = self.getContents()
             if json_contents is not None:
                 files = self.filteredFiles
                 for content in json_contents:
-                    cr = MhReportEntry(content, files, self.allTags, self.allSubContents,
+                    cr = MhReportEntry(content, files, self.allTags, self.allSubContents, self.reportSheet,
                                        self.commentTag, self.showTags, self.labels, nextLevel)
                     cr.generate(writer)
                     files = cr.elseFiles
@@ -385,19 +424,20 @@ class MhReportEntry:
 
             try:
                 MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
-                              self.allSubContents, self.commentTag, self.showTags, self.labels, nextLevel).generate(writer)
+                              self.allSubContents, self.reportSheet, self.commentTag, self.showTags, self.labels, nextLevel).generate(writer)
             except KeyError:
                 pass
 
 
 class MhReport:
 
-    def __init__(self, json, baseFolder, inputFiles, allTags, allSubContents):
+    def __init__(self, json, baseFolder, inputFiles, allTags, allSubContents, reportSheet):
         self.json = json
         self.baseFolder = baseFolder
         self.inputFiles = inputFiles
         self.allTags = allTags
         self.allSubContents = allSubContents
+        self.reportSheet = reportSheet
 
         # Setup comment tag
         try:
@@ -406,13 +446,13 @@ class MhReport:
             self.commentTag = None
 
         # Setup show tags
-        self.showTags = ReferenceUtil.showTags(self.json, allSubContents )
+        self.showTags = ReferenceUtil.showTags(self.json, allSubContents)
 
     def target(self):
         return self.baseFolder + '/' + self.json["target"]
 
     def generate(self):
-        rootReport = MhReportEntry(self.json, self.inputFiles, self.allTags, self.allSubContents,
+        rootReport = MhReportEntry(self.json, self.inputFiles, self.allTags, self.allSubContents, self.reportSheet,
                                    self.commentTag, self.showTags)
         logging.info("MDR | Generate report \"{}\" to {}".format(rootReport.title(), self.target()))
         with open(self.target(), 'w', encoding='utf-8') as writer:

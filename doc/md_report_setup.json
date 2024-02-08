@@ -2,6 +2,7 @@
     "version": 0,
     "global": {
         "base_folder": "C:\\Users\\nicol\\Documents\\GitHub\\gList2",
+        "reports_readme": "reports.md",
         "ignore" : [ ".git", ".obsidian", ".gitignore", ".gitattributes", "Readme.md",
             "_glist", "reports", "reports_episodic", "reports_next", "reports_play", "reports_wish"
         ],
@@ -34,7 +35,7 @@
                   "isRPG"
                 ],
                 "multi_condition": "and",
-                "content_ref": "contentByNext"
+                "content_ref": "contentByWish"
               }
             ]
           },
@@ -51,7 +52,7 @@
                   "isVN"
                 ],
                 "multi_condition": "and",
-                "content_ref": "contentByNext"
+                "content_ref": "contentByWish"
               }
             ]
           },
@@ -69,7 +70,7 @@
                   "isVNA"
                 ],
                 "multi_condition": "and",
-                "content_ref": "contentByNext"
+                "content_ref": "contentByWish"
               }
             ]
           },
@@ -86,7 +87,7 @@
                   "isCoop"
                 ],
                 "multi_condition": "and",
-                "content_ref": "contentByNext"
+                "content_ref": "contentByWish"
               }
             ]
           },
@@ -808,6 +809,17 @@
                       "title": "%TAGNAME%",
                       "tag_condition": [
                           "NEXT/"
+                      ],
+                      "else" : {
+                          "title": "Undefined expectation"
+                      }
+                  }
+              ],
+          "contentByWish": [
+                  {
+                      "title": "%TAGNAME%",
+                      "tag_condition": [
+                          "WISH/"
                       ],
                       "else" : {
                           "title": "Undefined expectation"

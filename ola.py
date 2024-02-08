@@ -32,7 +32,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02 alpha 12"
+    VERSION = "2024.02 alpha 13"
     PREVIOUS = ""
 
 
@@ -800,7 +800,7 @@ class OLAReports(QWidget):
         self.reports[sheetPath].enableVault()
 
     def setReports(self, sheetPaths):
-        self.reports["Readme"] = OLAReportLine(0, 0, self.reportPanelLayout, "Readme", customLabel="Readme (Reports page)")
+        self.reports["Readme"] = OLAReportLine(0, 0, self.reportPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, customLabel="Reports description")
         self.reports["Readme"].enableVault()
         row = 0
         col = 2

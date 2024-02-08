@@ -12,13 +12,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 import logging
+import os
 
 from base.setup import GhSetup
 
 from pathlib import Path
 
 from markdownHelper.markdownfile import MhMarkdownFile
-from markdownHelper.report import MhReport
+from markdownHelper.report import MhReport, MhReportSheet
 
 
 #
@@ -32,6 +33,7 @@ class MarkdownHelper:
             self.VAULT = vault
         else:
             self.VAULT = self.SETUP.getBloc("global")["base_folder"]
+        self.REPORTS_SHEET_NAME = self.SETUP.getBloc("global")["reports_readme"]
         self.vaultLenPath = len(self.VAULT) + 1
         self.playtag = playtag
         self.IGNORE = self.SETUP.getBloc("global")["ignore"]
@@ -46,6 +48,7 @@ class MarkdownHelper:
         self.TYPE_TAGS = []
         self.PLAY_TAGS_UNSORTED = set()
         self.PLAY_TAGS = []
+        self.REPORTS_SHEET = MhReportSheet("# Reports description\n\n> Automatic reports description\n")
 
     # folder: Path
     # shift: String ( String length provide the indentation level )
@@ -115,9 +118,20 @@ class MarkdownHelper:
             current = 1
             for reportTitle, report in self.REPORTS.items():
                 logging.info("MDR | Processing report \"{}\" {}/{}".format(reportTitle, current, total))
+                sname = os.path.basename(report["target"])
+                sname = sname[0:len(sname) - 3]
+                try:
+                    ctag = report["commentTag"]
+                except KeyError:
+                    ctag = "X"
+                self.REPORTS_SHEET.addTarget(reportTitle, sname, ctag)
                 current = current + 1
                 report["title"] = reportTitle
-                MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT).generate()
+                MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT, self.REPORTS_SHEET).generate()
+
+                with open("{}/{}".format(self.VAULT, self.REPORTS_SHEET_NAME), 'w', encoding='utf-8') as writer:
+                    for line in self.REPORTS_SHEET.lines:
+                        writer.writelines(line)
                 signal_report.emit(reportTitle, report["target"])
         except Exception as e:
             raise
