@@ -22,117 +22,6 @@
               }
             ]
           },
-          "My wish list - RPGs": {
-            "target": "reports_wish\\RPGs_wish.md",
-            "path_ref": "game_available",
-            "commentTag": "WISH",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "RPGs",
-                "tag_refs": [
-                  "isWishedGame",
-                  "isRPG"
-                ],
-                "multi_condition": "and",
-                "content_ref": "contentByWish"
-              }
-            ]
-          },
-          "My wish list - VNs": {
-            "target": "reports_wish\\VNs_wish.md",
-            "path_ref": "game_available",
-            "commentTag": "WISH",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "VNs",
-                "tag_refs": [
-                  "isWishedGame",
-                  "isVN"
-                ],
-                "multi_condition": "and",
-                "content_ref": "contentByWish"
-              }
-            ]
-          },
-          "My wish list - VNAs": {
-            "target": "reports_wish\\VNAs_wish.md",
-            "labelAbout": "VN Wish List",
-            "path_ref": "game_available",
-            "commentTag": "WISH",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "VNAs",
-                "tag_refs": [
-                  "isWishedGame",
-                  "isVNA"
-                ],
-                "multi_condition": "and",
-                "content_ref": "contentByWish"
-              }
-            ]
-          },
-          "My wish list - Coops": {
-            "target": "reports_wish\\Coops_wish.md",
-            "path_ref": "game_available",
-            "commentTag": "WISH",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "Coops",
-                "tag_refs": [
-                  "isWishedGame",
-                  "isCoop"
-                ],
-                "multi_condition": "and",
-                "content_ref": "contentByWish"
-              }
-            ]
-          },
-          "My wish list - Others": {
-            "target": "reports_wish\\Others_wish.md",
-            "labelAbout": "Game",
-            "path_ref": "game_available",
-            "commentTag": "WISH",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "Wished Games",
-                "tag_refs": [
-                  "isWishedGame"
-                ],
-                "contents": [
-                  {
-                    "title": "Other than RPGs or VNs",
-                    "tag_refs": [
-                      "isVNorVNAorRPGorCoop"
-                    ],
-                    "condition_type": "not",
-                    "content_ref": "contentByNext"
-                  }
-                ]
-              }
-            ]
-          },
-          "Game in development - VNs": {
-            "target": "reports_episodic\\VNs_dev.md",
-            "path_ref": "game_available_and_in_development",
-            "commentTag": "EDITOR/NOTE",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "VNs - dev in progress",
-                "tag_refs": [
-                  "isDevInProgress",
-                  "isVN"
-                ],
-                "multi_condition": "and",
-                "content_ref": "contentByNext"
-              }
-            ]
-          },
           "Game in development - VNAs": {
             "target": "reports_episodic\\VNAs_dev.md",
             "path_ref": "game_available_and_in_development",
@@ -174,6 +63,378 @@
                 ],
                 "multi_condition": "and",
                 "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "Game Available - VNAs": {
+            "target": "reports_next\\VNAs_next.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All VNs (Patreon)",
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "contents": [
+                  {
+                    "title": "VNs completed (available)",
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents": [
+                      {
+                        "title": "VNs available not done",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "content_ref": "contentByNext"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "VNA - Playing": {
+            "target": "reports_play\\VNAs_play.md",
+            "path_ref": "game_available",
+            "commentTag": "PLAY/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All VNAs",
+                "tag_refs": [
+                  "isVNA",
+                  "isInProgress"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "My wish list - VNAs": {
+            "target": "reports_wish\\VNAs_wish.md",
+            "path_ref": "game_available",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "VNAs",
+                "tag_refs": [
+                  "isWishedGame",
+                  "isVNA"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByWish"
+              }
+            ]
+          },
+          "Game in development - VNs": {
+            "target": "reports_episodic\\VNs_dev.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "VNs - dev in progress",
+                "tag_refs": [
+                  "isDevInProgress",
+                  "isVN"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "Game Available - VNs": {
+            "target": "reports_next\\VNs_next.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All VNs",
+                "tag_refs": [
+                  "isVN"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "title": "VNs completed (available)",
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents": [
+                      {
+                        "title": "VNs available not done",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "content_ref": "contentByNext"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "VN - Playing": {
+            "target": "reports_play\\VNs_play.md",
+            "path_ref": "game_available",
+            "commentTag": "PLAY/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All VNs",
+                "tag_refs": [
+                  "isVN",
+                  "isInProgress"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "My wish list - VNs": {
+            "target": "reports_wish\\VNs_wish.md",
+            "path_ref": "game_available",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "VNs",
+                "tag_refs": [
+                  "isWishedGame",
+                  "isVN"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByWish"
+              }
+            ]
+          },
+          "Game Available - RPGs": {
+            "target": "reports_next\\RPGs_next.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "RPGs",
+                "tag_refs": [
+                  "isRPG"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "title": "RPGs available",
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents": [
+                      {
+                        "title": "RPGs available not done",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "content_ref": "contentByNext"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "RPG - Playing": {
+            "target": "reports_play\\RPGs_play.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "PLAY/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All RPGs",
+                "tag_refs": [ "isRPG", "isInProgress" ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "My wish list - RPGs": {
+            "target": "reports_wish\\RPGs_wish.md",
+            "path_ref": "game_available",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "RPGs",
+                "tag_refs": [
+                  "isWishedGame",
+                  "isRPG"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByWish"
+              }
+            ]
+          },
+          "Next Coop Game": {
+            "target": "reports_next\\Coops_next.md",
+            "path_ref": "game_available",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Coops",
+                "tag_refs": [
+                  "isCoop"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "title": "Coops available",
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents": [
+                      {
+                        "title": "Coops available not done",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "content_ref": "contentByNext"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Coop - Playing": {
+            "target": "reports_play\\Coops_play.md",
+            "path_ref": "game_available",
+            "commentTag": "PLAY/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "All Coops",
+                "tag_refs": [
+                  "isCoop",
+                  "isInProgress"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "My wish list - Coops": {
+            "target": "reports_wish\\Coops_wish.md",
+            "path_ref": "game_available",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Coops",
+                "tag_refs": [
+                  "isWishedGame",
+                  "isCoop"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByWish"
+              }
+            ]
+          },
+          "Other Next Game": {
+            "target": "reports_next\\Others_next.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Other than RPGs or VNs",
+                "tag_refs": [
+                  "isVNorVNAorRPGorCoop"
+                ],
+                "condition_type": "not",
+                "contents": [
+                  {
+                    "title": "Others available",
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents": [
+                      {
+                        "title": "Other Games not done",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "content_ref": "contentByNext"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Other Playing Game": {
+            "target": "reports_play\\Others_play.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Other than RPGs or VNs",
+                "tag_refs": [
+                  "isVNorVNAorRPGorCoop"
+                ],
+                "condition_type": "not",
+                "contents": [
+                  {
+                    "title": "Others available",
+                    "tag_refs": [
+                      "isInProgress"
+                    ],
+                    "contents": [
+                      {
+                        "title": "Other Games - playing",
+                        "content_ref": "contentByNext"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "My wish list - Others": {
+            "target": "reports_wish\\Others_wish.md",
+            "path_ref": "game_available",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Wished Games",
+                "tag_refs": [
+                  "isWishedGame"
+                ],
+                "contents": [
+                  {
+                    "title": "Other than RPGs or VNs",
+                    "tag_refs": [
+                      "isVNorVNAorRPGorCoop"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentByNext"
+                  }
+                ]
               }
             ]
           },
@@ -221,272 +482,8 @@
               }
             ]
           },
-          "Game Available - VNAs": {
-            "target": "reports_next\\VNAs_next.md",
-            "path_ref": "game_available_and_in_development",
-            "commentTag": "NEXT",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "All VNs (Patreon)",
-                "tag_refs": [
-                  "isVNA"
-                ],
-                "contents": [
-                  {
-                    "title": "VNs completed (available)",
-                    "tag_refs": [
-                      "isDevInProgress"
-                    ],
-                    "condition_type": "not",
-                    "contents": [
-                      {
-                        "title": "VNs available not done",
-                        "tag_refs": [
-                          "isDone"
-                        ],
-                        "condition_type": "not",
-                        "content_ref": "contentByNext"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "Game Available - VNs": {
-            "target": "reports_next\\VNs_next.md",
-            "path_ref": "game_available_and_in_development",
-            "commentTag": "NEXT",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "All VNs",
-                "tag_refs": [
-                  "isVN"
-                ],
-                "multi_condition": "and",
-                "contents": [
-                  {
-                    "title": "VNs completed (available)",
-                    "tag_refs": [
-                      "isDevInProgress"
-                    ],
-                    "condition_type": "not",
-                    "contents": [
-                      {
-                        "title": "VNs available not done",
-                        "tag_refs": [
-                          "isDone"
-                        ],
-                        "condition_type": "not",
-                        "content_ref": "contentByNext"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "Game Available - RPGs": {
-            "target": "reports_next\\RPGs_next.md",
-            "path_ref": "game_available_and_in_development",
-            "commentTag": "NEXT",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "RPGs",
-                "tag_refs": [
-                  "isRPG"
-                ],
-                "multi_condition": "and",
-                "contents": [
-                  {
-                    "title": "RPGs available",
-                    "tag_refs": [
-                      "isDevInProgress"
-                    ],
-                    "condition_type": "not",
-                    "contents": [
-                      {
-                        "title": "RPGs available not done",
-                        "tag_refs": [
-                          "isDone"
-                        ],
-                        "condition_type": "not",
-                        "content_ref": "contentByNext"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "Next Coop Game": {
-            "target": "reports_next\\Coops_next.md",
-            "path_ref": "game_available",
-            "commentTag": "NEXT",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "Coops",
-                "tag_refs": [
-                  "isCoop"
-                ],
-                "multi_condition": "and",
-                "contents": [
-                  {
-                    "title": "Coops available",
-                    "tag_refs": [
-                      "isDevInProgress"
-                    ],
-                    "condition_type": "not",
-                    "contents": [
-                      {
-                        "title": "Coops available not done",
-                        "tag_refs": [
-                          "isDone"
-                        ],
-                        "condition_type": "not",
-                        "content_ref": "contentByNext"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "Other Next Game": {
-            "target": "reports_next\\Others_next.md",
-            "path_ref": "game_available_and_in_development",
-            "commentTag": "NEXT",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "Other than RPGs or VNs",
-                "tag_refs": [
-                  "isVNorVNAorRPGorCoop"
-                ],
-                "condition_type": "not",
-                "contents": [
-                  {
-                    "title": "Others available",
-                    "tag_refs": [
-                      "isDevInProgress"
-                    ],
-                    "condition_type": "not",
-                    "contents": [
-                      {
-                        "title": "Other Games not done",
-                        "tag_refs": [
-                          "isDone"
-                        ],
-                        "condition_type": "not",
-                        "content_ref": "contentByNext"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "VN - Playing": {
-            "target": "reports_play\\VNs_play.md",
-            "path_ref": "game_available",
-            "commentTag": "PLAY/NOTE",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "All VNs",
-                "tag_refs": [
-                  "isVN",
-                  "isInProgress"
-                ],
-                "multi_condition": "and",
-                "content_ref": "contentByNext"
-              }
-            ]
-          },
-          "RPG - Playing": {
-            "target": "reports_play\\RPGs_play.md",
-            "path_ref": "game_available_and_in_development",
-            "commentTag": "PLAY/NOTE",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "All RPGs",
-                "tag_refs": [ "isRPG", "isInProgress" ],
-                "multi_condition": "and",
-                "content_ref": "contentByNext"
-              }
-            ]
-          },
-          "Coop - Playing": {
-            "target": "reports_play\\Coops_play.md",
-            "path_ref": "game_available",
-            "commentTag": "PLAY/NOTE",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "All Coops",
-                "tag_refs": [
-                  "isCoop",
-                  "isInProgress"
-                ],
-                "multi_condition": "and",
-                "content_ref": "contentByNext"
-              }
-            ]
-          },
-          "VNA - Playing": {
-            "target": "reports_play\\VNAs_play.md",
-            "path_ref": "game_available",
-            "commentTag": "PLAY/NOTE",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "All VNAs",
-                "tag_refs": [
-                  "isVNA",
-                  "isInProgress"
-                ],
-                "multi_condition": "and",
-                "content_ref": "contentByNext"
-              }
-            ]
-          },
-          "Other Next Game": {
-            "target": "reports_play\\Others_play.md",
-            "path_ref": "game_available_and_in_development",
-            "commentTag": "NEXT",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "title": "Other than RPGs or VNs",
-                "tag_refs": [
-                  "isVNorVNAorRPGorCoop"
-                ],
-                "condition_type": "not",
-                "contents": [
-                  {
-                    "title": "Others available",
-                    "tag_refs": [
-                      "isInProgress"
-                    ],
-                    "contents": [
-                      {
-                        "title": "Other Games - playing",
-                        "content_ref": "contentByNext"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
           "To be completed": {
             "target": "reports\\ErrorSheetCreatedButEmpty.md",
-            "labelAbout": "Game",
             "labelTags": "TYPE",
             "path_condition": [
               "_Incoming"
@@ -653,7 +650,7 @@
         "shared_contents" : {
           "paths" : {
             "game_owned": ["1.Available", "2.To classify" ],
-            "game_available" : ["1.Available","2.To classify","4.Wishlist (game available)\\Game sheets","5.Dev in progress"],
+            "game_available" : ["1.Available","2.To classify","5.Dev in progress"],
             "game_available_and_in_development" : [ "1.Available", "2.To classify", "4.Wishlist (game available)\\Game sheets","5.Dev in progress", "6.Kickstarted"],
             "editors" :  [  "Editors" ]
           },
