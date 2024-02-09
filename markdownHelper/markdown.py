@@ -19,7 +19,7 @@ from base.setup import GhSetup
 from pathlib import Path
 
 from markdownHelper.markdownfile import MhMarkdownFile
-from markdownHelper.report import MhReport, MhReportSheet
+from markdownHelper.report import MhReport, MhReportDescriptionSheet
 
 
 #
@@ -48,7 +48,7 @@ class MarkdownHelper:
         self.TYPE_TAGS = []
         self.PLAY_TAGS_UNSORTED = set()
         self.PLAY_TAGS = []
-        self.REPORTS_SHEET = MhReportSheet("# Reports description\n\n> Automatic reports description\n")
+        self.REPORTS_SHEET = MhReportDescriptionSheet("# Reports description\n\n> Automatic reports description\n", self.REPORTS_SHEET_NAME)
 
     # folder: Path
     # shift: String ( String length provide the indentation level )

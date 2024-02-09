@@ -22,7 +22,7 @@
               }
             ]
           },
-          "Game in development - VNAs": {
+          "DEV - VNAs": {
             "target": "reports_episodic\\VNAs_dev.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -48,7 +48,7 @@
               }
             ]
           },
-          "Game in development - VNAs Tested": {
+          "DEV - VNAs Tested": {
             "target": "reports_episodic\\VNAs-Tested_dev.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -66,7 +66,25 @@
               }
             ]
           },
-          "Game Available - VNAs": {
+          "DEV - VNAs Wait Completed": {
+            "target": "reports_episodic\\VNAs-Wait_dev.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "waitedGameTags",
+            "contents": [
+              {
+                "title": "Episodic VNs Tested",
+                "tag_refs": [
+                  "isDevInProgress",
+                  "isVNA",
+                  "isWaitCompleted"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByNext"
+              }
+            ]
+          },
+          "VNAs": {
             "target": "reports_next\\VNAs_next.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -133,7 +151,7 @@
               }
             ]
           },
-          "Game in development - VNs": {
+          "DEV - VNs": {
             "target": "reports_episodic\\VNs_dev.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -150,7 +168,7 @@
               }
             ]
           },
-          "Game Available - VNs": {
+          "VNs": {
             "target": "reports_next\\VNs_next.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -184,7 +202,7 @@
               }
             ]
           },
-          "VN - Playing": {
+          "VNs - Playing": {
             "target": "reports_play\\VNs_play.md",
             "path_ref": "game_available",
             "commentTag": "PLAY/NOTE",
@@ -218,7 +236,7 @@
               }
             ]
           },
-          "Game Available - RPGs": {
+          "RPGs": {
             "target": "reports_next\\RPGs_next.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -438,7 +456,7 @@
               }
             ]
           },
-          "Game in development - KickStarted": {
+          "KickStarted": {
             "target": "reports_episodic\\Kicks.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -460,7 +478,7 @@
               }
             ]
           },
-          "Game in development - Early Access": {
+          "Early Access": {
             "target": "reports_episodic\\Early.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -482,11 +500,67 @@
               }
             ]
           },
+          "Steam": {
+            "target": "reports_platforms\\Steam.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "INFO",
+            "showTags": "PlatformGameTags",
+            "contents": [
+              {
+                "title": "Steams",
+                "tag_condition": [
+                  "PLATFORM/STEAM"
+                ],
+                "content_ref": "contentByCategory"
+              }
+            ]
+          },
+          "Witch from review": {
+            "target": "reports_wish\\wish_from_review.md",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "PRICE",
+            "showTags": "DoneGameTags",
+            "contents": [
+              {
+                "title": "Game tested from Review",
+                "tag_condition" : [ "PLATFORM/Review"],
+                "contents" : [
+                  {
+                    "title": "Only good game",
+                    "tag_refs": [
+                      "isDoneGood"
+                    ],
+                    "contents" : [
+                      {
+                        "title" : "not rejected game",
+                        "tag_condition" : [ "NOT/WISHED" ],
+                        "condition_type": "not",
+                        "content_ref": "contentByCategory"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
           "To be completed": {
             "target": "reports\\ErrorSheetCreatedButEmpty.md",
             "labelTags": "TYPE",
             "path_condition": [
               "_Incoming"
+            ]
+          },
+          "Error Missing Platform": {
+            "target": "reports\\ErrorMissingPlatform.md",
+            "path_ref": "game_owned",
+            "contents": [
+              {
+                "title": "Missing Platform",
+                "tag_condition": [
+                  "PLATFORM"
+                ],
+                "condition_type": "not"
+              }
             ]
           },
           "Error Missing Type": {
@@ -661,8 +735,10 @@
             "isWishedGame" : [ "PLATFORM/Wish" ],
             "isDevInProgress" : [ "DEV/DEV_IN_PROGRESS" ],
             "isTested" : [ "PLAY/TESTED" ],
+            "isWaitCompleted" : [ "PLAY/WAIT_COMPLETED" ],
             "isInProgress" : [ "PLAY/INPROGRESS" ],
             "isDone" : [ "DONE" ],
+            "isDoneGood" : [ "DONE/1", "DONE/2" ],
             "isRPG" : [ "TYPE/RPG" ],
             "isVN" : [ "TYPE/VN" ],
             "isVNA" : [ "TYPE/VNA" ],
@@ -671,7 +747,10 @@
           },
           "info_tags" : {
             "editorTags" : [ "EDTNOTE", "EDTTYPE" ],
-            "allGameTags" : [  "PLATFORM", "PLAY", "DEV", "CAT", "ART", "TYPE", "KEY"]
+            "allGameTags" : [  "PLATFORM", "PLAY", "DEV", "CAT", "ART", "TYPE", "KEY"],
+            "PlatformGameTags" : [ "DEV", "ART", "TYPE", "KEY" ],
+            "DoneGameTags" : [ "DONE", "ART", "TYPE", "KEY" ],
+            "waitedGameTags" : [ "DEV", "CAT", "ART", "TYPE", "KEY"]
           },
           "contentByCategory": [
                           {

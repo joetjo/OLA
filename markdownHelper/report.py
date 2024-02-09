@@ -123,21 +123,24 @@ class ReferenceUtil:
             return []
 
 
-class MhReportSheet:
-    def __init__(self, title):
+class MhReportDescriptionSheet:
+    def __init__(self, title, reportLink):
+        self.reportLink = reportLink
         self.lines = [title]
         self.lines.append("\n| Sheet | Filtering |\n")
         self.lines.append("|-|-|\n")
 
     @staticmethod
-    def toStr(label, values):
-        if values is not None and len(values) > 0:
-            result = "{}:".format(label)
-            for value in values:
-                result = "{} ``{}``".format(result, value)
-            return result
-        else:
-            return ""
+    def valuesToConditionStr(separator, values):
+        empty = True
+        condition = ""
+        for val in values:
+            if not empty:
+                condition = "{}{}``{}``".format(condition, separator, val)
+            else:
+                condition = "{} ``{}``".format(condition, val)
+                empty = False
+        return condition
 
     def addTarget(self, title, name, commentTag):
         self.lines.append("| {} : [[{}]] | comment tag: {} |\n".format(title, name, commentTag))
@@ -146,97 +149,31 @@ class MhReportSheet:
         self.lines.append("| | > Expand by tag {} | \n".format(tags))
 
     def addFiltering(self, tags, paths, isNot, isAnd):
-        logOperator = ""
-        if (tags is not None and len(tags) > 0) or (paths is not None and len(paths) > 0):
-            if len(isNot) > 0:
-                if len(isAnd) > 0:
-                    logOperator = " **NOT** **AND** "
-                else:
-                    logOperator = " **NOT** "
-            elif len(isAnd) > 0:
-                logOperator = " **AND** "
-            self.lines.append("| | {}{}{} |\n".format(logOperator, MhReportSheet.toStr("tags", tags), MhReportSheet.toStr("paths", paths)))
+        logOperator = " **OR** "
+        if isAnd == "and":
+            logOperator = " **AND** "
+        notOperator = ""
+        if len(isNot) > 0:
+            notOperator = " **NOT** "
+        hasTags = tags is not None and len(tags) > 0
+        hasPaths = paths is not None and len(paths) > 0
+        condition = ""
+        if hasTags:
+            condition = "*tags* ( {} )".format(MhReportDescriptionSheet.valuesToConditionStr(logOperator, tags))
+        if hasPaths:
+            if hasTags:
+                condition = "{}{}*Paths* ( {} )".format(condition, logOperator, MhReportDescriptionSheet.valuesToConditionStr(logOperator, paths))
+            else:
+                condition = "*Paths* ( {} )".format(MhReportDescriptionSheet.valuesToConditionStr(logOperator, paths))
+        if len(condition)>0:
+            self.lines.append("| | {}{} |\n".format(notOperator, condition))
 
 
-class MhCountEntry:
-
+class MhEntry:
     def __init__(self, json, inputFiles, allSubContents):
         self.json = json
         self.inputFiles = inputFiles
-        self.count = 0
-
-        for key in json:
-            if key not in ALLOWED_ATTRIBUTES:
-                raise UnknownJSonAttribute(key, json)
-
-        # Setup content filter
-        self.tags = ReferenceUtil.getTags(json, allSubContents)
-
-        try:
-            self.not_tags = self.json["tag_not_condition"]
-        except KeyError:
-            self.not_tags = []
-
-        self.paths = ReferenceUtil.getPath(self.json, allSubContents)
-
-        try:
-            self.not_paths = self.json["path_not_condition"]
-        except KeyError:
-            self.not_paths = []
-
-        for name, file in self.inputFiles.items():
-            if self.matchCondition(file):
-                self.count = self.count + 1
-
-    # Returns True if file match report condition
-    def matchCondition(self, file):
-        resultByTag = True
-        resultByPath = True
-        resultByNotTag = True
-        resultByNotPath = True
-
-        for tag in self.tags:
-            if not file.hasTagStartingBy(tag):
-                resultByTag = False
-                break
-
-        for tag in self.not_tags:
-            if file.hasTagStartingBy(tag):
-                resultByNotTag = False
-                break
-
-        for path in self.paths:
-            if not file.pathMatch(path):
-                resultByPath = False
-                break
-
-        for path in self.not_paths:
-            if file.pathMatch(path):
-                resultByNotPath = False
-                break
-
-        return resultByTag and resultByPath and resultByNotTag and resultByNotPath
-
-    def getCount(self):
-        return self.count
-
-
-class MhReportEntry:
-
-    # inputFiles: dict of name, MhMarkdownFiles
-    def __init__(self, json, inputFiles, allTags, allSubContents, reportSheet, commentTag, showTags, labels=None, level="#"):
-        self.json = json
-        self.level = level
-        self.inputFiles = inputFiles
-        self.allTags = allTags
         self.allSubContents = allSubContents
-        self.reportSheet = reportSheet
-        self.commentTag = commentTag
-        self.showTags = showTags
-        if labels is None:
-            self.labels = MhLabels(json)
-        else:
-            self.labels = labels
 
         for key in json:
             if key not in ALLOWED_ATTRIBUTES:
@@ -264,27 +201,6 @@ class MhReportEntry:
         except KeyError:
             self.multiCondition = "or"
 
-        self.isFiltering = not len(self.tags) == 0 or not len(self.paths) == 0
-        self.isVirtual = self.title() == "%TAGNAME%"
-        self.isRoot = level == "#"
-
-        # Setup content
-        self.elseFiles = dict()
-        if not self.isFiltering:
-            self.filteredFiles = inputFiles.copy()
-        else:
-            self.filteredFiles = dict()
-            for name, file in self.inputFiles.items():
-                if self.matchCondition(file):
-                    self.filteredFiles[name] = file
-                else:
-                    self.elseFiles[name] = file
-
-        if self.inverseCondition == "not":
-            tmp = self.filteredFiles
-            self.filteredFiles = self.elseFiles
-            self.elseFiles = tmp
-
     # Returns True if file match report condition
     def matchCondition(self, file):
         result = self.multiCondition == "and"  # if or, false by default and became True on first match found
@@ -309,6 +225,58 @@ class MhReportEntry:
                 break
 
         return result
+
+
+class MhCountEntry(MhEntry):
+
+    def __init__(self, json, inputFiles, allSubContents):
+
+        super().__init__(json, inputFiles, allSubContents)
+        self.count = 0
+
+        for name, file in self.inputFiles.items():
+            if self.matchCondition(file):
+                self.count = self.count + 1
+
+    def getCount(self):
+        return self.count
+
+
+class MhReportEntry(MhEntry):
+
+    # inputFiles: dict of name, MhMarkdownFiles
+    def __init__(self, json, inputFiles, allTags, allSubContents, reportSheet, commentTag, showTags, labels=None, level="#"):
+        super().__init__(json, inputFiles, allSubContents)
+        self.level = level
+        self.allTags = allTags
+        self.reportSheet = reportSheet
+        self.commentTag = commentTag
+        self.showTags = showTags
+        if labels is None:
+            self.labels = MhLabels(json)
+        else:
+            self.labels = labels
+
+        self.isFiltering = not len(self.tags) == 0 or not len(self.paths) == 0
+        self.isVirtual = self.title() == "%TAGNAME%"
+        self.isRoot = level == "#"
+
+        # Setup content
+        self.elseFiles = dict()
+        if not self.isFiltering:
+            self.filteredFiles = inputFiles.copy()
+        else:
+            self.filteredFiles = dict()
+            for name, file in self.inputFiles.items():
+                if self.matchCondition(file):
+                    self.filteredFiles[name] = file
+                else:
+                    self.elseFiles[name] = file
+
+        if self.inverseCondition == "not":
+            tmp = self.filteredFiles
+            self.filteredFiles = self.elseFiles
+            self.elseFiles = tmp
 
     def title(self):
         return self.json["title"]
@@ -457,5 +425,5 @@ class MhReport:
         logging.info("MDR | Generate report \"{}\" to {}".format(rootReport.title(), self.target()))
         with open(self.target(), 'w', encoding='utf-8') as writer:
             writer.writelines(
-                "> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit*\n\n")  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
+                "> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit* - see [[{}]] for description\n\n".format(self.reportSheet.reportLink[0:len(self.reportSheet.reportLink)-3]))  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
             rootReport.generate(writer)
