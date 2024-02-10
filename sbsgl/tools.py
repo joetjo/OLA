@@ -126,10 +126,7 @@ class FileUsageGenerator(QRunnable):
                     sheet = "{}.md".format(session.json[0])
                     find = GhFileUtil.findFileInFolder(sheet, OLABackend.VAULT.VAULT)
                     if find is None:
-                        for letter in sheet:
-                            if letter.isupper():
-                                sheet = sheet.replace(letter, " " + letter)
-                        find = GhFileUtil.findFileInFolder(sheet, OLABackend.VAULT.VAULT)
+                        find = GhFileUtil.findFileInFolder(GhFileUtil.ConvertUpperCaseWordSeparatedNameToStr(sheet), OLABackend.VAULT.VAULT)
                     if find:
                         repairedLink = repairedLink + 1
                         names.append("+ " + sheet)

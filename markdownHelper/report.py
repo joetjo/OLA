@@ -13,6 +13,7 @@
 #   limitations under the License.
 import logging
 
+from base.fileutil import GhFileUtil
 # Ugly but simple
 from markdownHelper.label import MhLabels
 
@@ -163,7 +164,7 @@ class MhReportDescriptionSheet:
                 condition = "{}{}*Paths* ( {} )".format(condition, logOperator, MhReportDescriptionSheet.valuesToConditionStr(logOperator, paths))
             else:
                 condition = "*Paths* ( {} )".format(MhReportDescriptionSheet.valuesToConditionStr(logOperator, paths))
-        if len(condition)>0:
+        if len(condition) > 0:
             self.lines.append("| | {}{} |\n".format(notOperator, condition))
 
 
@@ -243,13 +244,14 @@ class MhCountEntry(MhEntry):
 class MhReportEntry(MhEntry):
 
     # inputFiles: dict of name, MhMarkdownFiles
-    def __init__(self, json, inputFiles, allTags, allSubContents, reportSheet, commentTag, showTags, labels=None, level="#"):
+    def __init__(self, json, inputFiles, allTags, allSubContents, reportSheet, commentTag, showTags, virtualParentName, labels=None, level="#"):
         super().__init__(json, inputFiles, allSubContents)
         self.level = level
         self.allTags = allTags
         self.reportSheet = reportSheet
         self.commentTag = commentTag
         self.showTags = showTags
+        self.virtualParentName = virtualParentName
         if labels is None:
             self.labels = MhLabels(json)
         else:
@@ -321,14 +323,15 @@ class MhReportEntry(MhEntry):
                     content = self.json.copy()
                     del content["else"]
                     content["title"] = tag[len(self.tags[0]) + 1:]  # Replace %TAGNAME% title by expended tag detected
+                    virtualParentName = content["title"]
                     content["tag_condition"] = [tag[1:]]  # and use the expanded tag to filer
                     if len(content["title"]) > 0:
                         MhReportEntry(content, self.filteredFiles.copy(), self.allTags,
-                                      self.allSubContents, None, self.commentTag, self.showTags, self.labels, self.level).generate(writer)
+                                      self.allSubContents, None, self.commentTag, self.showTags, virtualParentName, self.labels, self.level).generate(writer)
             # Proceed to else of VIRTUAL block
             try:
                 MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
-                              self.allSubContents, self.reportSheet, self.commentTag, self.showTags, self.labels, self.level).generate(writer)
+                              self.allSubContents, self.reportSheet, self.commentTag, self.showTags, "", self.labels, self.level).generate(writer)
             except KeyError:
                 pass
 
@@ -340,7 +343,11 @@ class MhReportEntry(MhEntry):
 
         nextLevel = "{}#".format(self.level)
         if len(self.filteredFiles) > 0:
-            currentTitle = "{} {} ({})\n".format(self.level, self.title(), len(self.filteredFiles))
+            title = self.title()
+            if title != self.virtualParentName:
+                title = "{} - {}".format(GhFileUtil.ConvertUpperCaseWordSeparatedNameToStr(self.virtualParentName),
+                                         title)
+            currentTitle = "{} {} ({})\n".format(self.level, title, len(self.filteredFiles))
             # writer.writelines(currentTitle)  # this display a title for each hierarchy to the report, lot of titles
             if self.reportSheet is not None:
                 self.reportSheet.addFiltering(self.tags, self.paths, self.inverseCondition, self.multiCondition)
@@ -351,7 +358,7 @@ class MhReportEntry(MhEntry):
                 files = self.filteredFiles
                 for content in json_contents:
                     cr = MhReportEntry(content, files, self.allTags, self.allSubContents, self.reportSheet,
-                                       self.commentTag, self.showTags, self.labels, nextLevel)
+                                       self.commentTag, self.showTags, self.virtualParentName, self.labels, nextLevel)
                     cr.generate(writer)
                     files = cr.elseFiles
             else:
@@ -390,7 +397,7 @@ class MhReportEntry(MhEntry):
 
             try:
                 MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
-                              self.allSubContents, self.reportSheet, self.commentTag, self.showTags, self.labels, nextLevel).generate(writer)
+                              self.allSubContents, self.reportSheet, self.commentTag, self.showTags, self.virtualParentName, self.labels, nextLevel).generate(writer)
             except KeyError:
                 pass
 
@@ -419,9 +426,10 @@ class MhReport:
 
     def generate(self):
         rootReport = MhReportEntry(self.json, self.inputFiles, self.allTags, self.allSubContents, self.reportSheet,
-                                   self.commentTag, self.showTags)
+                                   self.commentTag, self.showTags, "")
         logging.info("MDR | Generate report \"{}\" to {}".format(rootReport.title(), self.target()))
         with open(self.target(), 'w', encoding='utf-8') as writer:
             writer.writelines(
-                "> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit* - see [[{}]] for description\n\n".format(self.reportSheet.reportLink[0:len(self.reportSheet.reportLink)-3]))  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
+                "> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit* - see [[{}]] for description\n\n".format(
+                    self.reportSheet.reportLink[0:len(self.reportSheet.reportLink) - 3]))  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
             rootReport.generate(writer)

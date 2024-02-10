@@ -51,3 +51,16 @@ class GhFileUtil:
         for root, dirs, files in os.walk(path):
             if name in files:
                 return os.path.join(root, name)
+
+    @staticmethod
+    def ConvertUpperCaseWordSeparatedNameToStr(name):
+        result = name
+        hasLowerCase = False
+        for letter in result:
+            if letter.islower():
+                hasLowerCase = True
+        if hasLowerCase:
+            for letter in result:
+                if letter.isupper():
+                    result = result.replace(letter, " " + letter)
+        return result
