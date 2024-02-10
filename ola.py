@@ -16,6 +16,7 @@ import logging
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -32,7 +33,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02 alpha 14"
+    VERSION = "2024.02 alpha 15"
     PREVIOUS = ""
 
 
@@ -68,7 +69,7 @@ class OLAGuiSetup:
     POSSIBLE_FILTER = ["#TYPE", "#PLAY"]
     DEFAULT_SESSION_FILTER = "INPROGRESS"
     DEFAULT_INSTALL_MODE_FILTER = True
-    LINE_REPORTS_COUNT = 20
+    LINE_REPORTS_COUNT = 18
 
 
 class OLAGui:
@@ -253,7 +254,8 @@ class OLAPlayingPanel(QWidget):
         # Search and filtering
         self.defaultFilter = OLAFilter(None, None)
         self.filters = dict()
-        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1], self.applyFilter, defaultValue=OLAGuiSetup.DEFAULT_SESSION_FILTER, defaultInstallMode=OLAGuiSetup.DEFAULT_INSTALL_MODE_FILTER, linkListener=self.applyCheck)
+        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1], self.applyFilter, defaultValue=OLAGuiSetup.DEFAULT_SESSION_FILTER, defaultInstallMode=OLAGuiSetup.DEFAULT_INSTALL_MODE_FILTER,
+                                                           linkListener=self.applyCheck)
         self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[0], self.applyFilter)
         self.filter = self.defaultFilter
 
@@ -747,7 +749,7 @@ class OLAReportLine(QWidget):
 
         if customLabel is None:
             sname = os.path.basename(sheetPath)
-            sname = sname[0:len(sname)-3]
+            sname = sname[0:len(sname) - 3]
             sheet = QLabel(sname)
         else:
             sheet = QLabel(customLabel)
@@ -779,10 +781,10 @@ class OLAReports(QWidget):
         super().__init__()
         OLAGui.REPORTS = self
         self.reports = dict()
+        self.start = time.time()
 
         layout = QVBoxLayout()
         self.setLayout(layout)
-
         scroll = QScrollArea()
         scroll.setWidgetResizable(OLAGuiSetup.VISIBLE_SESSION_COUNT)
         content = QWidget()
@@ -796,8 +798,30 @@ class OLAReports(QWidget):
 
         layout.addWidget(scroll)
 
+        statusLine = QWidget()
+        statusLine.setLayout(QHBoxLayout())
+        statusLine.setContentsMargins(0, 0, 0, 0)
+        self.reportStatus = QLabel("Starting report generation")
+        statusLine.layout().addWidget(self.reportStatus)
+        statusLine.layout().addStretch()
+        self.linkErrorMessage = QLabel("")
+        statusLine.layout().addWidget(self.linkErrorMessage)
+        layout.addWidget(statusLine)
+
     def reportAvailable(self, sheetPath):
+        self.setStatus("{} generated".format(sheetPath))
         self.reports[sheetPath].enableVault()
+
+    def setStatus(self, message):
+        elapsed = str(round(time.time() - self.start, 1))
+        self.reportStatus.setText("{}s | {}".format(elapsed, message))
+
+    def setLinkCheckStatus(self, message, detailed=None):
+        self.linkErrorMessage.setText(message)
+        if detailed is None:
+            self.linkErrorMessage.setToolTip("")
+        else:
+            self.linkErrorMessage.setToolTip("\n".join(detailed))
 
     def setReports(self, sheetPaths):
         self.reports["Readme"] = OLAReportLine(0, 0, self.reportPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, customLabel="Reports description")
@@ -813,6 +837,9 @@ class OLAReports(QWidget):
             else:
                 row = row + 1
                 col = 0
+        self.reports["Duplicate files"] = OLAReportLine(row, col, self.reportPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, customLabel="Files duplication")
+        self.reports["Duplicate files"].enableVault()
+
         for idx in range(row, OLAGuiSetup.LINE_REPORTS_COUNT):
             self.reportPanelLayout.addWidget(QLabel(""), idx, 0)
 
@@ -850,6 +877,8 @@ class OLAObsidianAssistant(OLASharedGameListWidget):
         self.title = "Vault: {} files, {} tags".format(len(OLABackend.VAULT.SORTED_FILES), len(OLABackend.VAULT.TAGS))
         self.col1.setText(self.title)
         self.loadPlaying()
+        if OLAGui.REPORTS is not None:
+            OLAGui.REPORTS.setStatus("Reports generation finished")
 
 
 class OLAExcludedGame(QWidget):
@@ -1001,6 +1030,7 @@ class OLAApplication(QApplication):
 
         filegen = FileUsageGenerator()
         filegen.signals.file_usage_generation_finished.connect(self.fileUsageGenerated)
+        filegen.signals.sheet_link_finished.connect(self.sheetLinkChecked)
         self.threadpool.start(filegen)
 
     def scanFinished(self):
@@ -1018,7 +1048,6 @@ class OLAApplication(QApplication):
         OLAGui.PLAYING_PANEL.gameLaunchFailure()
 
     def mdReportGenerated(self, reportName, sheet):
-        self.main.setStatus("Processing {}".format(reportName))
         OLAGui.REPORTS.reportAvailable(sheet)
 
     def mdParsed(self):
@@ -1031,11 +1060,18 @@ class OLAApplication(QApplication):
         OLAGui.REPORTS.setReports(reports)
 
     def mdReportsGenerated(self):
-        self.main.setStatus("Vault reports Generated")
-        OLAGui.ASSISTANT.vaultParsed()
+        self.mdParsed()
 
     def fileUsageGenerated(self):
         self.main.setStatus("File usage Generated")
+
+    def sheetLinkChecked(self, linkCount, brokenLinkCount, repairedLink, names):
+        message = "{} vault links".format(linkCount)
+        if brokenLinkCount > 0:
+            message = "{} | {} removed links".format(message, brokenLinkCount)
+        if repairedLink > 0:
+            message = "{} | {} inserted links".format(message, repairedLink)
+        OLAGui.REPORTS.setLinkCheckStatus(message, names)
 
 
 logging.info("OLAApplication - starting application execution")

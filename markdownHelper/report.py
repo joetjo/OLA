@@ -22,10 +22,8 @@ ALLOWED_ATTRIBUTES = ["target",  # 1st level only: target file path
                       "title",  # mandatory on each bloc
                       "tag_condition",  # optional: tag list to filter content ( can be tag prefix )
                       "tag_refs",  # optional : references by name to tag list in shared data
-                      "tag_not_condition",  # optional: tag list to filter content ( can be tag prefix ) ONLY IN COUNT BLOC
                       "path_condition",  # optional: name list that should be used in folder path
                       "path_ref",  # reference by name to a path condition in shared data
-                      "path_not_condition",  # optional: name list that should be used in folder path ONLY IN COUNT BLOC
                       "condition_type",  # if "not" --> inverse the tag_condition or path condition
                       "multi_condition",  # "or" by default. can be set to "and"
                       "contents",  # sub blocs / in not defined --> leaf to print

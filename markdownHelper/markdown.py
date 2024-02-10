@@ -34,6 +34,7 @@ class MarkdownHelper:
         else:
             self.VAULT = self.SETUP.getBloc("global")["base_folder"]
         self.REPORTS_SHEET_NAME = self.SETUP.getBloc("global")["reports_readme"]
+        self.REPORTS_DUPFILE_NAME = self.SETUP.getBloc("global")["reports_dupfiles"]
         self.vaultLenPath = len(self.VAULT) + 1
         self.playtag = playtag
         self.IGNORE = self.SETUP.getBloc("global")["ignore"]
@@ -73,12 +74,11 @@ class MarkdownHelper:
                         self.PLAY.append(mdfile)
                         playInProgress = True
                     self.SHEETS[key] = mdfile
-                if playInProgress:
-                    for tag in mdfile.tags:
-                        if tag.startswith("#TYPE/"):
-                            self.TYPE_TAGS_UNSORTED.add(tag[6:])
-                        if tag.startswith("#PLAY/"):
-                            self.PLAY_TAGS_UNSORTED.add(tag[6:])
+                for tag in mdfile.tags:
+                    if tag.startswith("#TYPE/"):
+                        self.TYPE_TAGS_UNSORTED.add(tag[6:])
+                    if tag.startswith("#PLAY/"):
+                        self.PLAY_TAGS_UNSORTED.add(tag[6:])
 
         # Loop on sub folder
         for entry in folder.iterdir():

@@ -52,3 +52,9 @@ class GhFileUtil:
                       title="Select file",
                       filetypes=[("Text Files", "*.txt")]):
         return filedialog.askopenfilename(initialdir=initialdir, title=title, filetypes=filetypes)
+
+    @staticmethod
+    def findFileInFolder(name, path):
+        for root, dirs, files in os.walk(path):
+            if name in files:
+                return os.path.join(root, name)

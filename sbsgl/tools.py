@@ -14,10 +14,12 @@
 
 import logging
 import os
+import re
 import subprocess
 
 from PySide6.QtCore import QRunnable, Slot, QObject, Signal
 
+from base.fileutil import GhFileUtil
 from base.osutil import OSUtil
 from diskAnalyser.DiskAnalyser import DiskAnalyser
 from markdownHelper.markdown import MarkdownHelper
@@ -55,6 +57,7 @@ class MdReportGeneratorSignals(QObject):
 
 class FileUsageGeneratorSignals(QObject):
     file_usage_generation_finished = Signal()
+    sheet_link_finished = Signal(object, object, object, object)
 
 
 class SbSGLSignals(QObject):
@@ -97,6 +100,38 @@ class FileUsageGenerator(QRunnable):
             logging.info("Starting File Usage generation")
             DiskAnalyser().generateReport()
             logging.info("Generation File Usage finished")
+
+            linkCount = 0
+            brokenLink = 0
+            repairedLink = 0
+            names = []
+            for session in OLABackend.SBSGL.procmgr.getSessions():
+                sheet = session.getGameInfo()['sheet']
+                if sheet is not None and len(sheet) > 0:
+                    find = GhFileUtil.findFileInFolder("{}.md".format(sheet), OLABackend.VAULT.VAULT)
+                    if find:
+                        linkCount = linkCount + 1
+                    else:
+                        logging.warning("Broken vault link detected : {}".format(sheet))
+                        names.append("X " + sheet)
+                        brokenLink = brokenLink + 1
+                        session.getGameInfo()['sheet'] = ""
+                sheet = session.getGameInfo()['sheet']
+                if sheet is None or len(sheet) == 0:
+                    sheet = "{}.md".format(session.json[0])
+                    find = GhFileUtil.findFileInFolder(sheet, OLABackend.VAULT.VAULT)
+                    if find is None:
+                        for letter in sheet:
+                            if letter.isupper():
+                                sheet = sheet.replace(letter, " " + letter)
+                        find = GhFileUtil.findFileInFolder(sheet, OLABackend.VAULT.VAULT)
+                    if find:
+                        repairedLink = repairedLink + 1
+                        names.append("+ " + sheet)
+                        session.getGameInfo()['sheet'] = sheet
+            if brokenLink > 0 or repairedLink > 0:
+                OLABackend.SBSGL.procmgr.storage.save()
+            self.signals.sheet_link_finished.emit(linkCount, brokenLink, repairedLink, names)
         finally:
             self.signals.file_usage_generation_finished.emit()
 
