@@ -57,7 +57,8 @@ class MdReportGeneratorSignals(QObject):
 
 class FileUsageGeneratorSignals(QObject):
     file_usage_generation_finished = Signal()
-    sheet_link_finished = Signal(object, object, object, object)
+    sheet_link_progress = Signal(object)
+    sheet_link_finished = Signal(object, object, object, object, object)
 
 
 class SbSGLSignals(QObject):
@@ -101,11 +102,15 @@ class FileUsageGenerator(QRunnable):
             DiskAnalyser().generateReport()
             logging.info("Generation File Usage finished")
 
+            count = 0
             linkCount = 0
             brokenLink = 0
             repairedLink = 0
             names = []
-            for session in OLABackend.SBSGL.procmgr.getSessions():
+            sessions = OLABackend.SBSGL.procmgr.getSessions()
+            sessionsCount = len(sessions)
+            self.signals.sheet_link_progress.emit("Checking {} vault links...".format(sessionsCount))
+            for session in sessions:
                 sheet = session.getGameInfo()['sheet']
                 if sheet is not None and len(sheet) > 0:
                     find = GhFileUtil.findFileInFolder("{}.md".format(sheet), OLABackend.VAULT.VAULT)
@@ -128,10 +133,14 @@ class FileUsageGenerator(QRunnable):
                     if find:
                         repairedLink = repairedLink + 1
                         names.append("+ " + sheet)
-                        session.getGameInfo()['sheet'] = sheet
+                        session.getGameInfo()['sheet'] = sheet[0:len(sheet)-3]
+                count = count + 1
+                if count%10 == 0:
+                    self.signals.sheet_link_progress.emit("{}/{} links checked...".format(count, sessionsCount))
+
             if brokenLink > 0 or repairedLink > 0:
                 OLABackend.SBSGL.procmgr.storage.save()
-            self.signals.sheet_link_finished.emit(linkCount, brokenLink, repairedLink, names)
+            self.signals.sheet_link_finished.emit(sessionsCount, linkCount, brokenLink, repairedLink, names)
         finally:
             self.signals.file_usage_generation_finished.emit()
 

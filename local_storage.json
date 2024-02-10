@@ -31,12 +31,12 @@
             "tips": "",
             "type": "",
             "status": "",
-            "sheet": "Control.md"
+            "sheet": "Control"
         },
         "RoseOfSegunda": {
-            "duration": "581.112401",
-            "last_duration": "5.789557",
-            "last_session": "1707048997.3035333",
+            "duration": "825.639913",
+            "last_duration": "52.929024",
+            "last_session": "1707561436.838224",
             "note": "",
             "www": "https://blackcrosstaylor.itch.io/tros",
             "tips": "blackcross-taylor.com/index.php/guides",
@@ -124,20 +124,20 @@
     },
     "last_sessions": [
         [
-            "UnityCrashHandler64",
-            "J:\\Jeux\\steamapps\\common\\Slasta_COTM\\UnityCrashHandler64.exe",
-            "UnityCrashHandler64",
-            "",
-            "",
-            "",
-            ""
-        ],
-        [
             "RoseOfSegunda",
             "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
             "renpy",
             "",
             "ITCHIO",
+            "",
+            ""
+        ],
+        [
+            "UnityCrashHandler64",
+            "J:\\Jeux\\steamapps\\common\\Slasta_COTM\\UnityCrashHandler64.exe",
+            "UnityCrashHandler64",
+            "",
+            "",
             "",
             ""
         ],

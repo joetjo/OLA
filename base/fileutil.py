@@ -15,7 +15,6 @@
 import os
 import string
 from pathlib import Path
-from tkinter import filedialog
 
 VALID_CHARS_4_FILENAME = "-_.() {}{}".format(string.ascii_letters, string.digits)
 
@@ -46,12 +45,6 @@ class GhFileUtil:
     def parentFolder(file):
         path = Path(file)
         return path.parent.absolute()
-
-    @staticmethod
-    def fileSelection(initialdir=os.getcwd(),
-                      title="Select file",
-                      filetypes=[("Text Files", "*.txt")]):
-        return filedialog.askopenfilename(initialdir=initialdir, title=title, filetypes=filetypes)
 
     @staticmethod
     def findFileInFolder(name, path):

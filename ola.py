@@ -211,6 +211,7 @@ class OLAPlayingPanel(QWidget):
         OLAGui.PLAYING_PANEL = self
 
         self.sheet = None
+        self.session = None
         self.rawName = None
         self.setLayout(QHBoxLayout())
 
@@ -236,6 +237,13 @@ class OLAPlayingPanel(QWidget):
         self.bVault.clicked.connect(self.openInVault)
         self.bVault.setVisible(False)
         leftPanelLayout.addWidget(self.bVault, 0, 4)
+
+        self.bLink = QPushButton("")
+        self.bLink.setStatusTip("Name in obsidian Vault")
+        self.bLink.setIcon(Icons.PENCIL)
+        self.bLink.clicked.connect(self.setVaultName)
+        self.bLink.setVisible(False)
+        leftPanelLayout.addWidget(self.bLink, 0, 5)
 
         self.ptimeIcon = QLabel()
         self.ptimeIcon.setPixmap(Icons.VOID)
@@ -298,12 +306,13 @@ class OLAPlayingPanel(QWidget):
         for k, f in self.filters.items():
             f.setValues()
 
-    def refreshSBSGL(self):
+    def refreshSBSGL(self, force=False):
         game = OLABackend.SBSGL.procmgr.getCurrentGame()
         if game is not None:
-            if game.getName() != self.rawName:
+            if game.getName() != self.rawName or force:
                 self.rawName = game.getName()
-                self.sheet = game.process.getStoreEntry()["sheet"]
+                self.session = game.process.getStoreEntry()
+                self.sheet = self.session["sheet"]
                 if len(self.sheet) == 0:
                     self.sheet = None
                     self.game.setText(game.getName())
@@ -315,12 +324,17 @@ class OLAPlayingPanel(QWidget):
                 self.ptime.setText(formatted_time)
                 self.ptimeIcon.setPixmap(Icons.RUNNING)
                 self.bVault.setVisible(True)
+                self.bLink.setVisible(True)
+                if not force and self.sheet is not None and len(self.sheet) > 0:
+                    self.openInVault()
         elif self.game.text() != "":
             self.gameIcon.setPixmap(Icons.VOID)
             self.game.setText("")
             self.ptimeIcon.setPixmap(Icons.VOID)
             self.ptime.setText("")
             self.bVault.setVisible(False)
+            self.bLink.setVisible(False)
+            self.session = None
             self.sheet = None
 
     def gameLaunchFailure(self):
@@ -329,6 +343,9 @@ class OLAPlayingPanel(QWidget):
 
     def openInVault(self):
         OLABackend.openInVault(sheetName=self.sheet)
+
+    def setVaultName(self):
+        OLAGameLine.requestVaultNameDialog(self.session, self.sheet, self.game.text(), self)
 
 
 class OLAGameLine(QWidget):
@@ -443,17 +460,22 @@ class OLAGameLine(QWidget):
     def doSetupLauncher(self):
         pass
 
-    def setVaultName(self):
-        val = self.sheet
+    @staticmethod
+    def requestVaultNameDialog(sessionInfo, sheet, defaultValue, parent):
+        val = sheet
         if val is None or len(val) == 0:
-            val = self.name.text()
-        text, ok = QInputDialog.getText(self, "Obsidian sheet name",
+            val = defaultValue
+        text, ok = QInputDialog.getText(parent, "Obsidian sheet name",
                                         "name:", QLineEdit.Normal,
                                         val)
         if ok and text:
-            self.session.getGameInfo()['sheet'] = text
+            sessionInfo['sheet'] = text
         OLABackend.SBSGL.procmgr.storage.save()
         OLAGui.TAB_PANEL.reload()
+        OLAGui.PLAYING_PANEL.refreshSBSGL(force=True)
+
+    def setVaultName(self):
+        OLAGameLine.requestVaultNameDialog(self.session.getGameInfo(), self.sheet, self.name.text(), self)
 
     def setSession(self, session, sheetAlreadySet=None):
         """
@@ -1030,6 +1052,7 @@ class OLAApplication(QApplication):
 
         filegen = FileUsageGenerator()
         filegen.signals.file_usage_generation_finished.connect(self.fileUsageGenerated)
+        filegen.signals.sheet_link_progress.connect(self.sheetLinkProgress)
         filegen.signals.sheet_link_finished.connect(self.sheetLinkChecked)
         self.threadpool.start(filegen)
 
@@ -1065,8 +1088,11 @@ class OLAApplication(QApplication):
     def fileUsageGenerated(self):
         self.main.setStatus("File usage Generated")
 
-    def sheetLinkChecked(self, linkCount, brokenLinkCount, repairedLink, names):
-        message = "{} vault links".format(linkCount)
+    def sheetLinkProgress(self, message):
+        OLAGui.REPORTS.setLinkCheckStatus(message)
+
+    def sheetLinkChecked(self, sessionCount, linkCount, brokenLinkCount, repairedLink, names):
+        message = "{}/{} vault links".format(linkCount, sessionCount)
         if brokenLinkCount > 0:
             message = "{} | {} removed links".format(message, brokenLinkCount)
         if repairedLink > 0:
