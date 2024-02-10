@@ -33,7 +33,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02 alpha 15"
+    VERSION = "2024.02 alpha 16"
     PREVIOUS = ""
 
 
@@ -325,8 +325,6 @@ class OLAPlayingPanel(QWidget):
                 self.ptimeIcon.setPixmap(Icons.RUNNING)
                 self.bVault.setVisible(True)
                 self.bLink.setVisible(True)
-                if not force and self.sheet is not None and len(self.sheet) > 0:
-                    self.openInVault()
         elif self.game.text() != "":
             self.gameIcon.setPixmap(Icons.VOID)
             self.game.setText("")
@@ -452,6 +450,8 @@ class OLAGameLine(QWidget):
         QApplication.clipboard().setText(self.name.text())
 
     def startGame(self):
+        if self.sheet is not None and len(self.sheet) > 0:
+            self.openInVault()
         OLABackend.SBSGL.launchGame(self.session, OLAGui.APP)
 
     def openInVault(self):
