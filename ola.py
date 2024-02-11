@@ -24,7 +24,7 @@ from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
     QVBoxLayout, \
-    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollBar, QScrollArea
+    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollBar, QScrollArea, QSplashScreen
 
 from base.formatutil import FormatUtil
 from resources.resources import Icons
@@ -33,7 +33,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02 alpha 16"
+    VERSION = "2024.02.11a"
     PREVIOUS = ""
 
 
@@ -511,7 +511,7 @@ class OLAGameLine(QWidget):
             self.bLink.setVisible(True)
 
     def applyPlatform(self):
-        icon = Icons.QUESTION
+        icon = Icons.NOT_FOUND
         if self.sheetFile is not None:
             size = len(self.sheetFile.platforms)
             if size == 1:
@@ -998,6 +998,16 @@ class OLAApplication(QApplication):
 
         Icons.initIcons()
 
+        self.splash = QSplashScreen(Icons.SPLASH)
+        self.splash.show()
+        self.processEvents()
+
+        # Blocking parsing of vault or display will be wrong
+        mdgen = MdReportGenerator(report=False)
+        mdgen.run()
+        self.splash.showMessage("{} - loading vault...".format(OLAVersionInfo.VERSION))
+        self.processEvents()
+
         OLAGui.APP = self
         self.setQuitOnLastWindowClosed(True)
         self.setWindowIcon(Icons.APP)
@@ -1022,6 +1032,11 @@ class OLAApplication(QApplication):
         OLAGui.PLAYING_PANEL.refreshVault()
         self.main.show()
         self.exec()
+
+    def checkSplash(self):
+        if self.splash is not None:
+            self.splash.setVisible(False)
+            self.splash = None
 
     def startProcessCheck(self):
         if not self.scanInProgress:
@@ -1057,6 +1072,7 @@ class OLAApplication(QApplication):
         self.threadpool.start(filegen)
 
     def scanFinished(self):
+        self.checkSplash()
         self.scanInProgress = False
         OLAGui.PLAYING_PANEL.refreshSBSGL()
         OLAGui.SESSIONS.loadSessions()
@@ -1074,6 +1090,7 @@ class OLAApplication(QApplication):
         OLAGui.REPORTS.reportAvailable(sheet)
 
     def mdParsed(self):
+        self.checkSplash()
         self.main.setStatus("Vault parsed")
         OLAGui.ASSISTANT.vaultParsed()
         OLAGui.SESSIONS.loadSessions()
@@ -1102,8 +1119,5 @@ class OLAApplication(QApplication):
 
 logging.info("OLAApplication - starting application execution")
 app = OLAApplication(sys.argv, OLAVersionInfo.VERSION)
-# Blocking parsing of vault or display will be wrong
-mdgen = MdReportGenerator(report=False)
-mdgen.run()
 app.start()
 logging.info("OLAApplication - application terminated")

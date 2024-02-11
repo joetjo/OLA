@@ -75,9 +75,9 @@ class MarkdownHelper:
                         playInProgress = True
                     self.SHEETS[key] = mdfile
                 for tag in mdfile.tags:
-                    if tag.startswith("#TYPE/"):
+                    if playInProgress and tag.startswith("#TYPE/"): # List of TYPE tag used ( combo contents in tab Obsidian )
                         self.TYPE_TAGS_UNSORTED.add(tag[6:])
-                    if tag.startswith("#PLAY/"):
+                    if tag.startswith("#PLAY/"):                    # List in PLAY possible values ( combo contents in tab Session )
                         self.PLAY_TAGS_UNSORTED.add(tag[6:])
 
         # Loop on sub folder

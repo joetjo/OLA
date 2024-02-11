@@ -18,6 +18,7 @@ def resource_path(res):
 
 class Icons:
     """to be initialized in gui.application.py initIcons()"""
+    SPLASH = None
     APP = None
     HOME = None
     HOME_TAB = None
@@ -42,11 +43,13 @@ class Icons:
     PLAY = None
     RUNNING = None
     MANY = None
+    NOT_FOUND = None
 
     CACHE = dict()
 
     @staticmethod
     def initIcons():
+        Icons.SPLASH = QPixmap(resource_path("splash.png"))
         Icons.APP = QPixmap(resource_path("home.png"))
         Icons.HOME = QPixmap(resource_path("home.png"))
         Icons.HOME_TAB = QPixmap(resource_path("homeV.png"))
@@ -71,6 +74,7 @@ class Icons:
         Icons.REPORT = QPixmap(resource_path("report-24.png"))
         Icons.IMPORT = QPixmap(resource_path("import-file-24.png"))
         Icons.MANY = QPixmap(resource_path("many-16.png"))
+        Icons.NOT_FOUND = QPixmap(resource_path("clear-search-16.png"))
 
     @staticmethod
     def loadIcons(iconName):
