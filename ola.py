@@ -33,7 +33,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.next"
+    VERSION = "2024.02.11c internal"
     PREVIOUS = "2024.02.11b"
 
 
@@ -161,7 +161,6 @@ class OLAToolbar(QToolBar):
         bExit.setIcon(Icons.EXIT)
         bExit.triggered.connect(OLAGui.APP.shutdown)
         self.addAction(bExit)
-
 
 
 class OLAStatusBar(QStatusBar):
@@ -806,7 +805,7 @@ class OLAGameSessions(OLASharedGameListWidget):
 
 
 class OLAReportLine(QWidget):
-    def __init__(self, row, col, layout, sheetPath, customLabel=None):
+    def __init__(self, row, col, layout, sheetPath, about, customLabel=None):
         super().__init__()
 
         self.sheet = sheetPath
@@ -823,27 +822,49 @@ class OLAReportLine(QWidget):
             sheet = QLabel(sname)
         else:
             sheet = QLabel(customLabel)
+        sheet.setToolTip(about)
         layout.addWidget(sheet, row, colUpdated)
 
         bPanel = QWidget()
         bPanel.setLayout(QHBoxLayout())
         bPanel.layout().setContentsMargins(0, 0, 0, 0)
+
         bVault = QPushButton("")
         bVault.setStatusTip("Open in obsidian Vault")
         bVault.setIcon(Icons.OBSIDIAN)
         bVault.clicked.connect(self.openReportInVault)
         bVault.setEnabled(False)
         bPanel.layout().addWidget(bVault)
-        bPanel.layout().addStretch()
         self.bVault = bVault
+
+        if customLabel is None:
+            bRedo = QPushButton("")
+            bRedo.setStatusTip("Regenerate only this report")
+            bRedo.setIcon(Icons.REPORT)
+            bRedo.clicked.connect(self.startSingleReport)
+            bRedo.setEnabled(False)
+            bPanel.layout().addWidget(bRedo)
+            self.bRedo = bRedo
+        else:
+            self.bRedo = None
+
+        bPanel.layout().addStretch()
 
         layout.addWidget(bPanel, row, colUpdated + 1)
 
     def openReportInVault(self):
         OLABackend.openInVault(sheetName=self.sheet)
 
+    def startSingleReport(self):
+        OLAGui.APP.startSingleReport(self.sheet)
+
     def enableVault(self):
         self.bVault.setEnabled(True)
+        if self.bRedo is not None:
+            self.bRedo.setEnabled(True)
+
+    def regenerateReport(self):
+        OLAGui.APP.startSingleReport(self.sheet)
 
 
 class OLAReports(QWidget):
@@ -894,12 +915,12 @@ class OLAReports(QWidget):
             self.linkErrorMessage.setToolTip("\n".join(detailed))
 
     def setReports(self, sheetPaths):
-        self.reports["Readme"] = OLAReportLine(0, 0, self.reportPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, customLabel="Reports description")
+        self.reports["Readme"] = OLAReportLine(0, 0, self.reportPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, "All reports description", customLabel="Reports description")
         self.reports["Readme"].enableVault()
         row = 0
         col = 2
-        for sheetPath in sheetPaths:
-            self.reports[sheetPath] = OLAReportLine(row, col, self.reportPanelLayout, sheetPath)
+        for sheetPath, about in sheetPaths.items():
+            self.reports[sheetPath] = OLAReportLine(row, col, self.reportPanelLayout, sheetPath, about)
             if col == 0:
                 col = 2
             elif col == 2:
@@ -907,7 +928,8 @@ class OLAReports(QWidget):
             else:
                 row = row + 1
                 col = 0
-        self.reports["Duplicate files"] = OLAReportLine(row, col, self.reportPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, customLabel="Files duplication")
+        self.reports["Duplicate files"] = OLAReportLine(row, col, self.reportPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, "Report that identify duplicate files in predefined folders",
+                                                        customLabel="Files duplication")
         self.reports["Duplicate files"].enableVault()
 
         for idx in range(row, OLAGuiSetup.LINE_REPORTS_COUNT):
@@ -1052,7 +1074,7 @@ class OLAApplication(QApplication):
         self.processEvents()
 
         # Blocking parsing of vault or display will be wrong
-        mdgen = MdReportGenerator(report=False)
+        mdgen = MdReportGenerator(allReports=False)
         mdgen.run()
         self.splash.showMessage("{} - loading vault...".format(OLAVersionInfo.VERSION))
         self.processEvents()
@@ -1106,14 +1128,14 @@ class OLAApplication(QApplication):
 
     def parseVault(self):
         OLAGui.ASSISTANT.vaultParsingInProgress()
-        mdgen = MdReportGenerator(report=False)
+        mdgen = MdReportGenerator(allReports=False)
         mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
         self.threadpool.start(mdgen)
 
     def startReporting(self):
         OLAGui.TAB_PANEL.clearAndShowReportsTab()
         OLAGui.ASSISTANT.vaultReportInProgress()
-        mdgen = MdReportGenerator()
+        mdgen = MdReportGenerator(allReports=True)
         mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
         mdgen.signals.md_report_generation_starting.connect(self.mdStarting)
         mdgen.signals.md_last_report.connect(self.mdReportGenerated)
@@ -1124,6 +1146,16 @@ class OLAApplication(QApplication):
         filegen.signals.sheet_link_progress.connect(self.sheetLinkProgress)
         filegen.signals.sheet_link_finished.connect(self.sheetLinkChecked)
         self.threadpool.start(filegen)
+
+    def startSingleReport(self, target):
+        mdgen = MdReportGenerator(target=target, allReports=False)
+        mdgen.signals.md_report_generation_finished.connect(self.ignoreSignal)
+        mdgen.signals.md_report_generation_starting.connect(self.ignoreSignal)
+        mdgen.signals.md_last_report.connect(self.mdReportGenerated)
+        self.threadpool.start(mdgen)
+
+    def ignoreSignal(self):
+        pass
 
     def scanFinished(self):
         self.checkSplash()

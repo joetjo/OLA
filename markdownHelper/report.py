@@ -21,6 +21,7 @@ LONG_BLANK = "                                                                  
 
 ALLOWED_ATTRIBUTES = ["target",  # 1st level only: target file path
                       "title",  # mandatory on each bloc
+                      "about",
                       "tag_condition",  # optional: tag list to filter content ( can be tag prefix )
                       "tag_refs",  # optional : references by name to tag list in shared data
                       "path_condition",  # optional: name list that should be used in folder path
@@ -34,9 +35,6 @@ ALLOWED_ATTRIBUTES = ["target",  # 1st level only: target file path
                       "commentTag",  # a comment TAG is a tag that start at the beginning of the line and
                       # the text on the same line will be registered as a comment and shown in report.
                       "showTags",  # ref to tag list to show (tag that start by the requested string will be added to the line)
-                      "labelAbout",
-                      "labelTags",
-                      "labelComment"
                       ]
 
 
@@ -432,4 +430,11 @@ class MhReport:
             writer.writelines(
                 "> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit* - see [[{}]] for description\n\n".format(
                     self.reportSheet.reportLink[0:len(self.reportSheet.reportLink) - 3]))  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
+            try:
+                about = self.json["about"]
+                writer.writelines("*CONTENT*\n```")
+                writer.writelines(about)
+                writer.writelines("```\n")
+            except KeyError:
+                pass  # no about set
             rootReport.generate(writer)

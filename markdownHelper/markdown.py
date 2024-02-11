@@ -75,9 +75,9 @@ class MarkdownHelper:
                         playInProgress = True
                     self.SHEETS[key] = mdfile
                 for tag in mdfile.tags:
-                    if playInProgress and tag.startswith("#TYPE/"): # List of TYPE tag used ( combo contents in tab Obsidian )
+                    if playInProgress and tag.startswith("#TYPE/"):  # List of TYPE tag used ( combo contents in tab Obsidian )
                         self.TYPE_TAGS_UNSORTED.add(tag[6:])
-                    if tag.startswith("#PLAY/"):                    # List in PLAY possible values ( combo contents in tab Session )
+                    if tag.startswith("#PLAY/"):  # List in PLAY possible values ( combo contents in tab Session )
                         self.PLAY_TAGS_UNSORTED.add(tag[6:])
 
         # Loop on sub folder
@@ -103,35 +103,50 @@ class MarkdownHelper:
         for t in sorted(self.PLAY_TAGS_UNSORTED):
             self.PLAY_TAGS.append(t)
 
+    def processReport(self, reportTitle, report, current, total, signal_report):
+        logging.info("MDR | Processing report \"{}\" {}/{}".format(reportTitle, current, total))
+        sname = os.path.basename(report["target"])
+        sname = sname[0:len(sname) - 3]
+        try:
+            ctag = report["commentTag"]
+        except KeyError:
+            ctag = "X"
+        self.REPORTS_SHEET.addTarget(reportTitle, sname, ctag)
+        report["title"] = reportTitle
+        MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT, self.REPORTS_SHEET).generate()
+
+        with open("{}/{}".format(self.VAULT, self.REPORTS_SHEET_NAME), 'w', encoding='utf-8') as writer:
+            for line in self.REPORTS_SHEET.lines:
+                writer.writelines(line)
+        signal_report.emit(reportTitle, report["target"])
+
+    def generateReport(self, target, signal_reports, signal_report):
+        self.parseVault()
+
+        for reportTitle, report in self.REPORTS.items():
+            if report["target"] == target:
+                self.processReport(reportTitle, report, 1, 1, signal_report)
+
     def generateAllReports(self, signal_reports, signal_report, reload=False):
         try:
             if reload or len(self.SORTED_FILES) == 0:
                 self.parseVault()
 
             total = len(self.REPORTS)
-            reportTargets = []
+            reportTargets = dict()
 
             for report in self.REPORTS.values():
-                reportTargets.append(report["target"])
+                try:
+                    about = report["about"]
+                except KeyError:
+                    about = "no description available..."
+                reportTargets[report["target"]] = about
             signal_reports.emit(reportTargets)
 
             current = 1
             for reportTitle, report in self.REPORTS.items():
-                logging.info("MDR | Processing report \"{}\" {}/{}".format(reportTitle, current, total))
-                sname = os.path.basename(report["target"])
-                sname = sname[0:len(sname) - 3]
-                try:
-                    ctag = report["commentTag"]
-                except KeyError:
-                    ctag = "X"
-                self.REPORTS_SHEET.addTarget(reportTitle, sname, ctag)
+                self.processReport(reportTitle, report, current, total, signal_report)
                 current = current + 1
-                report["title"] = reportTitle
-                MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT, self.REPORTS_SHEET).generate()
 
-                with open("{}/{}".format(self.VAULT, self.REPORTS_SHEET_NAME), 'w', encoding='utf-8') as writer:
-                    for line in self.REPORTS_SHEET.lines:
-                        writer.writelines(line)
-                signal_report.emit(reportTitle, report["target"])
         except Exception as e:
-            raise
+            raise e

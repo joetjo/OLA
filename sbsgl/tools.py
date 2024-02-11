@@ -69,19 +69,23 @@ class SbSGLSignals(QObject):
 
 
 class MdReportGenerator(QRunnable):
-    def __init__(self, report=True):
+    def __init__(self, allReports=True, target=None):
         super().__init__()
         self.signals = MdReportGeneratorSignals()
-        self.report = report
+        self.allReports = allReports
+        self.target = target
 
     @Slot()  # QtCore.Slot
     def run(self):
         try:
             logging.info("Starting Markdown report generation")
             OLABackend.VAULT = MarkdownHelper(vault="C:\\Users\\nicol\\Documents\\GitHub\\gList2")
-            if self.report:
+            if self.allReports:
                 OLABackend.VAULT.generateAllReports(self.signals.md_report_generation_starting, self.signals.md_last_report, reload=True)
-                logging.info("Generation Markdown report finished")
+                logging.info("Generation Markdown reports finished")
+            elif self.target is not None:
+                OLABackend.VAULT.generateReport(self.target, self.signals.md_report_generation_starting, self.signals.md_last_report)
+                logging.info("Generation Markdown single report finished")
             else:
                 OLABackend.VAULT.parseVault()
                 logging.info("Parse Vault finished")

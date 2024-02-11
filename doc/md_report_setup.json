@@ -3,6 +3,7 @@
     "global": {
         "base_folder": "C:\\Users\\nicol\\Documents\\GitHub\\gList2",
         "reports_readme": "reports.md",
+        "reports_dupfiles": "disk content - duplicate stuff",
         "ignore" : [ ".git", ".obsidian", ".gitignore", ".gitattributes", "Readme.md",
             "_glist", "reports", "reports_episodic", "reports_next", "reports_play", "reports_wish"
         ],
@@ -15,7 +16,7 @@
             "contents": [
               {
                 "title": "%TAGNAME%",
-                "tag_condition": "EDITOR",
+                "tag_condition": [ "EDITOR/" ],
                 "else": {
                   "title": "Editor without flag"
                 }
@@ -24,12 +25,13 @@
           },
           "DEV - VNAs": {
             "target": "reports_episodic\\VNAs_dev.md",
+            "about" : "All VNA games followed currently in development not already tested",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
             "showTags": "allGameTags",
             "contents": [
               {
-                "title": "VNs in development",
+                "title": "VNAs in development",
                 "tag_refs": [
                   "isDevInProgress",
                   "isVNA"
@@ -39,10 +41,11 @@
                   {
                     "title": "Episodic VNs not tested",
                     "tag_refs": [
-                      "isTested"
+                      "isTested",
+                      "isWaitCompleted"
                     ],
                     "condition_type": "not",
-                    "content_ref": "contentByNext"
+                    "content_ref": "VNAFiltering"
                   }
                 ]
               }
@@ -62,7 +65,16 @@
                   "isTested"
                 ],
                 "multi_condition": "and",
-                "content_ref": "contentByNext"
+                "contents" : [
+                  {
+                    "title" : "not waiting to be complete",
+                    "tag_refs" : [
+                      "isWaitCompleted"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "VNAFiltering"
+                  }
+                ]
               }
             ]
           },
@@ -80,11 +92,11 @@
                   "isWaitCompleted"
                 ],
                 "multi_condition": "and",
-                "content_ref": "contentByNext"
+                "content_ref": "contentByDate"
               }
             ]
           },
-          "VNAs": {
+          "VNAs - Next": {
             "target": "reports_next\\VNAs_next.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -99,7 +111,7 @@
                   {
                     "title": "VNs completed (available)",
                     "tag_refs": [
-                      "isDevInProgress"
+                      "isDevInProgress", "isInProgress"
                     ],
                     "condition_type": "not",
                     "contents": [
@@ -109,7 +121,7 @@
                           "isDone"
                         ],
                         "condition_type": "not",
-                        "content_ref": "contentByNext"
+                        "content_ref": "VNAFiltering"
                       }
                     ]
                   }
@@ -130,7 +142,7 @@
                   "isInProgress"
                 ],
                 "multi_condition": "and",
-                "content_ref": "contentByNext"
+                "content_ref": "VNAFiltering"
               }
             ]
           },
@@ -545,7 +557,6 @@
           },
           "To be completed": {
             "target": "reports\\ErrorSheetCreatedButEmpty.md",
-            "labelTags": "TYPE",
             "path_condition": [
               "_Incoming"
             ]
@@ -618,47 +629,54 @@
             "target": "reports\\Stats.md",
             "path_ref": "game_available_and_in_development",
             "count": {
-              "Game to classify": {
+              "Games ": {
+                "tag_condition": [
+                  "PLATFORM"
+                ]
+              },
+              "Games to classify": {
                 "path_condition": [
                   "2.To classify"
                 ]
               },
-              "Game available": {
+              "Games available": {
                 "path_condition": [
                   "1.Available"
                 ]
               },
-              "Game Kick Started": {
+              "Games KickStarted": {
                 "tag_condition": [
-                  "KICK"
+                  "DEV/KICKSTARTED"
                 ]
               },
-              "Game Kick Started ( in development )": {
+              "Games Kick Started ( in development )": {
                 "path_condition": [
-                  "6.Kickstarted"
-                ],
-                "tag_condition": [
-                  "KICK"
+                  "6.Kickstarted\\in progress"
                 ]
               },
-              "Game in development": {
+              "Games in development": {
                 "path_condition": [
                   "5.Dev in progress"
                 ]
               },
-              "Game Evaluated": {
+              "Games Evaluated": {
                 "tag_condition": [
                   "DONE"
                 ]
               },
-              "Game Evaluated 1++": {
+              "Games Evaluated 1++": {
                 "tag_condition": [
                   "DONE/1"
                 ]
               },
-              "Game Available 1++": {
+              "Games Available 1++": {
                 "path_condition": [
                   "1 ++"
+                ]
+              },
+              "VNA": {
+                "tag_refs": [
+                  "isVNA"
                 ]
               },
               "VN": {
@@ -672,51 +690,32 @@
                   "isVN"
                 ]
               },
-              "Game in standby": {
+              "Games in standby": {
                 "tag_condition": [
                   "PLAY/STANDBY"
                 ]
               },
-              "Game with alternative route": {
+              "Games with alternative route": {
                 "tag_condition": [
                   "PLAY/ALT_ROUTES"
                 ]
               },
-              "Game suite": {
+              "Games suite": {
                 "tag_condition": [
                   "PLAY/SUITE"
                 ]
               },
-              "Game Missing CAT Tag": {
-                "tag_not_condition": [
-                  "TYPE"
-                ]
-              },
-              "Game Missing Type Tag": {
-                "tag_not_condition": [
-                  "CAT"
-                ]
-              },
-              "Game Missing Story Tag": {
-                "tag_not_condition": [
-                  "STORY"
-                ]
-              },
-              "VN Missing Story Tag": {
-                "tag_refs": [
-                  "isVN"
+              "Games Missing CAT Tag": {
+                "tag_condition": [
+                  "CAT/"
                 ],
-                "tag_not_condition": [
-                  "STORY"
-                ]
+                "condition_type" : "not"
               },
-              "VN Missing Art Tag": {
-                "tag_refs": [
-                  "isVN"
+              "Games Missing Type Tag": {
+                "tag_condition": [
+                  "TYPE/"
                 ],
-                "tag_not_condition": [
-                  "ART"
-                ]
+                "condition_type" : "not"
               }
             }
           }
@@ -725,12 +724,12 @@
           "paths" : {
             "game_owned": ["1.Available", "2.To classify" ],
             "game_available" : ["1.Available","2.To classify","5.Dev in progress"],
-            "game_available_and_in_development" : [ "1.Available", "2.To classify", "4.Wishlist (game available)\\Game sheets","5.Dev in progress", "6.Kickstarted"],
+            "game_available_and_in_development" : [ "1.Available", "2.To classify", "4.Wishlist (game available)\\Game sheets","5.Dev in progress", "6.Kickstarted\\in progress"],
             "editors" :  [  "Editors" ]
           },
           "tags" : {
             "isEditor" : [ "EDITOR" ],
-            "isKickStarted" : [ "KICK" ],
+            "isKickStarted" : [ "DEV/KICKSTARTED" ],
             "isEarlyAccess" : [ "PRICE/EARLY_ACCESS_PAID" ],
             "isWishedGame" : [ "PLATFORM/Wish" ],
             "isDevInProgress" : [ "DEV/DEV_IN_PROGRESS" ],
@@ -740,17 +739,17 @@
             "isDone" : [ "DONE" ],
             "isDoneGood" : [ "DONE/1", "DONE/2" ],
             "isRPG" : [ "TYPE/RPG" ],
-            "isVN" : [ "TYPE/VN" ],
+            "isVN" : [ "TYPE/VN/" ],
             "isVNA" : [ "TYPE/VNA" ],
             "isCoop" : [ "TYPE/Coop" ],
             "isVNorVNAorRPGorCoop" : [ "TYPE/RPG", "TYPE/VN", "TYPE/VNA", "TYPE/Coop"]
           },
           "info_tags" : {
             "editorTags" : [ "EDTNOTE", "EDTTYPE" ],
-            "allGameTags" : [  "PLATFORM", "PLAY", "DEV", "CAT", "ART", "TYPE", "KEY"],
-            "PlatformGameTags" : [ "DEV", "ART", "TYPE", "KEY" ],
+            "allGameTags" : [  "PLATFORM", "PLAY", "DEV", "CAT", "ART", "TYPE", "KEY", "NEXT" ],
+            "PlatformGameTags" : [ "DEV", "ART", "TYPE", "KEY", "NEXT" ],
             "DoneGameTags" : [ "DONE", "ART", "TYPE", "KEY" ],
-            "waitedGameTags" : [ "DEV", "CAT", "ART", "TYPE", "KEY"]
+            "waitedGameTags" : [ "ART", "TYPE", "KEY", "NEXT" ]
           },
           "contentByCategory": [
                           {
@@ -799,15 +798,26 @@
 							}
 						],
           "contentByType" : [
-                                     {
-                                        "title": "%TAGNAME%",
-                                        "tag_condition": [
-                                            "TYPE/"
-                                        ],
-                                        "else": {
-                                            "title": "Undefined TYPE"
-                                        }
-                                    }
+                 {
+                    "title": "%TAGNAME%",
+                    "tag_condition": [
+                        "TYPE/"
+                    ],
+                    "else": {
+                        "title": "Undefined TYPE"
+                    }
+                }
+          ],
+          "contentByDate" : [
+                 {
+                    "title": "%TAGNAME%",
+                    "tag_condition": [
+                        "DATE/"
+                    ],
+                    "else": {
+                        "title": "Undefined DATE"
+                    }
+                }
           ],
           "contentByTypeTagByStoryType": [
             {
@@ -908,6 +918,34 @@
                     "tag_condition": [ "STORY" ],
                     "condition_type": "not"
                   }
+          ],
+          "VNAFiltering": [
+            {
+              "title": "%TAGNAME%",
+              "tag_condition": [
+                "STORY/"
+              ],
+              "contents": [
+                {
+                  "title": "Female MC",
+                  "tag_condition": [
+                    "KEY/FemaleMC"
+                  ]
+                },
+                {
+                  "title": "Classic VNA Pitch",
+                  "tag_condition": [
+                    "KEY/VNAH"
+                  ]
+                },
+                {
+                  "title": ""
+                }
+              ],
+              "else": {
+                "title": "Story ?"
+              }
+            }
           ]
         }
     },

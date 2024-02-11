@@ -27,6 +27,7 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 - Emulator not managed ( LEGUI for example , to start japanese VN - popup menu added by is empty, is this the right way to do it ? )
 - Excluded game not managed ( tab added but not implemented )
 - Stop scanning game while report generation is in progress ( access to VAULT might be invalid )
+- Do not allow multiple report generation at the same time ( ot it will behave badly...)
 - ... 
 
 _Version 2024.02.11:_ 
