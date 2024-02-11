@@ -4,6 +4,7 @@
 | ![splash](res/splash-small.png "Last sessions launched tab") | Use Obsidian https://obsidian.md/ to manage what your tools and mostly games :-) you are using Use tag to classify them within obsidian |
 |-|--|
 
+> WARNING : usage without an "already done setup" may not work at all. This is done for private use and shared because there is nothing confidential in it.
 
 Then this Assistant will help you to
 - start usual stuff
