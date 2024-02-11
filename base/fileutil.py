@@ -54,7 +54,7 @@ class GhFileUtil:
 
     @staticmethod
     def ConvertUpperCaseWordSeparatedNameToStr(name):
-        result = name
+        result = name.strip()
         hasLowerCase = False
         for letter in result:
             if letter.islower():
@@ -62,11 +62,11 @@ class GhFileUtil:
         if hasLowerCase:
             previous = None
             for letter in result:
-                if previous is not None and letter.isupper() and not previous.isspace():
+                if previous is not None and letter.isupper() and not previous.isspace() and not previous.isupper():
                     result = result.replace(letter, " " + letter)
                 if previous is not None and letter.isdigit() and not previous.isspace() and not previous.isdigit():
                     result = result.replace(letter, " " + letter)
                 if letter == '_':
                     result = result.replace(letter, " ")
                 previous = letter
-        return result
+        return result.strip()

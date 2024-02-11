@@ -116,27 +116,31 @@ class FileUsageGenerator(QRunnable):
             self.signals.sheet_link_progress.emit("Checking {} vault links...".format(sessionsCount))
             for session in sessions:
                 sheet = session.getGameInfo()['sheet']
+                # STEP 1 - check if current sheet seems to exist
                 if sheet is not None and len(sheet) > 0:
                     find = GhFileUtil.findFileInFolder("{}.md".format(sheet), OLABackend.VAULT.VAULT)
                     if find:
                         linkCount = linkCount + 1
                     else:
                         logging.warning("Broken vault link detected : {}".format(sheet))
-                        names.append("X " + sheet)
+                        names.append("- [{}]".format(sheet))
                         brokenLink = brokenLink + 1
                         session.getGameInfo()['sheet'] = ""
+                # STEP 2 - test if empty sheet could be guessed from current sheet name
                 sheet = session.getGameInfo()['sheet']
                 if sheet is None or len(sheet) == 0:
                     sheet = "{}.md".format(session.json[0])
                     find = GhFileUtil.findFileInFolder(sheet, OLABackend.VAULT.VAULT)
                     if find is None:
-                        find = GhFileUtil.findFileInFolder(GhFileUtil.ConvertUpperCaseWordSeparatedNameToStr(sheet), OLABackend.VAULT.VAULT)
+                        sheet = GhFileUtil.ConvertUpperCaseWordSeparatedNameToStr(sheet)
+                        find = GhFileUtil.findFileInFolder(sheet, OLABackend.VAULT.VAULT)
                     if find:
                         repairedLink = repairedLink + 1
-                        names.append("+ " + sheet)
-                        session.getGameInfo()['sheet'] = sheet[0:len(sheet)-3]
+                        session.getGameInfo()['sheet'] = sheet[0:len(sheet) - 3]
+                        names.append("+ [{}]".format(session.getGameInfo()['sheet']))
+
                 count = count + 1
-                if count%10 == 0:
+                if count % 10 == 0:
                     self.signals.sheet_link_progress.emit("{}/{} links checked...".format(count, sessionsCount))
 
             if brokenLink > 0 or repairedLink > 0:
