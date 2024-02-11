@@ -17,7 +17,7 @@ It includes my previous project *(that has been switch to private)*:
 - **Markdown Helpers** ( Generate md report from markdown file hierarchy like Obsidian vault )
 
 Why not an obsidian plugin ?
-- because obsidian is a web application that do not deal in the bast way to local process execution for security concerns.
+- because obsidian is a web application that do not deal in the best way to local process execution for security concerns.
 Python allows to do more easily.
 and Obsidian is a great tool ! but it should do what it handles the best.
 
