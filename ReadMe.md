@@ -1,8 +1,9 @@
 
 # Obsidian Launcher Assistant
 
-Use Obsidian https://obsidian.md/ to manage what your tools and mostly games :-) you are using
-Use tag to classify them within obsidian
+| ![splash](res/splash-small.png "Last sessions launched tab") | Use Obsidian https://obsidian.md/ to manage what your tools and mostly games :-) you are using Use tag to classify them within obsidian |
+|-|--|
+
 
 Then this Assistant will help you to
 - start usual stuff
@@ -18,18 +19,16 @@ Python allows to do more easily.
 and Obsidian is a great tool ! but it should do what it handles the best.
 
 # Issues :
-- No user documentation at all curently 
+- No user documentation at all currently 
 - Fresh start without existing SBSGL / Markdown config will probably failed 
 - Emulator not managed ( LEGUI for example - popup menu added by empty, is this the right way to do it )
 - Excluded game not managed ( tab added but not implemented )
 - Stop scanning game while report generation is in progress ( access to VAULT my be invalid )
 - About panel and third party references
-- add a tab with the report generated ( appears while generation is in progress )
-- on link vault, if empty value -> set field to None ( set to none on loading is empty )
-- pagination : after a search that change the content, reset pas display
 
-_Version 2024.02 Alpha 9:_ 
-![gui](screen.png "Last sessions launched tab")
+_Version 2024.02.11a:_ 
+![ola Assistant](screen1.png "Obsidian file tag 'In Progress'")
+![ola session](screen2.png "Last sessions launched tab")
 
 # Dev corner  
 
