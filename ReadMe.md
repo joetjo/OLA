@@ -12,9 +12,9 @@
 - start usual stuff
 - generate reports from obsidian
 
-It includes my previous project:
-- SBSGL Simple But Smart Game Launcher
-- Markdown Helpers ( Generate md report from markdown file hierarchy like Obsidian vault )
+It includes my previous project *(that has been switch to private)*:
+- **SBSGL** Simple But Smart Game Launcher
+- **Markdown Helpers** ( Generate md report from markdown file hierarchy like Obsidian vault )
 
 Why not an obsidian plugin ?
 - because obsidian is a web application that do not deal in the bast way to local process execution for security concerns.
@@ -28,6 +28,7 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 - Excluded game not managed ( tab added but not implemented )
 - Stop scanning game while report generation is in progress ( access to VAULT my be invalid )
 - About panel and third party references
+- ... 
 
 _Version 2024.02.11a:_ 
 
