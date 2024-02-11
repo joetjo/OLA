@@ -26,6 +26,7 @@ from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWin
     QVBoxLayout, \
     QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollBar, QScrollArea, QSplashScreen, QTextBrowser, QDialog
 
+from base.fileutil import GhFileUtil
 from base.formatutil import FormatUtil
 from resources.resources import Icons
 from sbsgl.sbsgl import SBSGL
@@ -33,7 +34,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.11c internal"
+    VERSION = "2024.02.11c"
     PREVIOUS = "2024.02.11b"
 
 
@@ -390,7 +391,7 @@ class OLAPlayingPanel(QWidget):
         OLABackend.openInVault(sheetName=self.sheet)
 
     def setVaultName(self):
-        OLAGameLine.requestVaultNameDialog(self.session, self.sheet, self.game.text(), self)
+        OLAGameLine.requestVaultNameDialog(self.session, self.sheet, GhFileUtil.ConvertUpperCaseWordSeparatedNameToStr(self.game.text()), self)
 
 
 class OLAGameLine(QWidget):
@@ -522,7 +523,7 @@ class OLAGameLine(QWidget):
         OLAGui.PLAYING_PANEL.refreshSBSGL(force=True)
 
     def setVaultName(self):
-        OLAGameLine.requestVaultNameDialog(self.session.getGameInfo(), self.sheet, self.name.text(), self)
+        OLAGameLine.requestVaultNameDialog(self.session.getGameInfo(), self.sheet, GhFileUtil.ConvertUpperCaseWordSeparatedNameToStr(self.name.text()), self)
 
     def setSession(self, session, sheetAlreadySet=None):
         """

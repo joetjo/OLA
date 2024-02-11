@@ -60,7 +60,13 @@ class GhFileUtil:
             if letter.islower():
                 hasLowerCase = True
         if hasLowerCase:
+            previous = None
             for letter in result:
-                if letter.isupper():
+                if previous is not None and letter.isupper() and not previous.isspace():
                     result = result.replace(letter, " " + letter)
+                if previous is not None and letter.isdigit() and not previous.isspace() and not previous.isdigit():
+                    result = result.replace(letter, " " + letter)
+                if letter == '_':
+                    result = result.replace(letter, " ")
+                previous = letter
         return result
