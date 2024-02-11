@@ -5,7 +5,7 @@
 |-|--------------------------------------------------------------------------------------------------------------------------|
 
 > WARNING : usage without an "already done setup" may not work at all. This is done for private use and shared because there is nothing confidential in it.
-> Mandatory tags to use in Obsidian are also not documented "here" and maybe configuration or maybe not :-) 
+> Mandatory tags to use in Obsidian are also not documented "here" and maybe configurable or maybe not :-) 
 > Minimal tags are: ``#PLAY/IN_PROGRESS``, ``#PLAY/"play status"``,``#TYPE/"type"``, ``#PLATFORM/"platform name"`` )
 
 **Then this Assistant will help you to :**
