@@ -20,6 +20,7 @@ class Icons:
     """to be initialized in gui.application.py initIcons()"""
     SPLASH = None
     APP = None
+    ABOUT = None
     HOME = None
     HOME_TAB = None
     FOLDER = None
@@ -51,6 +52,7 @@ class Icons:
     def initIcons():
         Icons.SPLASH = QPixmap(resource_path("splash.png"))
         Icons.APP = QPixmap(resource_path("home.png"))
+        Icons.ABOUT = QPixmap(resource_path("about-24.png"))
         Icons.HOME = QPixmap(resource_path("home.png"))
         Icons.HOME_TAB = QPixmap(resource_path("homeV.png"))
         Icons.FOLDER = QPixmap(resource_path("file-explorer-16.png"))
@@ -58,7 +60,7 @@ class Icons:
         Icons.PENCIL = QPixmap(resource_path("pencil.png"))
         Icons.QUESTION = QPixmap(resource_path("question-mark-16.png"))
         Icons.START = QPixmap(resource_path("start.png"))
-        Icons.EXIT = QPixmap(resource_path("close-16.png"))
+        Icons.EXIT = QPixmap(resource_path("power-off-24.png"))
         Icons.REFRESH = QPixmap(resource_path("refresh-16.png"))
         Icons.SMALL_DOCUMENT = QPixmap(resource_path("document-16.png"))
         Icons.DOCUMENT = QPixmap(resource_path("document.png"))

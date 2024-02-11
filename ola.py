@@ -24,7 +24,7 @@ from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QAction, QCursor
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
     QVBoxLayout, \
-    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollBar, QScrollArea, QSplashScreen
+    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollBar, QScrollArea, QSplashScreen, QTextBrowser, QDialog
 
 from base.formatutil import FormatUtil
 from resources.resources import Icons
@@ -33,8 +33,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.11a"
-    PREVIOUS = ""
+    VERSION = "2024.02.11b"
+    PREVIOUS = "2024.02.11a"
 
 
 class OLASetup:
@@ -86,6 +86,41 @@ class OLAGui:
     REPORTS_TAB_NAME = "Reports"
 
 
+class OlaAbout(QDialog):
+    def __init__(self, vault):
+        super().__init__()
+        about = """
+            <!DOCTYPE html>
+            <html>
+            <body>
+            <h1>OLA Obsidian Launcher Assistant</h1>
+            <hr>
+            Associated obsidian vault: <b>{}</b>
+            <hr>
+            Not related to obsidian project <a href="https://obsidian.md/">https://obsidian.md/</a> but highly recommended to use it.
+            <br><br>
+            <i>Third party software:
+            <br>- Icon8 resources (https://icons8exit.com/icons)
+            <br>- psutil pip module
+            <br>- PySide pip module
+            <br> Based on python</i>
+            <br>
+            <br>Copyright 2024 @ joetjo <a href="https://github.com/joetjo/OLA">https://github.com/joetjo/OLA</a>
+            <br>Provided "as is" under Apache-2.0 License and to be used on your own responsibilities
+            </body>
+            </html>
+            """.format(vault)
+        self.content = QTextBrowser()
+        self.content.setEnabled(False)
+        self.content.setText(about)
+        self.setWindowTitle("OLA {}".format(OLAVersionInfo.VERSION))
+        self.setWindowIcon(Icons.HOME)
+        self.setMinimumWidth(500)
+        self.setMinimumHeight(300)
+        self.setLayout(QHBoxLayout())
+        self.layout().addWidget(self.content)
+
+
 class OLAToolbar(QToolBar):
     def __init__(self, name):
         super().__init__(name)
@@ -96,6 +131,8 @@ class OLAToolbar(QToolBar):
         bRefresh.setIcon(Icons.REFRESH)
         bRefresh.triggered.connect(OLAGui.APP.startProcessCheck)
         self.addAction(bRefresh)
+
+        self.addSeparator()
 
         bGen = QAction("Generate vault reports", self)
         bGen.setStatusTip("Generate Markdown report and file usage")
@@ -109,11 +146,22 @@ class OLAToolbar(QToolBar):
         bGen.triggered.connect(OLAGui.APP.parseVault)
         self.addAction(bGen)
 
+        self.addSeparator()
+
+        bAbout = QAction("", self)
+        bAbout.setStatusTip("Maybe display some stiff about this wonderful application")
+        bAbout.setIcon(Icons.ABOUT)
+        bAbout.triggered.connect(OLAGui.APP.showAbout)
+
+        self.addSeparator()
+
+        self.addAction(bAbout)
         bExit = QAction("Exit", self)
         bExit.setStatusTip("Don't know, maybe, stop the App")
         bExit.setIcon(Icons.EXIT)
         bExit.triggered.connect(OLAGui.APP.shutdown)
         self.addAction(bExit)
+
 
 
 class OLAStatusBar(QStatusBar):
@@ -966,8 +1014,9 @@ class OLAMainWindow(QMainWindow):
 
         self.move(OLAGuiSetup.POSX, OLAGuiSetup.POSY)
 
+        toolbarPos = Qt.ToolBarArea.TopToolBarArea
         self.toolbar = OLAToolbar("Main toolbar")
-        self.addToolBar(self.toolbar)
+        self.addToolBar(toolbarPos, self.toolbar)
 
         self.status = OLAStatusBar()
         self.setStatusBar(self.status)
@@ -1023,6 +1072,11 @@ class OLAApplication(QApplication):
         logging.info("Process scanner set to be executed every {}s".format(OLAGuiSetup.PROCESS_SCANNER_TIMER / 1000))
 
         self.scanInProgress = False
+
+    def showAbout(self):
+        about = OlaAbout(OLABackend.VAULT.VAULT)
+        about.show()
+        about.exec()
 
     def start(self):
         OLAGui.TAB_PANEL.tabSelected()

@@ -48,7 +48,7 @@ Not documented currently
 - ---
 - Logging : https://docs.pyhon.org/3/howto/logging.html ( detail : https://docs.python.org/3/library/logging.html )
 ---
-- resources : https://icons8.com/icons
+- resources : https://icons8exit.com/icons
 ---
 Obsidian link:
 https://help.obsidian.md/Extending+Obsidian/Obsidian+URI
