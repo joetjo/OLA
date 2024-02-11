@@ -27,6 +27,7 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 - About panel and third party references
 
 _Version 2024.02.11a:_ 
+
 ![ola Assistant](screen1.png "Obsidian file tag 'In Progress'")
 ![ola session](screen2.png "Last sessions launched tab")
 
