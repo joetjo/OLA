@@ -23,11 +23,10 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 
 # Issues :
 - No user documentation at all currently 
-- Fresh start without existing SBSGL / Markdown config will probably failed 
-- Emulator not managed ( LEGUI for example - popup menu added by empty, is this the right way to do it )
+- Fresh start without existing SBSGL / Markdown config will probably fail 
+- Emulator not managed ( LEGUI for example , to start japanese VN - popup menu added by is empty, is this the right way to do it ? )
 - Excluded game not managed ( tab added but not implemented )
-- Stop scanning game while report generation is in progress ( access to VAULT my be invalid )
-- About panel and third party references
+- Stop scanning game while report generation is in progress ( access to VAULT might be invalid )
 - ... 
 
 _Version 2024.02.11:_ 

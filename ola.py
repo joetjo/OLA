@@ -33,8 +33,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.11b"
-    PREVIOUS = "2024.02.11a"
+    VERSION = "2024.02.next"
+    PREVIOUS = "2024.02.11b"
 
 
 class OLASetup:
@@ -152,10 +152,10 @@ class OLAToolbar(QToolBar):
         bAbout.setStatusTip("Maybe display some stiff about this wonderful application")
         bAbout.setIcon(Icons.ABOUT)
         bAbout.triggered.connect(OLAGui.APP.showAbout)
+        self.addAction(bAbout)
 
         self.addSeparator()
 
-        self.addAction(bAbout)
         bExit = QAction("Exit", self)
         bExit.setStatusTip("Don't know, maybe, stop the App")
         bExit.setIcon(Icons.EXIT)
