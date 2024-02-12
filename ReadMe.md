@@ -22,12 +22,20 @@ Python allows to do more easily.
 and Obsidian is a great tool ! but it should do what it handles the best.
 
 # Issues :
+## Not impleted yet
 - No user documentation at all currently 
 - Fresh start without existing SBSGL / Markdown config will probably fail 
 - Emulator not managed ( LEGUI for example , to start japanese VN - popup menu added by is empty, is this the right way to do it ? )
 - Excluded game not managed ( tab added but not implemented )
+## Majors
+- Parsing failure in report configuration are visible only in console ( so old-debug must be used when updating the report setup json file )
 - Stop scanning game while report generation is in progress ( access to VAULT might be invalid )
 - Do not allow multiple report generation at the same time ( ot it will behave badly...)
+## Other remarks
+- mapping support to parent folder when game executable is generic ( supported by SGSGL, not integrated in OLA )
+- somehow, it should be visible there is a mapping and mapping other than parent should be removed ( sheet name id displayed instead now )
+- Search just check executable name, not sheet name...
+- single report generation execution time is nimportnawak
 - startup position and size define in configuration could be managed more smoothly
 - Existing game mapping from SBSGL old setup disturb vault link
 - ... 
