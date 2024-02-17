@@ -21,10 +21,10 @@ from datetime import datetime
 from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
-from PySide6.QtGui import QAction, QCursor
+from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
     QVBoxLayout, \
-    QApplication, QStatusBar, QToolBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollBar, QScrollArea, QSplashScreen, QTextBrowser, QDialog
+    QApplication, QStatusBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollArea, QSplashScreen, QTextBrowser, QDialog
 
 from base.fileutil import GhFileUtil
 from base.formatutil import FormatUtil
@@ -73,6 +73,22 @@ class OLAGuiSetup:
     LINE_REPORTS_COUNT = 18
 
 
+class OLALock:
+    MDENGINE = False
+
+    @staticmethod
+    def takeMdEngine():
+        if OLALock.MDENGINE:
+            return False
+        else:
+            OLALock.MDENGINE = True
+            return True
+
+    @classmethod
+    def releaseMDEngine(cls):
+        OLALock.MDENGINE = False
+
+
 class OLAGui:
     APP = None
     MAIN = None
@@ -98,7 +114,7 @@ class OLAGui:
         button = QPushButton(label)
         button.setStatusTip(tip)
         button.setIcon(icon)
-        button.setIconSize(QSize(24,24))
+        button.setIconSize(QSize(24, 24))
         button.clicked.connect(action)
         return button
 
@@ -139,7 +155,7 @@ class OlaAbout(QDialog):
 
 
 class OLAToolbar(QWidget):
-    def __init__(self, name):
+    def __init__(self):
         super().__init__()
 
         layout = QHBoxLayout()
@@ -158,10 +174,10 @@ class OLAToolbar(QWidget):
         layout.addStretch()
 
         rightPane = OLAGui.createContainerPanel(QHBoxLayout())
-        rightPane.layout().addWidget(OLAGui.createToolbarButton("","Maybe display some stiff about this wonderful application",
-                                                                Icons.ABOUT,OLAGui.APP.showAbout))
-        rightPane.layout().addWidget(OLAGui.createToolbarButton("","Don't know, maybe, stop the App",
-                                                                Icons.EXIT,OLAGui.APP.shutdown))
+        rightPane.layout().addWidget(OLAGui.createToolbarButton("", "Maybe display some stiff about this wonderful application",
+                                                                Icons.ABOUT, OLAGui.APP.showAbout))
+        rightPane.layout().addWidget(OLAGui.createToolbarButton("", "Don't know, maybe, stop the App",
+                                                                Icons.EXIT, OLAGui.APP.shutdown))
         layout.addWidget(rightPane)
 
 
@@ -969,6 +985,7 @@ class OLAObsidianAssistant(OLASharedGameListWidget):
         self.col1.setText(self.title)
 
     def vaultParsed(self):
+        OLALock.releaseMDEngine()
         self.title = "Vault: {} files, {} tags".format(len(OLABackend.VAULT.SORTED_FILES), len(OLABackend.VAULT.TAGS))
         self.col1.setText(self.title)
         self.loadPlaying()
@@ -1046,7 +1063,7 @@ class OLAMainWindow(QMainWindow):
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
 
-        self.toolbar = OLAToolbar("Main toolbar")
+        self.toolbar = OLAToolbar()
         layout.addWidget(self.toolbar)
 
         self.playingPanel = OLAPlayingPanel()
@@ -1130,25 +1147,31 @@ class OLAApplication(QApplication):
         QCoreApplication.quit()
 
     def parseVault(self):
-        OLAGui.ASSISTANT.vaultParsingInProgress()
-        mdgen = MdReportGenerator(allReports=False)
-        mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
-        self.threadpool.start(mdgen)
+        if OLALock.takeMdEngine():
+            OLAGui.ASSISTANT.vaultParsingInProgress()
+            mdgen = MdReportGenerator(allReports=False)
+            mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
+            self.threadpool.start(mdgen)
+        else:
+            OLAGui.MAIN.setStatus("Vault engine already running")
 
     def startReporting(self):
-        OLAGui.TAB_PANEL.clearAndShowReportsTab()
-        OLAGui.ASSISTANT.vaultReportInProgress()
-        mdgen = MdReportGenerator(allReports=True)
-        mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
-        mdgen.signals.md_report_generation_starting.connect(self.mdStarting)
-        mdgen.signals.md_last_report.connect(self.mdReportGenerated)
-        self.threadpool.start(mdgen)
+        if OLALock.takeMdEngine():
+            OLAGui.TAB_PANEL.clearAndShowReportsTab()
+            OLAGui.ASSISTANT.vaultReportInProgress()
+            mdgen = MdReportGenerator(allReports=True)
+            mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
+            mdgen.signals.md_report_generation_starting.connect(self.mdStarting)
+            mdgen.signals.md_last_report.connect(self.mdReportGenerated)
+            self.threadpool.start(mdgen)
 
-        filegen = FileUsageGenerator()
-        filegen.signals.file_usage_generation_finished.connect(self.fileUsageGenerated)
-        filegen.signals.sheet_link_progress.connect(self.sheetLinkProgress)
-        filegen.signals.sheet_link_finished.connect(self.sheetLinkChecked)
-        self.threadpool.start(filegen)
+            filegen = FileUsageGenerator()
+            filegen.signals.file_usage_generation_finished.connect(self.fileUsageGenerated)
+            filegen.signals.sheet_link_progress.connect(self.sheetLinkProgress)
+            filegen.signals.sheet_link_finished.connect(self.sheetLinkChecked)
+            self.threadpool.start(filegen)
+        else:
+            OLAGui.MAIN.setStatus("Vault engine already running")
 
     def startSingleReport(self, target):
         mdgen = MdReportGenerator(target=target, allReports=False)

@@ -30,7 +30,6 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 ## Majors
 - Parsing failure in report configuration are visible only in console ( so old-debug must be used when updating the report setup json file )
 - Stop scanning game while report generation is in progress ( access to VAULT might be invalid )
-- Do not allow multiple report generation at the same time ( ot it will behave badly...)
 ## Other remarks
 - mapping support to parent folder when game executable is generic ( supported by SGSGL, not integrated in OLA )
 - somehow, it should be visible there is a mapping and mapping other than parent should be removed ( sheet name id displayed instead now )
