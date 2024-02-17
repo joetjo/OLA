@@ -86,6 +86,22 @@ class OLAGui:
     EXCLUDED_TAB_NAME = "Excluded launchers"
     REPORTS_TAB_NAME = "Reports"
 
+    @staticmethod
+    def createContainerPanel(layout):
+        pane = QWidget()
+        pane.setContentsMargins(0, 0, 0, 0)
+        pane.setLayout(layout)
+        return pane
+
+    @staticmethod
+    def createToolbarButton(label, tip, icon, action):
+        button = QPushButton(label)
+        button.setStatusTip(tip)
+        button.setIcon(icon)
+        button.setIconSize(QSize(24,24))
+        button.clicked.connect(action)
+        return button
+
 
 class OlaAbout(QDialog):
     def __init__(self, vault):
@@ -130,46 +146,22 @@ class OLAToolbar(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
-        leftPane = QWidget()
-        leftPane.setContentsMargins(0, 0, 0, 0)
-        leftPane.setLayout(QHBoxLayout())
-        bRefresh = QPushButton("", self)
-        bRefresh.setStatusTip("Scan now to detect game process running")
-        bRefresh.setIcon(Icons.REFRESH)
-        bRefresh.clicked.connect(OLAGui.APP.startProcessCheck)
-        leftPane.layout().addWidget(bRefresh)
-
-        bGen = QPushButton("", self)
-        bGen.setStatusTip("Generate Markdown report and file usage")
-        bGen.setIcon(Icons.REPORT)
-        bGen.clicked.connect(OLAGui.APP.startReporting)
-        leftPane.layout().addWidget(bGen)
-
-        bGen = QPushButton("", self)
-        bGen.setStatusTip("Parse content of Obsidian vault")
-        bGen.setIcon(Icons.IMPORT)
-        bGen.clicked.connect(OLAGui.APP.parseVault)
-        leftPane.layout().addWidget(bGen)
-
+        leftPane = OLAGui.createContainerPanel(QHBoxLayout())
+        leftPane.layout().addWidget(OLAGui.createToolbarButton("", "Scan now to detect game process running",
+                                                               Icons.REFRESH, OLAGui.APP.startProcessCheck))
+        leftPane.layout().addWidget(OLAGui.createToolbarButton("", "Generate Markdown report and file usage",
+                                                               Icons.REPORT, OLAGui.APP.startReporting))
+        leftPane.layout().addWidget(OLAGui.createToolbarButton("", "Parse content of Obsidian vault",
+                                                               Icons.IMPORT, OLAGui.APP.parseVault))
         layout.addWidget(leftPane)
+
         layout.addStretch()
 
-        rightPane = QWidget()
-        rightPane.setContentsMargins(0, 0, 0, 0)
-        rightPane.setLayout(QHBoxLayout())
-
-        bAbout = QPushButton("", self)
-        bAbout.setStatusTip("Maybe display some stiff about this wonderful application")
-        bAbout.setIcon(Icons.ABOUT)
-        bAbout.clicked.connect(OLAGui.APP.showAbout)
-        rightPane.layout().addWidget(bAbout)
-
-        bExit = QPushButton("", self)
-        bExit.setStatusTip("Don't know, maybe, stop the App")
-        bExit.setIcon(Icons.EXIT)
-        bExit.clicked.connect(OLAGui.APP.shutdown)
-        rightPane.layout().addWidget(bExit)
-
+        rightPane = OLAGui.createContainerPanel(QHBoxLayout())
+        rightPane.layout().addWidget(OLAGui.createToolbarButton("","Maybe display some stiff about this wonderful application",
+                                                                Icons.ABOUT,OLAGui.APP.showAbout))
+        rightPane.layout().addWidget(OLAGui.createToolbarButton("","Don't know, maybe, stop the App",
+                                                                Icons.EXIT,OLAGui.APP.shutdown))
         layout.addWidget(rightPane)
 
 
