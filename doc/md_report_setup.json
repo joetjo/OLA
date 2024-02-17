@@ -245,7 +245,7 @@
           },
           "VNs - Next": {
             "target": "reports_next\\VNs_next.md",
-            "about" : "VNs available ( not already started once, not in development )",
+            "about" : "VNs available to be done ( not already started once, not in development ), by expectation and type",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
             "showTags": "allGameTags",
@@ -263,7 +263,7 @@
                       "isDevInProgress", "isInProgress", "isInStandby", "isDone"
                     ],
                     "condition_type": "not",
-                    "content_ref": "contentByNext"
+                    "content_ref": "VNFiltering"
                   }
                 ]
               }
@@ -649,9 +649,12 @@
               "_Incoming"
             ]
           },
-          "Error Missing Platform": {
-            "target": "reports\\ErrorMissingPlatform.md",
-            "path_ref": "game_owned",
+          "Errors" : {
+            "target": "reports\\Errors.md",
+            "about" : "Try to detected what is missing",
+            "path_ref": "game_available_and_in_development",
+            "commentTag" : "info",
+            "showTags": "allGameTags",
             "contents": [
               {
                 "title": "Missing Platform",
@@ -659,57 +662,63 @@
                   "PLATFORM"
                 ],
                 "condition_type": "not"
-              }
-            ]
-          },
-          "Error Missing Type": {
-            "target": "reports\\ErrorMissingType.md",
-            "path_ref": "game_owned",
-            "contents": [
+              },
               {
                 "title": "Missing Type",
                 "tag_condition": [
                   "TYPE"
                 ],
                 "condition_type": "not"
-              }
-            ]
-          },
-          "Error Missing Category": {
-            "target": "reports\\ErrorMissingCategory.md",
-            "path_ref": "game_owned",
-            "contents": [
+              },
               {
                 "title": "Missing Category",
                 "tag_condition": [
                   "CAT"
                 ],
                 "condition_type": "not"
-              }
-            ]
-          },
-          "Error Missing Story": {
-            "target": "reports\\ErrorMissingStory.md",
-            "path_ref": "game_owned",
-            "contents": [
+              },
               {
-                "title": "VN",
+                "title": "VN Missing Story",
                 "tag_refs": [
                   "isVN"
                 ],
-                "content_ref": "missingStory",
-                "else": {
-                  "title": "Undefined TYPE",
-                  "tag_condition": [
-                    "STORY"
-                  ],
-                  "condition_type": "not",
-                  "content_ref": "missingStory",
-                  "else": {
-                    "title": "Others than VN",
-                    "content_ref": "missingStory"
+                "contents" : [
+                  {
+                    "title": "VN Missing Story",
+                    "tag_condition": [
+                      "STORY"
+                    ],
+                    "condition_type": "not"
                   }
-                }
+                ]
+              },
+              {
+                "title": "Wished and Done",
+                "tag_condition": [
+                  "WISH", "DONE"
+                ],
+                "multi_condition": "and",
+                "contents" : [
+                  {
+                    "title": "Wished and Done ( should set to PLATFORM/WISH )",
+                    "tag_condition" : [ "PLATFORM/Wish"],
+                    "condition_type": "not"
+                  }
+                ]
+              },
+              {
+                "title": "Wished and Next ?",
+                "tag_condition": [
+                  "NEXT", "WISH"
+                ],
+                "multi_condition": "and",
+                "contents" : [
+                  {
+                    "title": "Wished and Done ( should set to PLATFORM/WISH )",
+                    "tag_condition" : [ "TYPE/Coop"],
+                    "condition_type": "not"
+                  }
+                ]
               }
             ]
           },
@@ -792,18 +801,6 @@
                 "tag_condition": [
                   "PLAY/SUITE"
                 ]
-              },
-              "Games Missing CAT Tag": {
-                "tag_condition": [
-                  "CAT/"
-                ],
-                "condition_type" : "not"
-              },
-              "Games Missing Type Tag": {
-                "tag_condition": [
-                  "TYPE/"
-                ],
-                "condition_type" : "not"
               }
             }
           }
@@ -812,7 +809,7 @@
           "paths" : {
             "game_owned": ["1.Available", "2.To classify" ],
             "game_available" : ["1.Available","2.To classify","5.Dev in progress"],
-            "game_available_and_in_development" : [ "1.Available", "2.To classify", "4.Wishlist (game available)\\Game sheets","5.Dev in progress", "6.Kickstarted\\in progress"],
+            "game_available_and_in_development" : [ "1.Available", "2.To classify", "4.Wishlist (game available)\\Game sheets","5.Dev in progress", "6.Kickstarted\\in progress", "_Incoming" ],
             "editors" :  [  "Editors" ]
           },
           "tags" : {
@@ -980,6 +977,13 @@
                       }
                   }
               ],
+          "contentByNextAndType" : [
+            {
+              "title" : "Must be done !",
+              "tag_condition" : [ "NEXT/1" ],
+              "content_ref" : "contentByType"
+            }
+          ],
           "contentByNext": [
                   {
                       "title": "%TAGNAME%",
@@ -1034,6 +1038,46 @@
               ],
               "else": {
                 "title": "Story ?"
+              }
+            }
+          ],
+          "VNFiltering": [
+            {
+              "title": "%TAGNAME%",
+              "tag_condition": [
+                "TYPE/"
+              ],
+              "contents": [
+                {
+                  "title": "Must Be Done",
+                  "tag_condition": [
+                    "NEXT/1"
+                  ]
+                },
+                {
+                  "title": "To be Done",
+                  "tag_condition": [
+                    "NEXT/2"
+                  ]
+                },
+                {
+                  "title": "To Test",
+                  "tag_condition": [
+                    "NEXT/3"
+                  ]
+                },
+                {
+                  "title": "For information",
+                  "tag_condition": [
+                    "NEXT/4"
+                  ]
+                },
+                {
+                  "title": "Unset expectation"
+                }
+              ],
+              "else": {
+                "title": "Unset Type"
               }
             }
           ],

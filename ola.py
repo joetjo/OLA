@@ -34,8 +34,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.11c"
-    PREVIOUS = "2024.02.11b"
+    VERSION = "2024.02.Next"
+    PREVIOUS = "2024.02.11c"
 
 
 class OLASetup:
@@ -122,46 +122,55 @@ class OlaAbout(QDialog):
         self.layout().addWidget(self.content)
 
 
-class OLAToolbar(QToolBar):
+class OLAToolbar(QWidget):
     def __init__(self, name):
-        super().__init__(name)
-        self.setIconSize(QSize(24, 24))
+        super().__init__()
 
-        bRefresh = QAction("Check running process", self)
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
+
+        leftPane = QWidget()
+        leftPane.setContentsMargins(0, 0, 0, 0)
+        leftPane.setLayout(QHBoxLayout())
+        bRefresh = QPushButton("", self)
         bRefresh.setStatusTip("Scan now to detect game process running")
         bRefresh.setIcon(Icons.REFRESH)
-        bRefresh.triggered.connect(OLAGui.APP.startProcessCheck)
-        self.addAction(bRefresh)
+        bRefresh.clicked.connect(OLAGui.APP.startProcessCheck)
+        leftPane.layout().addWidget(bRefresh)
 
-        self.addSeparator()
-
-        bGen = QAction("Generate vault reports", self)
+        bGen = QPushButton("", self)
         bGen.setStatusTip("Generate Markdown report and file usage")
         bGen.setIcon(Icons.REPORT)
-        bGen.triggered.connect(OLAGui.APP.startReporting)
-        self.addAction(bGen)
+        bGen.clicked.connect(OLAGui.APP.startReporting)
+        leftPane.layout().addWidget(bGen)
 
-        bGen = QAction("Load obsidian vault", self)
+        bGen = QPushButton("", self)
         bGen.setStatusTip("Parse content of Obsidian vault")
         bGen.setIcon(Icons.IMPORT)
-        bGen.triggered.connect(OLAGui.APP.parseVault)
-        self.addAction(bGen)
+        bGen.clicked.connect(OLAGui.APP.parseVault)
+        leftPane.layout().addWidget(bGen)
 
-        self.addSeparator()
+        layout.addWidget(leftPane)
+        layout.addStretch()
 
-        bAbout = QAction("", self)
+        rightPane = QWidget()
+        rightPane.setContentsMargins(0, 0, 0, 0)
+        rightPane.setLayout(QHBoxLayout())
+
+        bAbout = QPushButton("", self)
         bAbout.setStatusTip("Maybe display some stiff about this wonderful application")
         bAbout.setIcon(Icons.ABOUT)
-        bAbout.triggered.connect(OLAGui.APP.showAbout)
-        self.addAction(bAbout)
+        bAbout.clicked.connect(OLAGui.APP.showAbout)
+        rightPane.layout().addWidget(bAbout)
 
-        self.addSeparator()
-
-        bExit = QAction("Exit", self)
+        bExit = QPushButton("", self)
         bExit.setStatusTip("Don't know, maybe, stop the App")
         bExit.setIcon(Icons.EXIT)
-        bExit.triggered.connect(OLAGui.APP.shutdown)
-        self.addAction(bExit)
+        bExit.clicked.connect(OLAGui.APP.shutdown)
+        rightPane.layout().addWidget(bExit)
+
+        layout.addWidget(rightPane)
 
 
 class OLAStatusBar(QStatusBar):
@@ -262,6 +271,7 @@ class OLAPlayingPanel(QWidget):
         self.session = None
         self.rawName = None
         self.setLayout(QHBoxLayout())
+        self.layout().setContentsMargins(0, 0, 5, 0)
 
         # LEFT PANEL - Current Game
         leftPanel = QWidget()
@@ -1037,15 +1047,15 @@ class OLAMainWindow(QMainWindow):
 
         self.move(OLAGuiSetup.POSX, OLAGuiSetup.POSY)
 
-        toolbarPos = Qt.ToolBarArea.TopToolBarArea
-        self.toolbar = OLAToolbar("Main toolbar")
-        self.addToolBar(toolbarPos, self.toolbar)
-
         self.status = OLAStatusBar()
         self.setStatusBar(self.status)
         self.status.set("Loading in progress...")
 
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        self.toolbar = OLAToolbar("Main toolbar")
+        layout.addWidget(self.toolbar)
 
         self.playingPanel = OLAPlayingPanel()
         layout.addWidget(self.playingPanel)
