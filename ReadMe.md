@@ -51,6 +51,21 @@ _Version 2024.02.11:_
 
 Not documented currently
 
+This is a single dev "short" project, so shortcut taken in terms of code organisation and design.
+Whole QT Code is in a single file. Without an IDE than is aware of python classes, that's a mess to edit.
+(PyCharm recommended)
+
+modules organisation come from previous project:
+- base : utility code + setup in a JSon file management
+- diskAnalyser : sub part of markdown report that try to detect duplicate or similar file
+- markdownHelper : report generation from Markdown hierarchy file ( obsidian vault )
+- ola : QT Gui
+- sbsgl : core implementation of the launcher ( process detection and session management )
+
+Other folder:
+- doc : my own report as an example
+- test : fake games to test
+
 ## Interesting external Sources :
 
 - PySide6 tutorial : https://www.pythonguis.com/pyside6-tutorial/
