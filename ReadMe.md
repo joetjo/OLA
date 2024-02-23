@@ -34,7 +34,6 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 - mapping support to parent folder when game executable is generic ( supported by SGSGL, not integrated in OLA )
 - somehow, it should be visible there is a mapping and mapping other than parent should be removed ( sheet name id displayed instead now )
 - Search just check executable name, not sheet name...
-- single report generation execution time is nimportnawak
 - startup position and size define in configuration could be managed more smoothly
 - Existing game mapping from SBSGL old setup disturb vault link
 - ... 

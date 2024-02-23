@@ -15,6 +15,7 @@ import logging
 import sys
 from pathlib import Path
 
+# KEEP UNUSED IMPORT FOR pyInstaller !
 from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \

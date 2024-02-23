@@ -1138,6 +1138,8 @@ class OLAApplication(QApplication):
 
     def startReporting(self):
         if OLALock.takeMdEngine():
+            if OLAGui.REPORTS is not None:
+                OLAGui.REPORTS.start = time.time()
             OLAGui.TAB_PANEL.clearAndShowReportsTab()
             OLAGui.ASSISTANT.vaultReportInProgress()
             mdgen = MdReportGenerator(allReports=True)
@@ -1155,6 +1157,7 @@ class OLAApplication(QApplication):
             OLAGui.MAIN.setStatus("Vault engine already running")
 
     def startSingleReport(self, target):
+        OLAGui.REPORTS.start = time.time()
         mdgen = MdReportGenerator(target=target, allReports=False)
         mdgen.signals.md_report_generation_finished.connect(self.ignoreSignal)
         mdgen.signals.md_report_generation_starting.connect(self.ignoreSignal)
