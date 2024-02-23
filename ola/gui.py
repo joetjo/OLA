@@ -15,10 +15,8 @@
 import logging
 import os
 import subprocess
-import sys
 import time
 from datetime import datetime
-from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QCursor
@@ -34,25 +32,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.17a"
-    PREVIOUS = "2024.02.11c"
-
-
-class OLASetup:
-    LOG_LEVEL = logging.INFO
-    LOG_FILENAME = "ola.log"
-
-
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    print("Starting in packaged mode (temp folder {})".format(Path(sys._MEIPASS)))
-
-stdout = logging.StreamHandler(stream=sys.stdout)
-fmt = logging.Formatter("%(asctime)s %(message)s")
-stdout.setFormatter(fmt)
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-logger.addHandler(stdout)
+    VERSION = "2024.02.22"
+    PREVIOUS = "2024.02.17b"
 
 
 class OLAGuiSetup:
@@ -1227,9 +1208,3 @@ class OLAApplication(QApplication):
         if repairedLink > 0:
             message = "{} | {} inserted links".format(message, repairedLink)
         OLAGui.REPORTS.setLinkCheckStatus(message, names)
-
-
-logging.info("OLAApplication - starting application execution")
-app = OLAApplication(sys.argv, OLAVersionInfo.VERSION)
-app.start()
-logging.info("OLAApplication - application terminated")
