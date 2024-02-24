@@ -510,7 +510,8 @@
                 "contents": [
                   {
                     "tag_refs": [
-                      "isDevInProgress"
+                      "isDevInProgress",
+                      "isToBeContinued"
                     ],
                     "condition_type": "not",
                     "contents": [
@@ -520,6 +521,46 @@
                         ],
                         "condition_type": "not",
                         "content_ref": "contentByNext"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Others - Next (Standby)": {
+            "target": "reports_next\\Others_standby.md",
+            "about" : "game not fitting previous types and started but in standby ( not VN or RPG or Coop ) - Also include not classified games because without proper tagging , it's others",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNorVNAorRPGorCoop"
+                ],
+                "condition_type": "not",
+                "contents": [
+                  {
+                    "tag_refs" : [
+                      "isToBeContinued"
+                    ],
+                    "contents" : [
+                      {
+                        "tag_refs": [
+                          "isDevInProgress",
+                          "isInProgress"
+                        ],
+                        "condition_type": "not",
+                        "contents": [
+                          {
+                            "tag_refs": [
+                              "isDone"
+                            ],
+                            "condition_type": "not",
+                            "content_ref": "contentByNextAndType"
+                          }
+                        ]
                       }
                     ]
                   }
