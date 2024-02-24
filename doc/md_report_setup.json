@@ -356,24 +356,29 @@
             "contents": [
               {
                 "tag_refs": [
-                  "isRPG",
-                  "isToBeContinued"
+                  "isRPG"
                 ],
-                "multi_condition": "and",
                 "contents": [
                   {
-                    "tag_refs": [
-                      "isDevInProgress",
-                      "isInProgress"
+                    "tag_refs" : [
+                      "isToBeContinued"
                     ],
-                    "condition_type": "not",
-                    "contents": [
+                    "contents" : [
                       {
                         "tag_refs": [
-                          "isDone"
+                          "isDevInProgress",
+                          "isInProgress"
                         ],
                         "condition_type": "not",
-                        "content_ref": "contentByNextAndType"
+                        "contents": [
+                          {
+                            "tag_refs": [
+                              "isDone"
+                            ],
+                            "condition_type": "not",
+                            "content_ref": "contentByNextAndType"
+                          }
+                        ]
                       }
                     ]
                   }
@@ -492,7 +497,7 @@
           },
           "Other Next Game": {
             "target": "reports_next\\Others_next.md",
-            "about" : "game not fitting previous types and available to play ( not VN or RPG or Coop )",
+            "about" : "game not fitting previous types and available to play ( not VN or RPG or Coop ) - Also include not classified games because without proper tagging , it's others",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
             "showTags": "allGameTags",
