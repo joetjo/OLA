@@ -674,7 +674,7 @@
               }
             ]
           },
-          "Witch from review": {
+          "Wish from review": {
             "target": "reports_wish\\wish_from_review.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "PRICE",
@@ -696,6 +696,50 @@
                     ]
                   }
                 ]
+              }
+            ]
+          },
+          "done (evaluation published)" : {
+            "target": "reports_done\\Reviews.md",
+            "about": "Game with review / Evaluation published",
+            "commentTag": "DONE",
+            "path_ref": "game_available_and_in_development",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "DONE/Review"
+                ]
+              }
+            ]
+          },
+          "Best games" : {
+            "target": "reports_done\\BestGames.md",
+            "about": "Best games done",
+            "commentTag": "DONE",
+            "path_ref": "game_available_and_in_development",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "DONE/1"
+                ],
+                "content_ref": "contentByType"
+              }
+            ]
+          },
+          "Good games" : {
+            "target": "reports_done\\GoodGames.md",
+            "about": "Good game done",
+            "commentTag": "DONE",
+            "path_ref": "game_available_and_in_development",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "DONE/2"
+                ],
+                "content_ref": "contentByType"
               }
             ]
           },
