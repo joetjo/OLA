@@ -381,6 +381,7 @@ class OLAPlayingPanel(QWidget):
             self.bLink.setVisible(False)
             self.session = None
             self.sheet = None
+            self.rawName = None
 
     def gameLaunchFailure(self):
         self.game.setText("Game not available")
@@ -1095,6 +1096,7 @@ class OLAApplication(QApplication):
         logging.info("Process scanner set to be executed every {}s".format(OLAGuiSetup.PROCESS_SCANNER_TIMER / 1000))
 
         self.scanInProgress = False
+        self.scanRejected = 0
 
     def showAbout(self):
         about = OlaAbout(OLABackend.VAULT.VAULT)
@@ -1118,11 +1120,17 @@ class OLAApplication(QApplication):
     def startProcessCheck(self):
         if not self.scanInProgress:
             self.scanInProgress = True
+            self.scanRejected = 0
             proc = SgSGLProcessScanner()
             proc.signals.refresh_finished.connect(self.scanFinished)
             self.threadpool.start(proc)
         else:
             OLAGui.MAIN.setStatus("/!\\ game process scan rejected")
+            self.scanRejected = self.scanRejected + 1
+            if self.scanRejected == 2:
+                logging.warning("Too many scan process rejected, reset the protection")
+                self.scanRejected = 0
+                self.scanInProgress = False
 
     def shutdown(self):
         QCoreApplication.quit()
