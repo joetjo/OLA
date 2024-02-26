@@ -50,7 +50,7 @@ class GhStorage:
     def create(self):
         if self.json_file is not None:
             logging.info("GhStorage: Creating local storage {}".format(self.json_file))
-            with open(self.json_file, "w") as file:
+            with open(self.json_file, "w", encoding='utf-8') as file:
                 file.write("{\"version\" : {} }".format(self.version))
             self.open()
         else:

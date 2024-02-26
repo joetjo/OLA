@@ -75,26 +75,29 @@
               }
             ]
           },
-          "DEV - VNAs Tested Standby": {
-            "target": "reports_episodic\\VNAs-Standby_dev.md",
-            "about" : "All VNA games followed currently in development (episodic) in standby and not in waiting later state",
+          "DEV - VNAs Tested Wait Update": {
+            "target": "reports_episodic\\VNAs-Wait_update.md.md",
+            "about" : "All VNA games followed currently in development (episodic) waiting for an update ( not completion, episodic playing  )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
             "showTags": "waitedGameTags",
             "contents": [
               {
                 "tag_refs": [
-                  "isDevInProgress",
                   "isVNA",
-                  "isInStandby"
+                  "isWaitUpdate"
                 ],
                 "multi_condition": "and",
-                "contents" : [
+                "contents": [
                   {
-                    "tag_refs" : [
-                      "isWaitCompleted"
+                    "title": "Most expected",
+                    "tag_condition": [
+                      "PLAY/EXPECTED"
                     ],
-                    "condition_type": "not",
+                    "content_ref": "VNAFiltering"
+                  },
+                  {
+                    "title": "No expectation",
                     "content_ref": "VNAFiltering"
                   }
                 ]
@@ -102,7 +105,36 @@
             ]
           },
           "DEV - VNAs Wait Completed": {
-            "target": "reports_episodic\\VNAs-Wait_dev.md",
+            "target": "reports_episodic\\VNAs-Wait_completed.md",
+            "about" : "All VN games available but where an extension / update is in development",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "waitedGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA",
+                  "isWaitCompleted"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "title": "Most expected",
+                    "tag_condition": [
+                      "PLAY/EXPECTED"
+                    ],
+                    "content_ref": "contentByDate"
+                  },
+                  {
+                    "title": "No expectation",
+                    "content_ref": "contentByDate"
+                  }
+                ]
+              }
+            ]
+          },
+          "VNAs - Extension planned": {
+            "target": "reports_episodic\\VNAs-Wait_extension.md",
             "about" : "All VNA games followed currently in development (episodic) in waiting to be complete ( or to be check really later )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -110,12 +142,30 @@
             "contents": [
               {
                 "tag_refs": [
-                  "isDevInProgress",
                   "isVNA",
-                  "isWaitCompleted"
+                  "isWaitExtension"
                 ],
                 "multi_condition": "and",
-                "content_ref": "contentByDate"
+                "contents": [
+                  {
+                    "title": "Most expected",
+                    "tag_condition": [
+                      "PLAY/EXPECTED"
+                    ],
+                    "content_ref": "contentByDate"
+                  },
+                  {
+                    "title": "Game done",
+                    "tag_condition": [
+                      "DONE/"
+                    ],
+                    "content_ref": "contentByDate"
+                  },
+                  {
+                    "title": "Game not done yet",
+                    "content_ref": "contentByDate"
+                  }
+                ]
               }
             ]
           },
@@ -310,6 +360,42 @@
                 ],
                 "multi_condition": "and",
                 "content_ref": "contentByWish"
+              }
+            ]
+          },
+          "VNs - Extension planned": {
+            "target": "reports_episodic\\VNs-Wait_extension.md",
+            "about" : "All VN games available but where an extension / update is in development",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "waitedGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVN",
+                  "isWaitExtension"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "title": "Most expected",
+                    "tag_condition": [
+                      "PLAY/EXPECTED"
+                    ],
+                    "content_ref": "contentByDate"
+                  },
+                  {
+                    "title": "Game done",
+                    "tag_condition": [
+                      "DONE/"
+                    ],
+                    "content_ref": "contentByDate"
+                  },
+                  {
+                    "title": "Game not done yet",
+                    "content_ref": "contentByDate"
+                  }
+                ]
               }
             ]
           },
@@ -914,7 +1000,9 @@
             "isWishedGame" : [ "PLATFORM/Wish" ],
             "isDevInProgress" : [ "DEV/DEV_IN_PROGRESS" ],
             "isTested" : [ "DEV/TESTED" ],
-            "isWaitCompleted" : [ "PLAY/WAIT_COMPLETED" ],
+            "isWaitUpdate" : [ "DEV/DEV_IN_PROGRESS" ,"PLAY/WAIT_UPDATE" ],
+            "isWaitCompleted" : [ "DEV/DEV_IN_PROGRESS" ,"PLAY/WAIT_COMPLETED" ],
+            "isWaitExtension" : [ "DEV/STILL_UPDATED" ],
             "isInProgress" : [ "PLAY/INPROGRESS" ],
             "isInStandby" : [ "PLAY/STANDBY" ],
             "isToBeContinued" : [ "PLAY/ALT_ROUTES", "PLAY/STANDBY", "PLAY/NOT_FINISHED", "PLAY/STARTED", "PLAY/SUITE" ],
