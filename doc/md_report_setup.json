@@ -5,11 +5,12 @@
         "reports_readme": "reports.md",
         "reports_dupfiles": "disk content - duplicate stuff",
         "ignore" : [ ".git", ".obsidian", ".gitignore", ".gitattributes", "Readme.md",
-            "_glist", "reports", "reports_episodic", "reports_next", "reports_play", "reports_wish"
+            "_glist", "reports", "reports/reports_episodic", "reports/reports_next", "reports/reports_play", "reports/reports_wish"
         ],
         "reports" : {
           "Editors": {
             "target": "Editors.md",
+            "about" : "All editors ( that have catch my interest ). Classified by type EDITOR/ and expectation for other game EDTLOVE/( GOOD, AVG, LOW ), comment tag is INFO",
             "path_ref": "editors",
             "commentTag": "INFO",
             "showTags": "editorTags",
@@ -17,6 +18,7 @@
               {
                 "title": "%TAGNAME%",
                 "tag_condition": [ "EDITOR/" ],
+                "content_ref": "contentByEdtLove",
                 "else": {
                   "title": "Editor without flag"
                 }
@@ -24,7 +26,7 @@
             ]
           },
           "DEV - VNAs": {
-            "target": "reports_episodic\\VNAs_dev.md",
+            "target": "reports/reports_episodic\\VNAs_dev.md",
             "about" : "All VNA games followed currently in development not already tested",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -50,7 +52,7 @@
             ]
           },
           "DEV - VNAs Tested": {
-            "target": "reports_episodic\\VNAs-Tested_dev.md",
+            "target": "reports/reports_episodic\\VNAs-Tested_dev.md",
             "about" : "All VNA games followed currently in development (episodic) tested and not in waiting later state or in standby",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -76,7 +78,7 @@
             ]
           },
           "DEV - VNAs Tested Wait Update": {
-            "target": "reports_episodic\\VNAs-Wait_update.md.md",
+            "target": "reports/reports_episodic\\VNAs-Wait_update.md.md",
             "about" : "All VNA games followed currently in development (episodic) waiting for an update ( not completion, episodic playing  )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -105,7 +107,7 @@
             ]
           },
           "DEV - VNAs Wait Completed": {
-            "target": "reports_episodic\\VNAs-Wait_completed.md",
+            "target": "reports/reports_episodic\\VNAs-Wait_completed.md",
             "about" : "All VN games available but where an extension / update is in development",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -134,7 +136,7 @@
             ]
           },
           "VNAs - Extension planned": {
-            "target": "reports_episodic\\VNAs-Wait_extension.md",
+            "target": "reports/reports_episodic\\VNAs-Wait_extension.md",
             "about" : "All VNA games followed currently in development (episodic) in waiting to be complete ( or to be check really later )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -170,7 +172,7 @@
             ]
           },
           "VNAs - Next": {
-            "target": "reports_next\\VNAs_next.md",
+            "target": "reports/reports_next\\VNAs_next.md",
             "about" : "VNAs available to be done and not already played ( started, standby, tested, done )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -193,7 +195,7 @@
             ]
           },
           "VNAs - in standby": {
-            "target": "reports_next\\VNAs_standby.md",
+            "target": "reports/reports_next\\VNAs_standby.md",
             "about" : "VNAs available already started, not in progress but not finished ( standby, alternative route, sequel, just launch once, ... ) ",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -221,7 +223,7 @@
             ]
           },
           "VNA - Playing": {
-            "target": "reports_play\\VNAs_play.md",
+            "target": "reports/reports_play\\VNAs_play.md",
             "about" : "VNAs available - play though in progress",
             "path_ref": "game_available_and_in_development",
             "commentTag": "WALK",
@@ -244,15 +246,15 @@
             ]
           },
           "My wish list - VNAs": {
-            "target": "reports_wish\\VNAs_wish.md",
+            "target": "reports/reports_wish\\VNAs_wish.md",
             "about" : "VNA Wish listed ( ``PLATFORM/Wish`` )",
-            "path_ref": "game_available",
+            "path_ref": "game_available_and_in_development",
             "commentTag": "WISH",
             "showTags": "allGameTags",
             "contents": [
               {
                 "tag_refs": [
-                  "isWishedGame",
+                  "isWished",
                   "isVNA"
                 ],
                 "multi_condition": "and",
@@ -261,8 +263,8 @@
             ]
           },
           "DEV - VNs": {
-            "target": "reports_episodic\\VNs_dev.md",
-            "about" : "Followed VNs in development ( by expectation: 1, 2, 3 or TO_BE_SET )",
+            "target": "reports/reports_episodic\\VNs_dev.md",
+            "about" : "Followed VNs in development ( by expectation: most expected and then 1, 2, 3 or TO_BE_SET )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
             "showTags": "allGameTags",
@@ -273,12 +275,23 @@
                   "isVN"
                 ],
                 "multi_condition": "and",
-                "content_ref": "contentByNext"
+                "contents": [
+                  {
+                    "title": "Most expected",
+                    "tag_condition": [
+                      "PLAY/EXPECTED"
+                    ],
+                    "content_ref": "contentByDate"
+                  },
+                  {
+                    "content_ref": "contentByNext"
+                  }
+                ]
               }
             ]
           },
           "VNs - Next": {
-            "target": "reports_next\\VNs_next.md",
+            "target": "reports/reports_next\\VNs_next.md",
             "about" : "VNs available to be done ( not already started once, not in development ), by expectation and type",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -292,7 +305,7 @@
                 "contents": [
                   {
                     "tag_refs": [
-                      "isDevInProgress", "isInProgress", "isInStandby", "isDone", "isVNA"
+                      "isDevInProgress", "isInProgress", "isInStandby", "isDone", "isVNA", "isWished"
                     ],
                     "condition_type": "not",
                     "content_ref": "VNFiltering"
@@ -302,7 +315,7 @@
             ]
           },
           "VNs - in standby": {
-            "target": "reports_next\\VNs_standby.md",
+            "target": "reports/reports_next\\VNs_standby.md",
             "about" : "VNs available already started, not in progress but not finished ( standby, alternative route, sequel, just launch once, ... ) ",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -330,7 +343,7 @@
             ]
           },
           "VNs - Playing": {
-            "target": "reports_play\\VNs_play.md",
+            "target": "reports/reports_play\\VNs_play.md",
             "about" : "VNs available - play though in progress",
             "path_ref": "game_available",
             "commentTag": "WALK",
@@ -347,24 +360,43 @@
             ]
           },
           "My wish list - VNs": {
-            "target": "reports_wish\\VNs_wish.md",
-            "about" : "VN Wish listed ( ``PLATFORM/Wish`` )",
-            "path_ref": "game_available",
+            "target": "reports/reports_wish\\VNs_wish.md",
+            "about" : "VN Wish listed ( ``PLATFORM/Wish`` ) for Available games ( Most expected and then 1 to undefined )",
+            "path_ref": "game_available_and_in_development",
             "commentTag": "WISH",
             "showTags": "allGameTags",
             "contents": [
               {
                 "tag_refs": [
-                  "isWishedGame",
+                  "isWished",
                   "isVN"
                 ],
                 "multi_condition": "and",
-                "content_ref": "contentByWish"
+                "contents" :  [
+                  {
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents": [
+                      {
+                        "title": "Most expected",
+                        "tag_condition": [
+                          "PLAY/EXPECTED"
+                        ],
+                        "content_ref": "contentByDate"
+                      },
+                      {
+                        "content_ref": "contentByWish"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           },
           "VNs - Extension planned": {
-            "target": "reports_episodic\\VNs-Wait_extension.md",
+            "target": "reports/reports_episodic\\VNs-Wait_extension.md",
             "about" : "All VN games available but where an extension / update is in development",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -400,7 +432,7 @@
             ]
           },
           "RPGs - Next": {
-            "target": "reports_next\\RPGs_next.md",
+            "target": "reports/reports_next\\RPGs_next.md",
             "about": "To choose the next RPG ( available and not already done ) to do !",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -434,7 +466,7 @@
             ]
           },
           "RPGs - Next (Standby)": {
-            "target": "reports_next\\RPGs_standby.md",
+            "target": "reports/reports_next\\RPGs_standby.md",
             "about": "RPGs already played but in standby ( to be restarted ... or not that is the question )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -473,7 +505,7 @@
             ]
           },
           "RPG - Playing": {
-            "target": "reports_play\\RPGs_play.md",
+            "target": "reports/reports_play\\RPGs_play.md",
             "about" : "RPGs in progress",
             "path_ref": "game_available_and_in_development",
             "commentTag": "WALK",
@@ -487,7 +519,7 @@
             ]
           },
           "My wish list - RPGs": {
-            "target": "reports_wish\\RPGs_wish.md",
+            "target": "reports/reports_wish\\RPGs_wish.md",
             "about" : "Wished RPGs ( available or in development )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "WISH",
@@ -495,7 +527,7 @@
             "contents": [
               {
                 "tag_refs": [
-                  "isWishedGame",
+                  "isWished",
                   "isRPG"
                 ],
                 "multi_condition": "and",
@@ -515,9 +547,9 @@
             ]
           },
           "Next Coop Game": {
-            "target": "reports_next\\Coops_next.md",
+            "target": "reports/reports_next\\Coops_next.md",
             "about" : "find the next coop game",
-            "path_ref": "game_available",
+            "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
             "showTags": "allGameTags",
             "contents": [
@@ -548,7 +580,7 @@
             ]
           },
           "Coop - Playing": {
-            "target": "reports_play\\Coops_play.md",
+            "target": "reports/reports_play\\Coops_play.md",
             "about" : "Coop game in progress with Willy",
             "path_ref": "game_available",
             "commentTag": "PLAY/NOTE",
@@ -565,15 +597,15 @@
             ]
           },
           "My wish list - Coops": {
-            "target": "reports_wish\\Coops_wish.md",
+            "target": "reports/reports_wish\\Coops_wish.md",
             "about" : "Potential coop game",
-            "path_ref": "game_available",
+            "path_ref": "game_available_and_in_development",
             "commentTag": "WISH",
             "showTags": "allGameTags",
             "contents": [
               {
                 "tag_refs": [
-                  "isWishedGame",
+                  "isWished",
                   "isCoop"
                 ],
                 "multi_condition": "and",
@@ -582,7 +614,7 @@
             ]
           },
           "Other Next Game": {
-            "target": "reports_next\\Others_next.md",
+            "target": "reports/reports_next\\Others_next.md",
             "about" : "game not fitting previous types and available to play ( not VN or RPG or Coop ) - Also include not classified games because without proper tagging , it's others",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -615,7 +647,7 @@
             ]
           },
           "Others - Next (Standby)": {
-            "target": "reports_next\\Others_standby.md",
+            "target": "reports/reports_next\\Others_standby.md",
             "about" : "game not fitting previous types and started but in standby ( not VN or RPG or Coop ) - Also include not classified games because without proper tagging , it's others",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -655,7 +687,7 @@
             ]
           },
           "Other Playing Game": {
-            "target": "reports_play\\Others_play.md",
+            "target": "reports/reports_play\\Others_play.md",
             "about" : "game not fitting previous types and in progress ( not VN or RPG or Coop )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
@@ -682,15 +714,15 @@
             ]
           },
           "My wish list - Others": {
-            "target": "reports_wish\\Others_wish.md",
+            "target": "reports/reports_wish\\Others_wish.md",
             "about" : "game not fitting previous types and wished ( not VN or RPG or Coop )",
-            "path_ref": "game_available",
+            "path_ref": "game_available_and_in_development",
             "commentTag": "WISH",
             "showTags": "allGameTags",
             "contents": [
               {
                 "tag_refs": [
-                  "isWishedGame"
+                  "isWished"
                 ],
                 "contents": [
                   {
@@ -705,7 +737,7 @@
             ]
           },
           "KickStarted": {
-            "target": "reports_episodic\\Kicks.md",
+            "target": "reports/reports_episodic\\Kicks.md",
             "about" : "kickstarted game ( development still in progress )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -726,7 +758,7 @@
             ]
           },
           "Early Access": {
-            "target": "reports_episodic\\Early.md",
+            "target": "reports/reports_episodic\\Early.md",
             "about" : "Game bought while development is in progress ( and still is )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "EDITOR/NOTE",
@@ -747,7 +779,7 @@
             ]
           },
           "Steam": {
-            "target": "reports_platforms\\Steam.md",
+            "target": "reports/reports_platforms\\Steam.md",
             "path_ref": "game_available_and_in_development",
             "commentTag": "INFO",
             "showTags": "PlatformGameTags",
@@ -761,7 +793,8 @@
             ]
           },
           "Wish from review": {
-            "target": "reports_wish\\wish_from_review.md",
+            "target": "reports/reports_wish\\wish_from_review.md",
+            "about" : "game with good notation from 'home made review' that are candidate to be bought",
             "path_ref": "game_available_and_in_development",
             "commentTag": "PRICE",
             "showTags": "DoneGameTags",
@@ -777,7 +810,7 @@
                       {
                         "tag_condition" : [ "NOT/WISHED" ],
                         "condition_type": "not",
-                        "content_ref": "contentByCategory"
+                        "content_ref": "contentByDoneAndCat"
                       }
                     ]
                   }
@@ -786,7 +819,7 @@
             ]
           },
           "done (evaluation published)" : {
-            "target": "reports_done\\Reviews.md",
+            "target": "reports/reports_done\\Reviews.md",
             "about": "Game with review / Evaluation published",
             "commentTag": "DONE",
             "path_ref": "game_available_and_in_development",
@@ -800,7 +833,7 @@
             ]
           },
           "Best games" : {
-            "target": "reports_done\\BestGames.md",
+            "target": "reports/reports_done\\BestGames.md",
             "about": "Best games done",
             "commentTag": "DONE",
             "path_ref": "game_available_and_in_development",
@@ -815,7 +848,7 @@
             ]
           },
           "Good games" : {
-            "target": "reports_done\\GoodGames.md",
+            "target": "reports/reports_done\\GoodGames.md",
             "about": "Good game done",
             "commentTag": "DONE",
             "path_ref": "game_available_and_in_development",
@@ -997,11 +1030,11 @@
             "isEditor" : [ "EDITOR" ],
             "isKickStarted" : [ "DEV/KICKSTARTED" ],
             "isEarlyAccess" : [ "PRICE/EARLY_ACCESS_PAID" ],
-            "isWishedGame" : [ "PLATFORM/Wish" ],
+            "isWished" : [ "PLATFORM/Wish" ],
             "isDevInProgress" : [ "DEV/DEV_IN_PROGRESS" ],
-            "isTested" : [ "DEV/TESTED" ],
-            "isWaitUpdate" : [ "DEV/DEV_IN_PROGRESS" ,"PLAY/WAIT_UPDATE" ],
-            "isWaitCompleted" : [ "DEV/DEV_IN_PROGRESS" ,"PLAY/WAIT_COMPLETED" ],
+            "isTested" : [ "PLAY/TESTED" ],
+            "isWaitUpdate" : [ "PLAY/WAIT_UPDATE" ],
+            "isWaitCompleted" : [ "PLAY/WAIT_COMPLETED" ],
             "isWaitExtension" : [ "DEV/STILL_UPDATED" ],
             "isInProgress" : [ "PLAY/INPROGRESS" ],
             "isInStandby" : [ "PLAY/STANDBY" ],
@@ -1171,6 +1204,17 @@
               "content_ref" : "contentByType"
             }
           ],
+          "contentByDoneAndCat" : [
+            {
+              "title" : "Best ones !",
+              "tag_condition" : [ "DONE/1" ],
+              "content_ref" : "contentByCategory"
+            },
+            {
+              "title" : "Good ones",
+              "content_ref" : "contentByCategory"
+            }
+          ],
           "contentByNext": [
                   {
                       "title": "%TAGNAME%",
@@ -1179,6 +1223,17 @@
                       ],
                       "else" : {
                           "title": "Undefined expectation"
+                      }
+                  }
+              ],
+          "contentByEdtLove": [
+                  {
+                      "title": "%TAGNAME%",
+                      "tag_condition": [
+                          "EDTLOVE/"
+                      ],
+                      "else" : {
+                          "title": "Undefined expectation (EDTLOVE not set)"
                       }
                   }
               ],
