@@ -23,9 +23,9 @@
             "sheet": ""
         },
         "Control": {
-            "duration": "699.373205",
-            "last_duration": "2.806747",
-            "last_session": "1707029965.9353464",
+            "duration": "713.218685",
+            "last_duration": "2.869806",
+            "last_session": "1708886566.8645482",
             "note": "",
             "www": "",
             "tips": "",
@@ -124,6 +124,15 @@
     },
     "last_sessions": [
         [
+            "Control",
+            "C:\\Users\\nicol\\PycharmProjects\\Ola\\tests\\jeux\\games\\Control\\Control.exe",
+            "Control",
+            "",
+            "STEAM",
+            "",
+            ""
+        ],
+        [
             "RoseOfSegunda",
             "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
             "renpy",
@@ -147,15 +156,6 @@
             "tw3",
             "ALauncher",
             "GOG",
-            "",
-            ""
-        ],
-        [
-            "Control",
-            "C:\\Users\\nicol\\PycharmProjects\\Ola\\tests\\jeux\\games\\Control\\Control.exe",
-            "Control",
-            "",
-            "STEAM",
             "",
             ""
         ],

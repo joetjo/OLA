@@ -79,7 +79,7 @@ class MdReportGenerator(QRunnable):
     def run(self):
         try:
             logging.info("Starting Markdown report generation")
-            OLABackend.VAULT = MarkdownHelper(vault="C:\\Users\\nicol\\Documents\\GitHub\\gList2")
+            OLABackend.VAULT = MarkdownHelper(vault="J:\\Nicol-Documents\\GitHub\\gList2")
             if self.allReports:
                 OLABackend.VAULT.generateAllReports(self.signals.md_report_generation_starting, self.signals.md_last_report, reload=True)
                 logging.info("Generation Markdown reports finished")

@@ -32,13 +32,13 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.02.23"
-    PREVIOUS = "2024.02.17b"
+    VERSION = "2024.09.09"
+    PREVIOUS = "2024.07.31"
 
 
 class OLAGuiSetup:
-    POSX = 350
-    POSY = 1440
+    POSX = 10  # 350
+    POSY = 20  # 1440
     PROCESS_SCANNER_TIMER = 20 * 1000
     GAME_NAME_MIN_WIDTH = 200
     TAG_MIN_WIDTH = 60
