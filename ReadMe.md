@@ -27,10 +27,15 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 - Fresh start without existing SBSGL / Markdown config will probably fail 
 - Emulator not managed ( LEGUI for example , to start japanese VN - popup menu added by is empty, is this the right way to do it ? )
 - Excluded game not managed ( tab added but not implemented )
+
 ## Majors
+- Vault name hardcoded and not taken from configuration file
+- keep track of the last window position on normal exit to keep it at the same place ( but somehow detect if not in the screen )
 - Parsing failure in report configuration are visible only in console ( so old-debug must be used when updating the report setup json file )
 - Stop scanning game while report generation is in progress ( access to VAULT might be invalid )
 - Report generation : path ref seems to select file outside the requested folder...
+- game installed while OLA is running are not refreshed properly ( install icon not enabled for example - to test mode )
+
 ## Other remarks
 - mapping support to parent folder when game executable is generic ( supported by SGSGL, not integrated in OLA )
 - somehow, it should be visible there is a mapping and mapping other than parent should be removed ( sheet name id displayed instead now )

@@ -78,15 +78,19 @@ class MdReportGenerator(QRunnable):
     @Slot()  # QtCore.Slot
     def run(self):
         try:
-            logging.info("Starting Markdown report generation")
-            OLABackend.VAULT = MarkdownHelper(vault="J:\\Nicol-Documents\\GitHub\\gList2")
+            vault = "J:\\Nicol-Documents\\GitHub\\gList2"
+            logging.info("Executing Markdown report module with hard coded vault: {}".format(vault))
+            OLABackend.VAULT = MarkdownHelper(vault=vault)
             if self.allReports:
+                logging.info("Starting all reports generation")
                 OLABackend.VAULT.generateAllReports(self.signals.md_report_generation_starting, self.signals.md_last_report, reload=True)
                 logging.info("Generation Markdown reports finished")
             elif self.target is not None:
+                logging.info("Starting single report generation")
                 OLABackend.VAULT.generateReport(self.target, self.signals.md_report_generation_starting, self.signals.md_last_report)
                 logging.info("Generation Markdown single report finished")
             else:
+                logging.info("Loading vault...")
                 OLABackend.VAULT.parseVault()
                 logging.info("Parse Vault finished")
                 OLABackend.VAULT_READY = True

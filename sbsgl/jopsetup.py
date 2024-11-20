@@ -14,7 +14,6 @@
 
 from base.setup import GhSetup
 
-
 # Setup definition for ZikRandomizer
 # Setup file is stored in home folder: .ZikMgr.json
 # - FOLDER  # folder path on desktop/laptop
@@ -26,6 +25,8 @@ from base.setup import GhSetup
 
 class JopSetup:
     _global_setup_ = None
+    APP_POSX = "APP_POSX"
+    APP_POSY = "APP_POSY"
     APP_WIDTH = "APP_WIDTH"
     APP_MIN_HEIGHT = "APP_MIN_HEIGHT"
     APP_HEIGHT_BY_GAME = "APP_HEIGHT_BY_GAME"
@@ -65,11 +66,6 @@ class JopSetup:
     EXTENDED_MODE = "EXTENDED_MODE"
 
     @staticmethod
-    # Test Purpose
-    def initJopSetup(content):
-        JopSetup._global_setup_ = JopSetup(content)
-
-    @staticmethod
     def getJopSetup():
         return JopSetup._global_setup_
 
@@ -83,6 +79,8 @@ class JopSetup:
         self.dirty = False
         if print_mode:
             print("================= SbSGM SETUP  =========================")
+        self.initSetupEntry(self.APP_POSX, 10)
+        self.initSetupEntry(self.APP_POSY, 10)
         self.initSetupEntry(self.APP_WIDTH, 1050)
         self.initSetupEntry(self.APP_MIN_HEIGHT, 400)
         self.initSetupEntry(self.APP_HEIGHT_BY_GAME, 24)

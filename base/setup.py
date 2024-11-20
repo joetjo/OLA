@@ -35,7 +35,7 @@ class GhSetup(GhStorage):
                 self.save()
                 self.setup = self.data()['global']
 
-            logging.info("GhSetup: Configuration loaded")
+            logging.info("GhSetup: Configuration loaded from {}".format(self.filename))
         else:
             super(GhSetup, self).__init__(appname, content)
 

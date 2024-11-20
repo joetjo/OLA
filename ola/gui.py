@@ -29,16 +29,15 @@ from base.formatutil import FormatUtil
 from resources.resources import Icons
 from sbsgl.sbsgl import SBSGL
 from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScanner, OLABackend
+from sbsgl.JopLauncherConstant import JopLauncher, JopSETUP
 
 
 class OLAVersionInfo:
-    VERSION = "2024.09.09"
-    PREVIOUS = "2024.07.31"
+    VERSION = "2024.11.NEXT"
+    PREVIOUS = "2024.09.09"
 
 
 class OLAGuiSetup:
-    POSX = 10  # 350
-    POSY = 20  # 1440
     PROCESS_SCANNER_TIMER = 20 * 1000
     GAME_NAME_MIN_WIDTH = 200
     TAG_MIN_WIDTH = 60
@@ -1036,7 +1035,10 @@ class OLAMainWindow(QMainWindow):
         OLAGui.MAIN = self
         self.setWindowTitle("Obsidian Launcher Assistant [SBSGL] - {}".format(version))
 
-        self.move(OLAGuiSetup.POSX, OLAGuiSetup.POSY)
+        posx = JopSETUP.get(JopSETUP.APP_POSX)
+        posy = JopSETUP.get(JopSETUP.APP_POSY)
+        logging.info("OLAMainWindow - initial position from setup file {},{}".format(posx, posy))
+        self.move( posx, posy )
 
         self.status = OLAStatusBar()
         self.setStatusBar(self.status)
