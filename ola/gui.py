@@ -1101,7 +1101,7 @@ class OLAMainWindow(QMainWindow):
         logging.info("OLAMainWindow - initial position from setup file: {},{} and size {} * {}\nNote : Edit configuration startup position is invalid"
                      .format(posx, posy, height, width))
         self.move( posx, posy )
-        # TODO set windows size
+        self.resize( width, height )
 
         self.status = OLAStatusBar()
         self.setStatusBar(self.status)
@@ -1130,9 +1130,8 @@ class OLAMainWindow(QMainWindow):
 
     def storeGuiState(self, olaSetup):
         size = self.geometry()
-        # TODO find window position
-        #olaSetup.set(OLAGuiSetup.POSX, 10)
-        #olaSetup.set(OLAGuiSetup.POSY, 10)
+        olaSetup.set(OLAGuiSetup.POSX, self.x())
+        olaSetup.set(OLAGuiSetup.POSY, self.y())
         olaSetup.set(OLAGuiSetup.HEIGHT, size.height())
         olaSetup.set(OLAGuiSetup.WIDTH, size.width())
 
