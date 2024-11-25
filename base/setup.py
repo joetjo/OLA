@@ -26,7 +26,7 @@ class GhSetup(GhStorage):
             else:
                 home = path
             self.filename = "{}/.{}.json".format(home, appname)
-            super(GhSetup, self).__init__(self.filename)
+            super(GhSetup, self).__init__(self.filename, appname)
 
             try:
                 self.setup = self.data()['global']

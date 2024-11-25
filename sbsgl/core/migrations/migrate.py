@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from sbsgl.JopLauncherConstant import JopLauncher
+from sbsgl.SbSGLLauncherConstant import SbSGLLauncher
 from sbsgl.log import Log
 
 
@@ -53,7 +53,7 @@ class StorageVersion:
                     1,
                     2,
                     4,
-                    JopLauncher.DB_VERSION]
+                    SbSGLLauncher.DB_VERSION]
 
     MIGRATIONS_STEP = [nop,
                        nop,

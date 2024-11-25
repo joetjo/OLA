@@ -1,10 +1,10 @@
-from sbsgl.jopsetup import JopSetup
+from sbsgl.sbsglsetup import SbSGLSetup
 
 # True for print_mode
-JopSETUP = JopSetup(False)
+SbSGLSETUP = SbSGLSetup(False)
 
 
-class JopLauncher:
+class SbSGLLauncher:
     # To be updated on release
     VERSION = '2023.12.12a'
     DEBUG = False
@@ -18,12 +18,12 @@ class JopLauncher:
     DB_VERSION = 4
 
     GAME_PLATFORMS = {
-        "steam.exe": JopSETUP.STEAM,
-        "GalaxyClient.exe": JopSETUP.GOG,
-        "EpicGamesLauncher.exe": JopSETUP.EPIC,
-        "upc.exe": JopSETUP.UBISOFT,
-        "itch.exe": JopSETUP.ITCHIO,
-        "Origin.exe": JopSETUP.ORIGIN
+        "steam.exe": SbSGLSETUP.STEAM,
+        "GalaxyClient.exe": SbSGLSETUP.GOG,
+        "EpicGamesLauncher.exe": SbSGLSETUP.EPIC,
+        "upc.exe": SbSGLSETUP.UBISOFT,
+        "itch.exe": SbSGLSETUP.ITCHIO,
+        "Origin.exe": SbSGLSETUP.ORIGIN
     }
 
     COM_APP_DISCORD = "Discord"

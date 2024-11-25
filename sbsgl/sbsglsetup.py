@@ -23,7 +23,7 @@ from base.setup import GhSetup
 # - TAG  # prefix used to randomize file
 
 
-class JopSetup:
+class SbSGLSetup:
     _global_setup_ = None
     APP_POSX = "APP_POSX"
     APP_POSY = "APP_POSY"
@@ -66,21 +66,20 @@ class JopSetup:
     EXTENDED_MODE = "EXTENDED_MODE"
 
     @staticmethod
-    def getJopSetup():
-        return JopSetup._global_setup_
+    def SbSGLSetup():
+        return SbSGLSetup._global_setup_
 
     def __init__(self, print_mode, content=None):
         self.print_mode = print_mode
 
         self.SETUP = GhSetup('SbSGL', content)
 
-        self.ZMGR = self.SETUP.getBloc('SbSGL')
+        self.SBSGL = self.SETUP.getBloc('SbSGL')
 
         self.dirty = False
         if print_mode:
-            print("================= SbSGM SETUP  =========================")
-        self.initSetupEntry(self.APP_POSX, 10)
-        self.initSetupEntry(self.APP_POSY, 10)
+            print("================= SbSGL SETUP  =========================")
+        # Graphical setup is for the old Tk-TCL gui ( deprecated )
         self.initSetupEntry(self.APP_WIDTH, 1050)
         self.initSetupEntry(self.APP_MIN_HEIGHT, 400)
         self.initSetupEntry(self.APP_HEIGHT_BY_GAME, 24)
@@ -131,9 +130,9 @@ class JopSetup:
     def initSetupEntry(self, name, default_value):
         reset = ""
         try:
-            value = self.ZMGR[name]
+            value = self.SBSGL[name]
         except KeyError:
-            self.ZMGR[name] = default_value
+            self.SBSGL[name] = default_value
             value = default_value
             self.dirty = True
         if self.print_mode:
@@ -142,8 +141,8 @@ class JopSetup:
     # set property value and generate KeyError is this is not a supported key entry
     # return previous value
     def set(self, name, value):
-        old = self.ZMGR[name]
-        self.ZMGR[name] = value
+        old = self.SBSGL[name]
+        self.SBSGL[name] = value
         if not self.dirty:
             print("Setup has been modified and has to be saved")
             self.dirty = True
@@ -151,7 +150,7 @@ class JopSetup:
 
     # get property value and generate KeyError is this is not a supported key entry
     def get(self, name):
-        return self.ZMGR[name]
+        return self.SBSGL[name]
 
     def save(self):
         self.SETUP.save()

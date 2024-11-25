@@ -16,16 +16,16 @@ import os
 import re
 from datetime import datetime
 
-from sbsgl.JopLauncherConstant import JopLauncher, JopSETUP
+from sbsgl.SbSGLLauncherConstant import SbSGLLauncher, SbSGLSETUP
 from sbsgl.log import Log
 
 
 class ProcessInfo:
-    game_extension = JopSETUP.get(JopSETUP.GAME_EXTENSION)
+    game_extension = SbSGLSETUP.get(SbSGLSETUP.GAME_EXTENSION)
 
     def __init__(self, pinfo):
 
-        self.game_pattern = JopSETUP.get(JopSETUP.GAME_PATTERN)
+        self.game_pattern = SbSGLSETUP.get(SbSGLSETUP.GAME_PATTERN)
 
         self.pinfo = pinfo
         self.pid = pinfo['pid']
@@ -83,16 +83,16 @@ class ProcessInfo:
     def platformDetector(self, path):
         if self.path is None:
             return None
-        for key in JopLauncher.GAME_PLATFORMS:
+        for key in SbSGLLauncher.GAME_PLATFORMS:
             if re.search(key, path, re.IGNORECASE):
-                return JopLauncher.GAME_PLATFORMS[key]
+                return SbSGLLauncher.GAME_PLATFORMS[key]
 
     def otherDetector(self, path):
         if self.path is None:
             return None
-        for key in JopLauncher.COM_APP:
+        for key in SbSGLLauncher.COM_APP:
             if re.search(key, path, re.IGNORECASE):
-                return JopLauncher.COM_APP[key]
+                return SbSGLLauncher.COM_APP[key]
 
     def setStarted(self):
         if self.started is None:

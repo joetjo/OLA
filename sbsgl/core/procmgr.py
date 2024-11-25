@@ -18,14 +18,14 @@ import logging  # This module is thread safe.
 import threading
 import time
 
-from sbsgl.JopLauncherConstant import JopLauncher, JopSETUP
+from sbsgl.SbSGLLauncherConstant import SbSGLLauncher, SbSGLSETUP
 from base.jsonstore import GhStorage
 from sbsgl.data.session import SessionList, Session
 from sbsgl.core.migrations.migrate import StorageVersion
 from sbsgl.core.private.currentgame import GameProcessHolder
 from sbsgl.core.private.process import ProcessInfo
 from sbsgl.core.private.processutil import ProcessUtil
-from sbsgl.jopsetup import JopSetup
+from sbsgl.sbsglsetup import SbSGLSetup
 
 LOCAL_STORAGE = 'local_storage.json'
 LOCK = threading.Lock()
@@ -52,8 +52,8 @@ class ProcMgr:
         self.currentGame = GameProcessHolder()
         self.previousGame = GameProcessHolder()
 
-        self.storage = GhStorage(LOCAL_STORAGE, version=JopLauncher.DB_VERSION)
-        StorageVersion.check_migration(self.storage, JopLauncher.DB_VERSION)
+        self.storage = GhStorage(LOCAL_STORAGE, "SBSGL", version=SbSGLLauncher.DB_VERSION)
+        StorageVersion.check_migration(self.storage, SbSGLLauncher.DB_VERSION)
 
         try:
             self.games = self.storage.data()["Games"]
@@ -70,13 +70,13 @@ class ProcMgr:
         self.platforms = []
         self.others = []
         self.games_platforms = [""]
-        for key in JopLauncher.GAME_PLATFORMS:
-            self.games_platforms.append(JopLauncher.GAME_PLATFORMS[key])
+        for key in SbSGLLauncher.GAME_PLATFORMS:
+            self.games_platforms.append(SbSGLLauncher.GAME_PLATFORMS[key])
 
         # Game properties
-        self.games_types = JopSETUP.get(JopSetup.GAME_TYPES)
-        self.games_statuses = JopSETUP.get(JopSetup.GAME_STATUSES)
-        self.games_notes = JopSETUP.get(JopSetup.GAME_NOTES)
+        self.games_types = SbSGLSETUP.get(SbSGLSetup.GAME_TYPES)
+        self.games_statuses = SbSGLSETUP.get(SbSGLSetup.GAME_STATUSES)
+        self.games_notes = SbSGLSETUP.get(SbSGLSetup.GAME_NOTES)
 
     # Returns current game if current game is still running
     def getCurrentGameDetected(self):

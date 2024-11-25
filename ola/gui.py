@@ -18,6 +18,7 @@ import subprocess
 import time
 from datetime import datetime
 
+from PySide6 import QtGui
 from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
@@ -26,10 +27,10 @@ from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWin
 
 from base.fileutil import GhFileUtil
 from base.formatutil import FormatUtil
+from base.setup import GhSetup
 from resources.resources import Icons
 from sbsgl.sbsgl import SBSGL
 from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScanner, OLABackend
-from sbsgl.JopLauncherConstant import JopLauncher, JopSETUP
 
 
 class OLAVersionInfo:
@@ -38,6 +39,7 @@ class OLAVersionInfo:
 
 
 class OLAGuiSetup:
+    # Constants - not (yet?) configurable
     PROCESS_SCANNER_TIMER = 20 * 1000
     GAME_NAME_MIN_WIDTH = 200
     TAG_MIN_WIDTH = 60
@@ -51,7 +53,58 @@ class OLAGuiSetup:
     DEFAULT_SESSION_FILTER = "INPROGRESS"
     DEFAULT_INSTALL_MODE_FILTER = True
     LINE_REPORTS_COUNT = 18
+    # CONFIGURABLE ENTRIES
+    POSX = "posx"
+    POSY = "posy"
+    HEIGHT = "height"
+    WIDTH = "width"
 
+    @staticmethod
+    def getSetupEntry(name):
+        return OLAGui.APP.olaSetup.get(name)
+
+    def __init__(self, print_mode, content=None):
+        self.print_mode = print_mode
+        self.setupFile = GhSetup('OLA', content)
+        self.SETUP = self.setupFile.getBloc("OLA")
+        self.dirty = False
+
+        if print_mode:
+            print("================= OLA SETUP  =========================")
+        self.posx = self.initSetupEntry(OLAGuiSetup.POSX, 10)
+        self.posy = self.initSetupEntry(OLAGuiSetup.POSY, 10)
+        self.height = self.initSetupEntry(OLAGuiSetup.HEIGHT, 0)
+        self.width = self.initSetupEntry(OLAGuiSetup.WIDTH, 0)
+
+    def initSetupEntry(self, name, default_value):
+        reset = ""
+        try:
+            value = self.SETUP[name]
+        except KeyError:
+            self.SETUP[name] = default_value
+            value = default_value
+            self.dirty = True
+        if self.print_mode:
+            print(">>>>>>> {}: {}{}".format(name, value, reset))
+        return value
+
+    # set property value and generate KeyError is this is not a supported key entry
+    # return previous value
+    def set(self, name, value):
+        old = self.SETUP[name]
+        self.SETUP[name] = value
+        if not self.dirty:
+            print("Setup has been modified and has to be saved")
+            self.dirty = True
+        return old
+
+    # get property value and generate KeyError is this is not a supported key entry
+    def get(self, name):
+        return self.SETUP[name]
+
+    def save(self):
+        self.setupFile.save()
+        self.dirty = False
 
 class OLALock:
     MDENGINE = False
@@ -1035,10 +1088,20 @@ class OLAMainWindow(QMainWindow):
         OLAGui.MAIN = self
         self.setWindowTitle("Obsidian Launcher Assistant [SBSGL] - {}".format(version))
 
-        posx = JopSETUP.get(JopSETUP.APP_POSX)
-        posy = JopSETUP.get(JopSETUP.APP_POSY)
-        logging.info("OLAMainWindow - initial position from setup file {},{}".format(posx, posy))
+        size = self.geometry()
+        posx = OLAGuiSetup.getSetupEntry(OLAGuiSetup.POSX)
+        posy = OLAGuiSetup.getSetupEntry(OLAGuiSetup.POSY)
+        # TODO Check this is really visible...
+        height = OLAGuiSetup.getSetupEntry(OLAGuiSetup.HEIGHT)
+        if height < size.height():
+            height = size.height()
+        width = OLAGuiSetup.getSetupEntry(OLAGuiSetup.WIDTH)
+        if width < size.width():
+            width = size.width()
+        logging.info("OLAMainWindow - initial position from setup file: {},{} and size {} * {}\nNote : Edit configuration startup position is invalid"
+                     .format(posx, posy, height, width))
         self.move( posx, posy )
+        # TODO set windows size
 
         self.status = OLAStatusBar()
         self.setStatusBar(self.status)
@@ -1065,12 +1128,20 @@ class OLAMainWindow(QMainWindow):
     def setStatus(self, message):
         self.status.set(message)
 
+    def storeGuiState(self, olaSetup):
+        size = self.geometry()
+        # TODO find window position
+        #olaSetup.set(OLAGuiSetup.POSX, 10)
+        #olaSetup.set(OLAGuiSetup.POSY, 10)
+        olaSetup.set(OLAGuiSetup.HEIGHT, size.height())
+        olaSetup.set(OLAGuiSetup.WIDTH, size.width())
 
 class OLAApplication(QApplication):
 
     def __init__(self, argv, version):
         super().__init__(argv)
 
+        self.olaSetup = OLAGuiSetup(True)
         Icons.initIcons()
 
         self.splash = QSplashScreen(Icons.SPLASH)
@@ -1135,6 +1206,8 @@ class OLAApplication(QApplication):
                 self.scanInProgress = False
 
     def shutdown(self):
+        self.main.storeGuiState(self.olaSetup)
+        self.olaSetup.save()
         QCoreApplication.quit()
 
     def parseVault(self):

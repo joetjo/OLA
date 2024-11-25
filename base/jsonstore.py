@@ -19,13 +19,14 @@ import logging
 class GhStorage:
 
     # init from json file
-    def __init__(self, json_file, content=None, version=0):
+    def __init__(self, json_file, label, content=None, version=0):
         if content is None:
+            self.label = label
             self.json_file = json_file
             self.content = {}
             self.version = version
             try:
-                self.open()
+                self.open(label)
             except FileNotFoundError:
                 try:
                     self.create()
@@ -38,12 +39,12 @@ class GhStorage:
             self.version = 0
             logging.info("GhStorage: transient usage")
 
-    def open(self):
+    def open(self, label):
         if self.json_file is not None:
             with open(self.json_file, encoding='utf-8') as file:
                 self.content = json.load(file)
                 self.version = self.getOrCreate("version", 0)
-            logging.info("GhStorage: loaded - version {}".format(self.version))
+            logging.info("GhStorage: {} loaded - version {} - local file: {}".format(label, self.version, self.json_file))
         else:
             logging.info("GhStorage: open ignored, not open from file")
 

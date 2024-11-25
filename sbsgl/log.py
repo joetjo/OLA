@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from sbsgl.JopLauncherConstant import JopLauncher
+from sbsgl.SbSGLLauncherConstant import SbSGLLauncher
 
 
 class Log:
