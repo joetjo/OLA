@@ -30,7 +30,6 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 
 ## In progress ( somehow )
 - Vault name hardcoded and not taken from configuration file
-- keep track of the last window position on normal exit to keep it at the same place ( but somehow detect if not in the screen )
 
 ## Majors
 - Parsing failure in report configuration are visible only in console ( so old-debug must be used when updating the report setup json file )
