@@ -101,9 +101,6 @@ class ProcMgr:
         platforms = []
         others = []
 
-        # One single game should be detected at the same time
-        logging.debug("CORE: BEGIN PLIST UPDATE ( current game {} )".format(self.currentGame.pid))
-
         #
         # Retrieve Process List
         #
@@ -228,8 +225,6 @@ class ProcMgr:
             self.storage.save()
 
             self.previousGame = None
-
-        logging.debug("END PLIST UPDATE")
 
     @staticmethod
     def toString(pdict):
