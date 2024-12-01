@@ -64,9 +64,9 @@ class MarkdownHelper:
                 entryCount = entryCount + 1
                 mdfile = MhMarkdownFile(key, entry, self.vaultLenPath)
                 self.FILES[key] = mdfile
-                logging.debug("MDR | {}>{} {}".format(shift, key, mdfile.tags))
+                logging.debug("MDR | {}>{} {}".format(shift, key.encode("utf-8"), mdfile.tags))
                 if len(mdfile.tagsComment) > 0:
-                    logging.debug("MDR | {}>>>> comments {}".format(shift, mdfile.tagsComment))
+                    logging.debug("MDR | {}>>>> comments {}".format(shift, mdfile.tagsComment).encode("utf-8"))
                 playInProgress = False
                 for tag in mdfile.tags:
                     self.TAGS[tag] = tag
