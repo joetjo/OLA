@@ -22,9 +22,10 @@ from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWin
     QVBoxLayout, \
     QApplication, QStatusBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollArea, QSplashScreen, QTextBrowser, QDialog
 
-from ola.gui import OLAApplication, OLAVersionInfo
+from ola.gui import OLAApplication, OLAVersionInfo, OLAGuiSetup
 
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    OLAGuiSetup.OLA_DEV_MODE = False
     print("Starting in packaged mode (temp folder {})".format(Path(sys._MEIPASS)))
 
 stdout = logging.StreamHandler(stream=sys.stdout)
@@ -32,10 +33,17 @@ fmt = logging.Formatter("%(asctime)s %(message)s")
 stdout.setFormatter(fmt)
 
 logger = logging.getLogger()
+# Remove stderr, default handler from logger
+logger.removeHandler(logger.handlers[0])
+
 logger.setLevel(logging.DEBUG)
 logger.addHandler(stdout)
-
 logging.info("OLAApplication - starting application execution")
+
+print("OLA Loggers setup:")
+for handler in logger.handlers:
+    print(handler)
+
 app = OLAApplication(sys.argv, OLAVersionInfo.VERSION)
 app.start()
 logging.info("OLAApplication - application terminated")

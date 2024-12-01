@@ -1099,7 +1099,7 @@ class OLAMainWindow(QMainWindow):
         width = OLAGuiSetup.getSetupEntry(OLAGuiSetup.WIDTH)
         if width < size.width():
             width = size.width()
-        logging.info("OLAMainWindow - initial position from setup file: {},{} and size {} * {}\nNote : Edit configuration file startup position if windows is not visible due to screen configuration change."
+        logging.info("OLAMainWindow - initial position from setup file: {},{} and size {} * {}\nNote : Edit configuration file <HOMEDIR>/ola.json if startup position windows is not visible due to screen configuration change."
                      .format(posx, posy, height, width))
         self.move( posx, posy )
         self.resize( width, height )
