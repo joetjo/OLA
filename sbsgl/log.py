@@ -19,7 +19,7 @@ class Log:
 
     @staticmethod
     def debug(message):
-        if JopLauncher.DEBUG:
+        if SbSGLLauncher.DEBUG:
             print(message)
 
     @staticmethod
