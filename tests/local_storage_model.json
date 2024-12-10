@@ -45,15 +45,15 @@
             "sheet": "The rose of Segunda"
         },
         "TheWitcher3": {
-            "duration": "737.126407",
-            "last_duration": "19.993927",
-            "last_session": "1733817178.0442355",
+            "duration": "577.120849",
+            "last_duration": "5.612185",
+            "last_session": "1707030429.7870471",
             "note": "",
             "www": "",
             "tips": "",
             "type": "RPG",
             "status": "",
-            "sheet": "The Witcher 3"
+            "sheet": ""
         },
         "TheWitcher2": {
             "duration": "139.022706",
@@ -124,17 +124,8 @@
     },
     "last_sessions": [
         [
-            "TheWitcher3",
-            "J:\\Nicol-Documents\\GitHub\\OLA\\tests\\jeux\\games\\TheWitcher3\\tw3.exe",
-            "tw3",
-            "",
-            "",
-            "",
-            ""
-        ],
-        [
             "Control",
-            "tests\\jeux\\games\\Control\\Control.exe",
+            "C:\\Users\\nicol\\PycharmProjects\\Ola\\tests\\jeux\\games\\Control\\Control.exe",
             "Control",
             "",
             "STEAM",
@@ -143,7 +134,7 @@
         ],
         [
             "RoseOfSegunda",
-            "tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
             "renpy",
             "",
             "ITCHIO",
@@ -160,8 +151,17 @@
             ""
         ],
         [
+            "TheWitcher3",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher3\\tw3.exe",
+            "tw3",
+            "ALauncher",
+            "GOG",
+            "",
+            ""
+        ],
+        [
             "TheWitcher2",
-            "tests\\jeux\\games\\TheWitcher2\\tw2.exe",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher2\\tw2.exe",
             "tw2",
             "",
             "",
@@ -179,7 +179,7 @@
         ],
         [
             "Divinity Original Sin",
-            "tests\\jeux\\games\\DivOriginalSin2\\dos2.exe",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\DivOriginalSin2\\dos2.exe",
             "dos2",
             "",
             "STEAM",
@@ -188,7 +188,7 @@
         ],
         [
             "TheWitcher2Renamed",
-            "tests\\jeux\\games\\TheWitcher2Renamed\\tw2.exe",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\TheWitcher2Renamed\\tw2.exe",
             "tw2",
             "",
             "",
@@ -197,16 +197,16 @@
         ],
         [
             "BorderLand2",
-            "tests\\jeux\\games\\Borderland2\\BorderLand2.exe",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\Borderland2\\BorderLand2.exe",
             "BorderLand2",
             "",
             "EPIC",
-            "tests/jeux/games/Borderland2/Launcher.exe",
+            "C:/Users/nicol/PycharmProjects/jopLauncher/tests/jeux/games/Borderland2/Launcher.exe",
             "tests\\jeux\\games\\Borderland2\\borderland2.exe"
         ],
         [
             "Assassins Creed - JoProd Arrival",
-            "tests\\jeux\\games\\AssassinsCreed42\\AssassinsCreeds42.exe",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\AssassinsCreed42\\AssassinsCreeds42.exe",
             "AssassinsCreeds42",
             "",
             "UBISOFT",
@@ -215,7 +215,7 @@
         ],
         [
             "MassEffectDefinitiveAndLastEdition",
-            "tests\\jeux\\games\\MassEffectDefinitiveAndLastEdition\\ME123.exe",
+            "C:\\Users\\nicol\\PycharmProjects\\jopLauncher\\tests\\jeux\\games\\MassEffectDefinitiveAndLastEdition\\ME123.exe",
             "ME123",
             "",
             "ORIGIN",
@@ -232,7 +232,7 @@
         "dos2": "Divinity Original Sin"
     },
     "launchers": {
-        "ALauncher": "tests/jeux/games/ALauncher.exe"
+        "ALauncher": "C:/Users/nicol/PycharmProjects/jopLauncher/tests/jeux/games/ALauncher.exe"
     },
     "version": 4,
     "ignored": [

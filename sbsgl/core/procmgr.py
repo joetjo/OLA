@@ -163,6 +163,7 @@ class ProcMgr:
                                     logging.info("Game {} : path has changed since last play ! Updating from {} to {}"
                                              .format(p.getName(), lastSession.getPath(), p.getPath()))
                                     lastSession.setPath(p.getPath())
+                                    self.storage.save()
 
                             p.setStarted()
                             self.currentGame.setProcess(p)

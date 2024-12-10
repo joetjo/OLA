@@ -28,6 +28,7 @@ if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     OLAGuiSetup.OLA_DEV_MODE = False
     print("Starting in packaged mode (temp folder {})".format(Path(sys._MEIPASS)))
 
+# WARNING: logging setup is duplicated with a small diff in ola-sbgl-debug.py
 stdout = logging.StreamHandler(stream=sys.stdout)
 fmt = logging.Formatter("%(asctime)s %(message)s")
 stdout.setFormatter(fmt)
@@ -40,9 +41,9 @@ logger.setLevel(logging.INFO)
 logger.addHandler(stdout)
 logging.info("OLAApplication - starting application execution")
 
-print("OLA Loggers setup:")
-for handler in logger.handlers:
-    print(handler)
+#print("OLA Loggers setup:")
+#for handler in logger.handlers:
+#    print(handler)
 
 app = OLAApplication(sys.argv, OLAVersionInfo.VERSION)
 app.start()

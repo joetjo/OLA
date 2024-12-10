@@ -34,8 +34,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.12.1"
-    PREVIOUS = "2024.11.26"
+    VERSION = "2024.12.10"
+    PREVIOUS = "2024.12.1"
 
 
 class OLAGuiSetup:

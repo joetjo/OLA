@@ -25,20 +25,6 @@ from base.setup import GhSetup
 
 class SbSGLSetup:
     _global_setup_ = None
-    APP_POSX = "APP_POSX"
-    APP_POSY = "APP_POSY"
-    APP_WIDTH = "APP_WIDTH"
-    APP_MIN_HEIGHT = "APP_MIN_HEIGHT"
-    APP_HEIGHT_BY_GAME = "APP_HEIGHT_BY_GAME"
-    APP_VERTICAL = "APP_VERTICAL"
-    APP_HORIZONTAL = "APP_HORIZONTAL"
-    APP_ICON = "APP_ICON"
-    APP_THEME = "APP_THEME"
-    APP_IMAGE_BUTTON = "APP_IMAGE_BUTTON"
-    APP_IMAGE_TEXT = "APP_IMAGE_TEXT"
-    GAME_NAME_WIDTH = "GAME_NAME_WIDTH"
-    URL_WIDTH = "URL_WIDTH"
-    PARAMS_WIDTH = "PARAMS_WIDTH"
     MAX_LAST_SESSION_COUNT = "MAX_LAST_SESSION_COUNT"
     GAME_PATTERN = "GAME_PATTERN"
     GAME_EXTENSION = "GAME_EXTENSION"
@@ -79,19 +65,6 @@ class SbSGLSetup:
         self.dirty = False
         if print_mode:
             print("================= SbSGL SETUP  =========================")
-        # Graphical setup is for the old Tk-TCL gui ( deprecated )
-        self.initSetupEntry(self.APP_WIDTH, 1050)
-        self.initSetupEntry(self.APP_MIN_HEIGHT, 400)
-        self.initSetupEntry(self.APP_HEIGHT_BY_GAME, 24)
-        self.initSetupEntry(self.APP_VERTICAL, 'top')
-        self.initSetupEntry(self.APP_HORIZONTAL, 'right')
-        self.initSetupEntry(self.APP_ICON, 'icons/joystick.ico')
-        self.initSetupEntry(self.APP_THEME, 'black')
-        self.initSetupEntry(self.APP_IMAGE_BUTTON, True)
-        self.initSetupEntry(self.APP_IMAGE_TEXT, False)
-        self.initSetupEntry(self.GAME_NAME_WIDTH, 30)
-        self.initSetupEntry(self.URL_WIDTH, 70)
-        self.initSetupEntry(self.PARAMS_WIDTH, 45)
         self.initSetupEntry(self.MAX_LAST_SESSION_COUNT, 30)
         self.initSetupEntry(self.GAME_PATTERN, 'jeux')
         self.initSetupEntry(self.GAME_EXTENSION, '.exe')
