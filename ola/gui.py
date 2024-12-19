@@ -34,8 +34,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2024.12.10"
-    PREVIOUS = "2024.12.1"
+    VERSION = "2024.19.10"
+    PREVIOUS = "2024.12.10"
 
 
 class OLAGuiSetup:
@@ -53,6 +53,8 @@ class OLAGuiSetup:
     POSSIBLE_FILTER = ["#TYPE", "#PLAY"]
     DEFAULT_SESSION_FILTER = "INPROGRESS"
     DEFAULT_INSTALL_MODE_FILTER = True
+    DEFAULT_VN_MODE_FILTER = True
+    DEFAULT_VNA_MODE_FILTER = False
     LINE_REPORTS_COUNT = 18
     # CONFIGURABLE ENTRIES
     POSX = "posx"
@@ -248,12 +250,14 @@ class OLAFilter(QGroupBox):
             layout.addWidget(self.filterValue, 0, 2)
 
         if linkListener is not None:
-            linkLabel = QLabel()
-            linkLabel.setPixmap(Icons.QUESTION)
-            layout.addWidget(linkLabel, 0, 3)
-            self.linkSelector = QCheckBox()
-            self.linkSelector.stateChanged.connect(linkListener)
-            layout.addWidget(self.linkSelector, 0, 4)
+            self.vnSelector = OLAFilter.createCheckbox(layout, 0, 3, linkListener,
+                                                       Icons.STORY1,
+                                                       "Display also Simple Story game (VN)",
+                                                       default=OLAGuiSetup.DEFAULT_VN_MODE_FILTER)
+            self.vnaSelector = OLAFilter.createCheckbox(layout, 0, 5, linkListener,
+                                                        Icons.STORY2,
+                                                        "Display also Adult Story game (VNA)",
+                                                       default=OLAGuiSetup.DEFAULT_VNA_MODE_FILTER )
 
         if listener is not None:
             layout.addWidget(QLabel("Search"), 1, 0)
@@ -264,14 +268,24 @@ class OLAFilter(QGroupBox):
             layout.addWidget(self.search, 1, 2)
 
         if linkListener is not None:
-            installLabel = QLabel()
-            installLabel.setPixmap(Icons.PLAY)
-            layout.addWidget(installLabel, 1, 3)
-            self.installSelector = QCheckBox()
-            if defaultInstallMode:
-                self.installSelector.setCheckState(Qt.CheckState.Checked)
-            self.installSelector.stateChanged.connect(linkListener)
-            layout.addWidget(self.installSelector, 1, 4)
+            self.linkSelector = OLAFilter.createCheckbox(layout, 1, 3,
+                                                         linkListener, Icons.QUESTION, "Display also game not properly declared in Obsidian")
+            self.installSelector = OLAFilter.createCheckbox(layout, 1, 5,
+                                                            linkListener, Icons.PLAY, "Display only installed game", default = defaultInstallMode )
+
+    @staticmethod
+    def createCheckbox(layout, line, pos, listener, icon, tip, default = False ):
+        linkLabel = QLabel()
+        linkLabel.setPixmap(icon)
+        linkLabel.setToolTip(tip)
+        layout.addWidget(linkLabel, line, pos)
+        result = QCheckBox()
+        if default:
+            result.setCheckState(Qt.CheckState.Checked)
+        result.setToolTip(tip)
+        result.stateChanged.connect(listener)
+        layout.addWidget(result, line, pos+1)
+        return result
 
     def isFiltering(self):
         return self.value is not None or self.searchToken is not None
@@ -362,7 +376,10 @@ class OLAPlayingPanel(QWidget):
         # Search and filtering
         self.defaultFilter = OLAFilter(None, None)
         self.filters = dict()
-        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1], self.applyFilter, defaultValue=OLAGuiSetup.DEFAULT_SESSION_FILTER, defaultInstallMode=OLAGuiSetup.DEFAULT_INSTALL_MODE_FILTER,
+        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1],
+                                                           self.applyFilter,
+                                                           defaultValue=OLAGuiSetup.DEFAULT_SESSION_FILTER,
+                                                           defaultInstallMode=OLAGuiSetup.DEFAULT_INSTALL_MODE_FILTER,
                                                            linkListener=self.applyCheck)
         self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[0], self.applyFilter)
         self.filter = self.defaultFilter
@@ -400,6 +417,8 @@ class OLAPlayingPanel(QWidget):
     def applyCheck(self):
         OLAGui.SESSIONS.showUnlink = self.filters[OLAGui.SESSIONS_TAB_NAME].linkSelector.isChecked()
         OLAGui.SESSIONS.showOnlyInstalled = self.filters[OLAGui.SESSIONS_TAB_NAME].installSelector.isChecked()
+        OLAGui.SESSIONS.showVN = self.filters[OLAGui.SESSIONS_TAB_NAME].vnSelector.isChecked()
+        OLAGui.SESSIONS.showVNA = self.filters[OLAGui.SESSIONS_TAB_NAME].vnaSelector.isChecked()
         OLAGui.SESSIONS.loadSessions()
 
     def refreshVault(self):
@@ -663,6 +682,8 @@ class OLASharedGameListWidget(QWidget):
         self.currentPageCount = 1
         self.showUnlink = False
         self.showOnlyInstalled = OLAGuiSetup.DEFAULT_INSTALL_MODE_FILTER
+        self.showVN = OLAGuiSetup.DEFAULT_VN_MODE_FILTER
+        self.showVNA = OLAGuiSetup.DEFAULT_VNA_MODE_FILTER
 
         layout = QGridLayout()
         self.setLayout(layout)
@@ -756,10 +777,19 @@ class OLASharedGameListWidget(QWidget):
             tags = sheet.play_tags
         else:
             return True
+        if not self.showVN or not self.showVNA:
+            for t in sheet.type_tags:
+                if not self.showVN and t.startswith("VN/"):
+                    return False
+                if not self.showVNA and t.startswith("VNA"):
+                    return False
+
         for t in tags:
             if t.startswith(self.filter.value):
-                return True
+                    return True
         return False
+
+
 
     def doBack(self):
         if self.currentPage > 1:
@@ -808,7 +838,11 @@ class OLASharedGameListWidget(QWidget):
 
     def load(self, rawList):
         self.filter.onLoad()
-        if self.showUnlink or self.showOnlyInstalled or self.filter.isFiltering():
+        if (not self.showUnlink
+                or self.showOnlyInstalled
+                or not self.showVN
+                or not self.showVNA
+                or self.filter.isFiltering()):
             selList = []
             for data in rawList:
                 if self.matchFilter(data):
@@ -1145,13 +1179,14 @@ class OLAApplication(QApplication):
         Icons.initIcons()
 
         self.splash = QSplashScreen(Icons.SPLASH)
+        self.splash.showMessage("{} - loading vault...".format(OLAVersionInfo.VERSION))
         self.splash.show()
         self.processEvents()
 
         # Blocking parsing of vault or display will be wrong
         mdgen = MdReportGenerator(allReports=False)
         mdgen.run()
-        self.splash.showMessage("{} - loading vault...".format(OLAVersionInfo.VERSION))
+
         self.processEvents()
 
         OLAGui.APP = self

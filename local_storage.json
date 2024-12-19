@@ -120,9 +120,29 @@
             "sheet": "Persona 4 Gold",
             "type": "",
             "status": ""
+        },
+        "Sigh of the Abyss": {
+            "duration": "0",
+            "last_duration": "0",
+            "last_session": "0",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "sheet": "Sigh of the Abyss",
+            "type": "",
+            "status": ""
         }
     },
     "last_sessions": [
+        [
+            "Sigh of the Abyss",
+            "J:\\Nicol-Documents\\GitHub\\OLA\\tests\\jeux\\games\\Sigh of the Abyss\\Sigh of the Abyss.exe",
+            "Sigh of the Abyss",
+            "",
+            "",
+            "",
+            ""
+        ],
         [
             "TheWitcher3",
             "J:\\Nicol-Documents\\GitHub\\OLA\\tests\\jeux\\games\\TheWitcher3\\tw3.exe",

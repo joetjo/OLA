@@ -38,6 +38,8 @@ class Icons:
     OK = None
     KO = None
     HOURGLASS = None
+    STORY1 = None
+    STORY2 = None
     OBSIDIAN = None
     POPMENU = None
     VOID = None
@@ -68,6 +70,8 @@ class Icons:
         Icons.OK = QPixmap(resource_path("check-16.png"))
         Icons.KO = QPixmap(resource_path("error-16.png"))
         Icons.HOURGLASS = QPixmap(resource_path("hourglass.png"))
+        Icons.STORY1 = QPixmap(resource_path("story1-16.png"))
+        Icons.STORY2 = QPixmap(resource_path("story2-16.png"))
         Icons.OBSIDIAN = QPixmap(resource_path("obsidian.png"))
         Icons.POPMENU = QPixmap(resource_path("menu-16.png"))
         Icons.VOID = QPixmap(resource_path("void-16.png"))

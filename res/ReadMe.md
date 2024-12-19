@@ -32,10 +32,9 @@ and Obsidian is a great tool ! but it should do what it handles the best.
 - Vault name hardcoded and not taken from configuration file
 
 ## Majors
-- Parsing failure in report configuration are visible only in console ( so old-debug must be used when updating the report setup json file )
+- Parsing failure in report configuration are visible only in console ( so ola-debug must be used when updating the report setup json file )
 - Stop scanning game while report generation is in progress ( access to VAULT might be invalid )
 - Report generation : path ref seems to select file outside the requested folder...
-- game installed while OLA is running are not refreshed properly ( install icon not enabled for example - to test mode )
 
 ## Other remarks
 - mapping support to parent folder when game executable is generic ( supported by SGSGL, not integrated in OLA )
@@ -70,7 +69,7 @@ modules organisation come from previous project:
 
 Other folder:
 - doc : my own report as an example
-- test : fake games to test
+- test : fake games hierarchy for testing
 
 ## Interesting external Sources :
 
@@ -81,7 +80,7 @@ Other folder:
 - ---
 - Logging : https://docs.pyhon.org/3/howto/logging.html ( detail : https://docs.python.org/3/library/logging.html )
 ---
-- resources : https://icons8exit.com/icons
+- resources : https://icons8.com/icons
 ---
 Obsidian link:
 https://help.obsidian.md/Extending+Obsidian/Obsidian+URI
