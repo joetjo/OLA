@@ -119,7 +119,7 @@ class FileUsageGenerator(QRunnable):
             sessionsCount = len(sessions)
             self.signals.sheet_link_progress.emit("Checking {} vault links...".format(sessionsCount))
             for session in sessions:
-                sheet = session.getGameInfo()['sheet']
+                sheet = session.getSheet()
                 # STEP 1 - check if current sheet seems to exist
                 if sheet is not None and len(sheet) > 0:
                     find = GhFileUtil.findFileInFolder("{}.md".format(sheet), OLABackend.VAULT.VAULT)
@@ -129,9 +129,9 @@ class FileUsageGenerator(QRunnable):
                         logging.warning("Broken vault link detected : {}".format(sheet))
                         names.append("- [{}]".format(sheet))
                         brokenLink = brokenLink + 1
-                        session.getGameInfo()['sheet'] = ""
+                        session.setSheet("")
                 # STEP 2 - test if empty sheet could be guessed from current sheet name
-                sheet = session.getGameInfo()['sheet']
+                sheet = session.getSheet()
                 if sheet is None or len(sheet) == 0:
                     sheet = "{}.md".format(session.json[0])
                     find = GhFileUtil.findFileInFolder(sheet, OLABackend.VAULT.VAULT)
@@ -140,8 +140,8 @@ class FileUsageGenerator(QRunnable):
                         find = GhFileUtil.findFileInFolder(sheet, OLABackend.VAULT.VAULT)
                     if find:
                         repairedLink = repairedLink + 1
-                        session.getGameInfo()['sheet'] = sheet[0:len(sheet) - 3]
-                        names.append("+ [{}]".format(session.getGameInfo()['sheet']))
+                        session.setSheet(sheet[0:len(sheet) - 3])
+                        names.append("+ [{}]".format(session.getSheet()))
 
                 count = count + 1
                 if count % 10 == 0:

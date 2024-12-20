@@ -50,7 +50,8 @@ class OLAGuiSetup:
     PAGE_BUTTON_SIZE = 20
     VISIBLE_TYPE_COUNT = 15
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
-    POSSIBLE_FILTER = ["#TYPE", "#PLAY"]
+    SHEET_VIEW_FILTER_TAG = "#TYPE"
+    SESSION_VIEW_FILTER_TAG = "#PLAY"
     DEFAULT_SESSION_FILTER = "INPROGRESS"
     DEFAULT_INSTALL_MODE_FILTER = True
     DEFAULT_VN_MODE_FILTER = True
@@ -300,9 +301,9 @@ class OLAFilter(QGroupBox):
 
     def setValues(self):
         if self.tag is not None:
-            if self.tag == OLAGuiSetup.POSSIBLE_FILTER[0]:
+            if self.tag == OLAGuiSetup.SHEET_VIEW_FILTER_TAG:
                 choices = OLABackend.VAULT.TYPE_TAGS
-            elif self.tag == OLAGuiSetup.POSSIBLE_FILTER[1]:
+            elif self.tag == OLAGuiSetup.SESSION_VIEW_FILTER_TAG:
                 choices = OLABackend.VAULT.PLAY_TAGS
             else:
                 choices = ["{} not supported".format(self.tag)]
@@ -376,12 +377,12 @@ class OLAPlayingPanel(QWidget):
         # Search and filtering
         self.defaultFilter = OLAFilter(None, None)
         self.filters = dict()
-        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[1],
+        self.filters[OLAGui.SESSIONS_TAB_NAME] = OLAFilter(OLAGuiSetup.SESSION_VIEW_FILTER_TAG,
                                                            self.applyFilter,
                                                            defaultValue=OLAGuiSetup.DEFAULT_SESSION_FILTER,
                                                            defaultInstallMode=OLAGuiSetup.DEFAULT_INSTALL_MODE_FILTER,
                                                            linkListener=self.applyCheck)
-        self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.POSSIBLE_FILTER[0], self.applyFilter)
+        self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.SHEET_VIEW_FILTER_TAG, self.applyFilter)
         self.filter = self.defaultFilter
 
         self.layout().addWidget(self.defaultFilter)
@@ -602,10 +603,10 @@ class OLAGameLine(QWidget):
         :param: session: sbsbl.data.session
         """
         self.session = session
-        sessionSheet = session.getGameInfo()['sheet']
+        sessionSheet = session.getSheet()
         if sheetAlreadySet:
             if self.sheet != sessionSheet:
-                self.session.getGameInfo()['sheet'] = self.sheet
+                self.session.setSheet(self.sheet)
                 OLABackend.SBSGL.procmgr.storage.save()
         elif len(sessionSheet) > 0:
             self.sheet = sessionSheet
@@ -745,38 +746,44 @@ class OLASharedGameListWidget(QWidget):
         self.filter = self.filter = OLAGui.PLAYING_PANEL.filters[name]
 
     def sessionMatchFilter(self, session):
-        sheetUnset = len(session.getSheet()) == 0
-        if not self.showUnlink and sheetUnset:
+        try:
+            sheet = OLABackend.VAULT.SHEETS[session.getSheet()]
+        except :
+            sheet = None
+        # Discard of session with no sheet if sheet is requested by filter
+        if not self.showUnlink and sheet is None:
             return False
+        # Discard not installed game if only installed game should be displayed
         if self.showOnlyInstalled and not session.installed:
             return False
+        # If search token is set, discard whatever do not match the earch token
         if self.filter.searchToken is not None and not self.filter.searchToken in session.getName():
             return False
-        if self.filter.value is not None:
-            if sheetUnset:
+        # If sheet is set, check if sheet match the filter
+        if sheet is not None:
+            return self.sheetMatchFilter(sheet)
+        # No sheet but no filter selected -> let's display it ( game not conform to OLA )
+        elif self.filter.value is None:
                 return True
-            else:
-                try:
-                    return self.sheetMatchFilter(OLABackend.VAULT.SHEETS[session.getSheet()])
-                except KeyError:
-                    return True
-        # else: Filter.value is None / No Active Search
-        elif self.showUnlink and not sheetUnset:  # Ack to show only unlink session when show unlink selected and no filtering
-            return False
-        else:
+        # else: no  sheet, filter value is set
+        elif self.showUnlink:
             return True
+        else:
+            return False
 
     def sheetMatchFilter(self, sheet):
+        # if a search token is set, discard any entry that do not match
         if self.filter.searchToken is not None and not self.filter.searchToken in sheet.name:
             return False
-        if self.filter.value is None:
-            return True
-        if self.filter.tag == OLAGuiSetup.POSSIBLE_FILTER[0]:
+        if self.filter.tag == OLAGuiSetup.SHEET_VIEW_FILTER_TAG:
             tags = sheet.type_tags
-        elif self.filter.tag == OLAGuiSetup.POSSIBLE_FILTER[1]:
+        elif self.filter.tag == OLAGuiSetup.SESSION_VIEW_FILTER_TAG:
             tags = sheet.play_tags
         else:
+            # internal error -- all filters should have a tag set for filtering
             return True
+
+        # Apply filter on type if requested
         if not self.showVN or not self.showVNA:
             for t in sheet.type_tags:
                 if not self.showVN and t.startswith("VN/"):
@@ -784,10 +791,13 @@ class OLASharedGameListWidget(QWidget):
                 if not self.showVNA and t.startswith("VNA"):
                     return False
 
-        for t in tags:
-            if t.startswith(self.filter.value):
-                    return True
-        return False
+        # Filtering on the combo selected value ( None: no value selected, no filtering )
+        if self.filter.value is not None:
+            for t in tags:
+                if t.startswith(self.filter.value):
+                        return True
+        else:
+            return True
 
 
 
@@ -838,16 +848,19 @@ class OLASharedGameListWidget(QWidget):
 
     def load(self, rawList):
         self.filter.onLoad()
-        if (not self.showUnlink
+        filteringNeeded = ( not self.showUnlink
                 or self.showOnlyInstalled
-                or not self.showVN
-                or not self.showVNA
-                or self.filter.isFiltering()):
+                or self.showVN
+                or self.showVNA
+                or self.filter.isFiltering() )
+        if filteringNeeded:
+            logging.debug("Loading session with filter {} / {}".format(self.filter.tag, self.filter.value))
             selList = []
             for data in rawList:
                 if self.matchFilter(data):
                     selList.append(data)
         else:
+            logging.debug("Loading session without filtering")
             selList = rawList
         count = len(selList)
         self.setPageCount(count)
@@ -1252,7 +1265,7 @@ class OLAApplication(QApplication):
             mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
             self.threadpool.start(mdgen)
         else:
-            OLAGui.MAIN.setStatus("Vault engine already running")
+            OLAGui.MAIN.setStatus("Obsidian Vault engine already running")
 
     def startReporting(self):
         if OLALock.takeMdEngine():
