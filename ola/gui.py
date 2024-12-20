@@ -1098,7 +1098,7 @@ class OLATabPanel(QTabWidget):
         self.tabsName = []
         self.declareTab(OLAGameSessions(), OLAGui.SESSIONS_TAB_NAME)
         self.declareTab(OLAObsidianAssistant(), OLAGui.ASSISTANT_TAB_NAME)
-        self.declareTab(OLAExcludedGame(), OLAGui.EXCLUDED_TAB_NAME)
+        #self.declareTab(OLAExcludedGame(), OLAGui.EXCLUDED_TAB_NAME)
 
         self.currentChanged.connect(self.tabSelected)
 
