@@ -34,9 +34,9 @@
             "sheet": "Control"
         },
         "RoseOfSegunda": {
-            "duration": "825.639913",
-            "last_duration": "52.929024",
-            "last_session": "1707561436.838224",
+            "duration": 1027.051516,
+            "last_duration": "3.230641",
+            "last_session": "1734856345.4323993",
             "note": "",
             "www": "https://blackcrosstaylor.itch.io/tros",
             "tips": "blackcross-taylor.com/index.php/guides",
@@ -131,9 +131,29 @@
             "sheet": "Sigh of the Abyss",
             "type": "",
             "status": ""
+        },
+        "ROS15": {
+            "duration": "89.49909500000001",
+            "last_duration": "3.849095",
+            "last_session": "1734856277.339686",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "sheet": "The rose of Segunda",
+            "type": "",
+            "status": ""
         }
     },
     "last_sessions": [
+        [
+            "RoseOfSegunda",
+            "J:\\Nicol-Documents\\GitHub\\OLA\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
+            "renpy",
+            "",
+            "",
+            "",
+            ""
+        ],
         [
             "Sigh of the Abyss",
             "J:\\Nicol-Documents\\GitHub\\OLA\\tests\\jeux\\games\\Sigh of the Abyss\\Sigh of the Abyss.exe",
@@ -158,15 +178,6 @@
             "Control",
             "",
             "STEAM",
-            "",
-            ""
-        ],
-        [
-            "RoseOfSegunda",
-            "tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",
-            "renpy",
-            "",
-            "ITCHIO",
             "",
             ""
         ],

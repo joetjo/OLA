@@ -11,6 +11,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+import logging
 import pathlib
 
 # Map Json storage for a session
@@ -132,6 +133,14 @@ class SessionList:
         else:
             if self.findSessionByName(session.getName()):
                 self.removeSessionByName(session.getName())
+            sheetName = session.getSheet()
+            if sheetName is not None and len(sheetName) > 0:
+                otherSession = self.findSessionBySheet(sheetName)
+                while otherSession is not None:
+                    logging.info("Merging multiple session for game sheet {} \n from previous session {} \n into latest running session {}".format(sheetName, otherSession.getPath(), session.getPath() ) )
+                    session.game_info["duration"] = float(session.game_info["duration"]) + float(otherSession.game_info["duration"])
+                    self.removeSessionByName(otherSession.getName())
+                    otherSession = self.findSessionBySheet(sheetName)
             self.sessions.insert(0, session)
             self.json_sessions.insert(0, session.json)
 
