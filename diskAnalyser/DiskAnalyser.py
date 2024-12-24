@@ -76,7 +76,7 @@ class GhDiskEntries:
         for name in self.leafNames:
             if name not in ignore:
                 for location in self.leafEntries[name]:
-                    writer.writelines(" - [[{}]] : [```{}```](<{}>)\n".format(name, name, location.replace("\\", "/")))
+                    writer.writelines(" - [[{}]] : [```{}```](<{}>)\n".format(os.path.basename(name), name, location.replace("\\", "/")))
 
     def write(self, writer, ignore):
         for name in self.names:
