@@ -42,7 +42,7 @@ class MhMarkdownFile:
                     lineTags = re.findall(r"^#[\w|/_-]+", line)
                     if len(lineTags) > 0:
                         lineTag = lineTags[0]
-                        comment = line[len(lineTag):len(line) - 1]
+                        comment = line[len(lineTag):len(line)].rstrip()
                         if len(comment) > 0:
                             try:
                                 comments = self.tagsComment[lineTag]
