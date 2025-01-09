@@ -1,6 +1,5 @@
 import logging
 import os
-from datetime import datetime
 
 from base.setup import GhSetup
 
@@ -17,6 +16,8 @@ class GhDiskStat:
 
 
 class GhDiskEntries:
+    HEADER = "> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit*\n\n"
+
     def __init__(self, name):
         self.name = name
         self.names = None
@@ -30,6 +31,9 @@ class GhDiskEntries:
         self.dupCount = 0
 
     def addPath(self, rootFolder, path, isLeaf, ignore):  # absolute path
+        """
+        Fill folderName, base and name using the path and initialize leafEntries
+        """
         base = os.path.dirname(path)
         name = os.path.basename(path)
         folderName = path[len(rootFolder) + 1:]
@@ -41,6 +45,9 @@ class GhDiskEntries:
                 self.leafEntries[folderName] = [path]
 
     def addPathAndName(self, path, name, ignore):  # absolute path
+        """
+        fill self.entries; entriesLC ( lowercase ), entriesCharOnly and duplicateByCharOnly using the name ( if name is not an ignored one )
+        """
         logging.debug("FUR |  [{}] Location:[{}] Name:[{}]".format(self.name, path, name))
         if name not in ignore:
             try:
@@ -69,16 +76,26 @@ class GhDiskEntries:
                 self.duplicateByCharOnly[nameCharOnly] = [name]
 
     def sort(self):
+        """
+        Fill names with all entries sorted
+             and leafNames with all leafEntries sorted
+        """
         self.names = sorted(self.entries)
         self.leafNames = sorted(self.leafEntries)
 
     def writeLeaf(self, writer, ignore):
+        """
+        Report content of leafNames (sort must have been called to fill it and addPathAndName must have been called to fill the entry.
+        """
         for name in self.leafNames:
             if name not in ignore:
                 for location in self.leafEntries[name]:
                     writer.writelines(" - [[{}]] : [```{}```](<{}>)\n".format(os.path.basename(name), name, location.replace("\\", "/")))
 
     def write(self, writer, ignore):
+        """
+        Report content of names (sort must have been called to fill it and addPath must have been called to fill the entry.
+        """
         for name in self.names:
             if len(self.entries[name]) > 1:
                 if name not in ignore:
@@ -150,6 +167,9 @@ class DiskAnalyser:
         self.allFiles = GhDiskEntries("files")
         self.allFolders = GhDiskEntries("folders")
         self.unsortedFiles = dict()  # key root folder, value : list of files
+        self.allFilesByFolders = dict()
+        for folder in self.FOLDERS:
+            self.allFilesByFolders[folder] = GhDiskEntries(folder)
 
     def generateReport(self):
         logging.info("FUR | Markdown vault: {}".format(self.REPORT_ALLFILES))
@@ -160,6 +180,7 @@ class DiskAnalyser:
         logging.debug("FUR | Parsing all requested folders....")
         for folder in self.FOLDERS:
             logging.debug("FUR |   | - {}".format(folder))
+            currentFolderAllFiles = self.allFilesByFolders[folder]
             stat = GhDiskStat(folder)
             self.unsortedFiles[folder] = []
             self.stats.append(stat)
@@ -169,10 +190,13 @@ class DiskAnalyser:
                 stat.folderCount = stat.folderCount + 1
                 stat.fileCount = stat.fileCount + len(files)
                 self.allFolders.addPath(folder, root, len(dir) == 0 or len(files) == 0, self.IGNORE_DUPLICATE)
+                currentFolderAllFiles.addPath(folder, root, len(dir) == 0 or len(files) == 0, self.IGNORE_DUPLICATE)
                 for file in files:
                     self.allFiles.addPathAndName(root, file, self.IGNORE_DUPLICATE)
+                    currentFolderAllFiles.addPathAndName(root, file, self.IGNORE_DUPLICATE)
                     if root == folder:
                         self.unsortedFiles[folder].append(file)
+            currentFolderAllFiles.sort()
         self.allFiles.sort()
         self.allFolders.sort()
 
@@ -180,11 +204,26 @@ class DiskAnalyser:
         logging.info("FUR | {} unique folders detected, {} unique files detected".format(len(self.allFolders.entries), len(self.allFiles.entries)))
 
         with open(self.REPORT_ALLFILES, 'w', encoding='utf-8') as writer:
-            writer.writelines("> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit*\n\n")  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
+            writer.writelines(GhDiskEntries.HEADER)  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
             self.allFolders.writeLeaf(writer, self.IGNORE_DUPLICATE)
 
+        for folder in self.FOLDERS:
+            idx = -1
+            for i in range(len(folder) - 1, -1, -1):
+                if idx == -1 and ( folder[i] == '\\' or folder[i] == '/' ):
+                    idx = i+1
+            if idx != -1:
+                folderName = folder[idx:]
+            else:
+                folderName = folder
+            folderPath = "{}_{}.md".format(self.REPORT_ALLFILES[0:len(self.REPORT_ALLFILES)-3], folderName)
+            with open(folderPath, 'w', encoding='utf-8') as writer:
+                # adding an empty line at the beginning avoid having the title selected when selecting the sheet
+                writer.writelines(GhDiskEntries.HEADER)
+                self.allFilesByFolders[folder].writeLeaf(writer, self.IGNORE_DUPLICATE)
+
         with open(self.REPORT_ERRORS, 'w', encoding='utf-8') as writer:
-            writer.writelines("> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit*\n")  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
+            writer.writelines(GhDiskEntries.HEADER)  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
             writer.writelines("\n> {} folders detected, {} files detected".format(self.globalStat.folderCount, self.globalStat.fileCount))
             writer.writelines("\n> {} unique folders detected, {} unique files detected".format(len(self.allFolders.entries), len(self.allFiles.entries)))
 
