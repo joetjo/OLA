@@ -184,13 +184,16 @@ class DiskAnalyser:
             stat = GhDiskStat(folder)
             self.unsortedFiles[folder] = []
             self.stats.append(stat)
-            for root, dir, files in os.walk(folder):
+            for root, directories, files in os.walk(folder):
+                # filter out all directories and files that start by _
+                directories[:] = [d for d in directories if not d.startswith("_")]
+                files[:] = [f for f in files if not f.startswith("_")]
                 self.globalStat.folderCount = self.globalStat.folderCount + 1
                 self.globalStat.fileCount = self.globalStat.fileCount + len(files)
                 stat.folderCount = stat.folderCount + 1
                 stat.fileCount = stat.fileCount + len(files)
-                self.allFolders.addPath(folder, root, len(dir) == 0 or len(files) == 0, self.IGNORE_DUPLICATE)
-                currentFolderAllFiles.addPath(folder, root, len(dir) == 0 or len(files) == 0, self.IGNORE_DUPLICATE)
+                self.allFolders.addPath(folder, root, len(directories) == 0 or len(files) == 0, self.IGNORE_DUPLICATE)
+                currentFolderAllFiles.addPath(folder, root, len(directories) == 0 or len(files) == 0, self.IGNORE_DUPLICATE)
                 for file in files:
                     self.allFiles.addPathAndName(root, file, self.IGNORE_DUPLICATE)
                     currentFolderAllFiles.addPathAndName(root, file, self.IGNORE_DUPLICATE)
