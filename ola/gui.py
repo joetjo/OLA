@@ -1,4 +1,4 @@
-# Copyright 2024 joetjo https://github.com/joetjo/OLA
+# Copyright 2025 joetjo https://github.com/joetjo/OLA
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -175,7 +175,7 @@ class OlaAbout(QDialog):
             <br>- PySide pip module
             <br> Based on python</i>
             <br>
-            <br>Copyright 2024 @ joetjo <a href="https://github.com/joetjo/OLA">https://github.com/joetjo/OLA</a>
+            <br>Copyright 2025 @ joetjo <a href="https://github.com/joetjo/OLA">https://github.com/joetjo/OLA</a>
             <br>Provided "as is" under Apache-2.0 License and to be used on your own responsibilities
             </body>
             </html>
