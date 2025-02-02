@@ -23,7 +23,7 @@ from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
 from PySide6.QtGui import QCursor
 from PySide6.QtWidgets import QWidget, QTabWidget, QHBoxLayout, QLabel, QMainWindow, \
     QVBoxLayout, \
-    QApplication, QStatusBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollArea, QSplashScreen, QTextBrowser, QDialog
+    QApplication, QStatusBar, QGroupBox, QLineEdit, QGridLayout, QPushButton, QInputDialog, QComboBox, QMenu, QMessageBox, QCheckBox, QScrollArea, QSplashScreen, QTextBrowser, QDialog, QFileDialog
 
 from base.fileutil import GhFileUtil
 from base.formatutil import FormatUtil
@@ -34,8 +34,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.01.14"
-    PREVIOUS = "2025.01.09"
+    VERSION = "2025.02.02"
+    PREVIOUS = "2025.01.14"
 
 
 class OLAGuiSetup:
@@ -62,6 +62,7 @@ class OLAGuiSetup:
     POSY = "posy"
     HEIGHT = "height"
     WIDTH = "width"
+    DEFAULT_GAME_FOLDER = "default game folder"
 
     @staticmethod
     def getSetupEntry(name):
@@ -79,6 +80,7 @@ class OLAGuiSetup:
         self.posy = self.initSetupEntry(OLAGuiSetup.POSY, 10)
         self.height = self.initSetupEntry(OLAGuiSetup.HEIGHT, 0)
         self.width = self.initSetupEntry(OLAGuiSetup.WIDTH, 0)
+        self.default_game_folder = self.initSetupEntry(OLAGuiSetup.DEFAULT_GAME_FOLDER, "" )
 
     def initSetupEntry(self, name, default_value):
         reset = ""
@@ -526,6 +528,7 @@ class OLAGameLine(QWidget):
 
         self.menu = QMenu(self)
         if sessionMode:
+            self.menu.addAction("Localise").triggered.connect(self.doLocalise)
             self.menu.addAction("Setup Launcher").triggered.connect(self.doSetupLauncher)
             self.menu.addAction("Exclude").triggered.connect(self.doExclude)
             self.menu.addAction("Remove").triggered.connect(self.doRemove)
@@ -533,6 +536,9 @@ class OLAGameLine(QWidget):
             self.menu.addAction("Copy Name").triggered.connect(self.copyPathName)
         else:
             self.menu.addAction("Copy Name").triggered.connect(self.copySheetName)
+
+        #Used when file selection needed
+        self.dialog = None
 
     def popMenu(self):
         self.menu.exec(QCursor.pos())
@@ -581,6 +587,34 @@ class OLAGameLine(QWidget):
     def doSetupLauncher(self):
         pass
 
+    def doLocalise(self):
+        # https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QFileDialog.html
+        if self.dialog is None:
+            self.dialog = QFileDialog(self)
+            self.dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
+            self.dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+            self.dialog.setNameFilters([ "Executable (*.exe)", "Script (*.bat)", "All Files (*)" ])
+            self.dialog.setWindowTitle('Select game executable...')
+            self.dialog.setDirectory(OLAGuiSetup.getSetupEntry(OLAGuiSetup.DEFAULT_GAME_FOLDER))
+            self.dialog.finished.connect(self.doLocaliseDone)
+            self.dialog.open()
+
+    def doLocaliseDone(self, code):
+        if code == QDialog.DialogCode.Accepted:
+            raw_selection = self.dialog.selectedFiles()
+            self.dialog = None
+            if len(raw_selection) > 0:
+                selection = raw_selection[0]
+                self.session.setPath(selection)
+                OLAGameLine.saveOnEdit()
+        self.dialog = None
+
+    @staticmethod
+    def saveOnEdit():
+        OLABackend.SBSGL.procmgr.storage.save()
+        OLAGui.TAB_PANEL.reload()
+        OLAGui.PLAYING_PANEL.refreshSBSGL(force=True)
+
     @staticmethod
     def requestVaultNameDialog(sessionInfo, sheet, defaultValue, parent):
         val = sheet
@@ -591,9 +625,7 @@ class OLAGameLine(QWidget):
                                         val)
         if ok and text:
             sessionInfo['sheet'] = text
-        OLABackend.SBSGL.procmgr.storage.save()
-        OLAGui.TAB_PANEL.reload()
-        OLAGui.PLAYING_PANEL.refreshSBSGL(force=True)
+        OLAGameLine.saveOnEdit()
 
     def setVaultName(self):
         OLAGameLine.requestVaultNameDialog(self.session.getGameInfo(), self.sheet, GhFileUtil.ConvertUpperCaseWordSeparatedNameToStr(self.name.text()), self)
@@ -607,7 +639,7 @@ class OLAGameLine(QWidget):
         if sheetAlreadySet:
             if self.sheet != sessionSheet:
                 self.session.setSheet(self.sheet)
-                OLABackend.SBSGL.procmgr.storage.save()
+                OLAGameLine.saveOnEdit()
         elif len(sessionSheet) > 0:
             self.sheet = sessionSheet
             self.name.setText(self.sheet)
