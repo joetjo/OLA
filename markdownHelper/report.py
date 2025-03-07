@@ -402,7 +402,8 @@ class MhReportEntry(MhEntry):
 
             try:
                 MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
-                              self.allSubContents, self.reportSheet, self.commentTag, self.showTags, self.paragraphTitle, self.labels, nextLevel).generate(writer)
+                              self.allSubContents, self.reportSheet, self.commentTag, self.showTags, "",
+                              self.labels, nextLevel).generate(writer)
             except KeyError:
                 pass
 
