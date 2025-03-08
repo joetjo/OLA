@@ -142,9 +142,29 @@
             "sheet": "The rose of Segunda",
             "type": "",
             "status": ""
+        },
+        "F95Checker": {
+            "duration": "217.714257",
+            "last_duration": "217.714257",
+            "last_session": "1741356270.8513477",
+            "note": "",
+            "www": "",
+            "tips": "",
+            "sheet": "",
+            "type": "",
+            "status": ""
         }
     },
     "last_sessions": [
+        [
+            "F95Checker",
+            "E:\\Jeux\\TOOLS\\F95Checker-Windows\\F95Checker.exe",
+            "F95Checker",
+            "",
+            "",
+            "",
+            ""
+        ],
         [
             "RoseOfSegunda",
             "J:\\Nicol-Documents\\GitHub\\OLA\\tests\\jeux\\games\\RoseOfSegunda\\renpy.exe",

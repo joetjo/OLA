@@ -345,12 +345,12 @@ class MhReportEntry(MhEntry):
 
             return
 
-        logging.debug("MDR |  | {} {} [{}->{} / {}] ({} {})".format(LONG_BLANK[0:len(self.level) * 2], self.paragraphTitle,
+        logging.debug("MDR |  | {} {} [in:{}->match:{}/else:{}] (tags:{} / paths:{})".format(LONG_BLANK[0:len(self.level) * 2], self.paragraphTitle,
                                                                     len(self.inputFiles), len(self.filteredFiles),
                                                                     len(self.elseFiles), self.tags, self.paths))
 
+        nextLevel = self.level
         if len(self.filteredFiles) > 0:
-            nextLevel = self.level
             currentTitle = "{} {} ({})\n".format(self.level, self.paragraphTitle, len(self.filteredFiles))
             # writer.writelines(currentTitle)  # this display a title for each hierarchy to the report, lot of titles
             if self.reportSheet is not None:
@@ -400,6 +400,7 @@ class MhReportEntry(MhEntry):
                         else:
                             writer.writelines("[[{}]]  {} \n".format(name, ctags))
 
+        if len(self.elseFiles) > 0:
             try:
                 MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
                               self.allSubContents, self.reportSheet, self.commentTag, self.showTags, "",
