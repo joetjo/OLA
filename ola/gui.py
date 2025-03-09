@@ -34,8 +34,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.07b"
-    PREVIOUS = "2025.02.02"
+    VERSION = "2025.03.09"
+    PREVIOUS = "2025.02.07b"
 
 
 class OLAGuiSetup:
@@ -946,6 +946,12 @@ class OLAReportLine(QWidget):
         if col == 2:
             layout.addWidget(QLabel(" | "), row, 2)
             colUpdated = 3
+        elif col == 5:
+            layout.addWidget(QLabel(" | "), row, 5)
+            colUpdated = 6
+        elif col == 8:
+            layout.addWidget(QLabel(" | "), row, 8)
+            colUpdated = 9
         else:
             colUpdated = col
 
@@ -1058,6 +1064,8 @@ class OLAReports(QWidget):
                 col = 2
             elif col == 2:
                 col = 5
+            elif col == 5:
+                col = 8
             else:
                 row = row + 1
                 col = 0

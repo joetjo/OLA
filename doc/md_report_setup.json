@@ -1197,6 +1197,33 @@
               }
             ]
           },
+          "tested" : {
+            "target": "reports/reports_done\\Tested.md",
+            "about": "Game tested",
+            "commentTag": "NEXT",
+            "path_ref": "game_available_and_in_development",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "PLAY/TESTED"
+                ],
+                "contents": [
+                  {
+                    "title" : "Game tested",
+                    "tag_condition": [
+                      "DONE"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentByType",
+                    "else" : {
+                      "title" : "already done"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
           "done (evaluation published)" : {
             "target": "reports/reports_done\\Reviews.md",
             "about": "Game with review / Evaluation published",
