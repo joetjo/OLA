@@ -284,6 +284,8 @@ class MhReportEntry(MhEntry):
             self.filteredFiles = self.elseFiles
             self.elseFiles = tmp
 
+        self.lineGenerated = 0
+
     def title(self):
         try:
             return self.json["title"]
@@ -334,16 +336,16 @@ class MhReportEntry(MhEntry):
                     content["title"] = GhFileUtil.ConvertUpperCaseWordSeparatedNameToStr(tag[len(self.tags[0]) + 1:])  # Replace %TAGNAME% title by expended tag detected
                     content["tag_condition"] = [tag[1:]]  # and use the expanded tag to filer
                     if len(content["title"]) > 0:
-                        MhReportEntry(content, self.filteredFiles.copy(), self.allTags,
+                        self.lineGenerated = self.lineGenerated + MhReportEntry(content, self.filteredFiles.copy(), self.allTags,
                                       self.allSubContents, None, self.commentTag, self.showTags, self.paragraphTitle, self.labels, self.level).generate(writer)
             # Proceed to else of VIRTUAL block
             try:
-                MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
+                self.lineGenerated = self.lineGenerated + MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
                               self.allSubContents, self.reportSheet, self.commentTag, self.showTags, self.paragraphTitle, self.labels, self.level).generate(writer)
             except KeyError:
                 pass
 
-            return
+            return self.lineGenerated
 
         logging.debug("MDR |  | {} {} [in:{}->match:{}/else:{}] (tags:{} / paths:{})".format(LONG_BLANK[0:len(self.level) * 2], self.paragraphTitle,
                                                                     len(self.inputFiles), len(self.filteredFiles),
@@ -363,7 +365,7 @@ class MhReportEntry(MhEntry):
                 for content in json_contents:
                     cr = MhReportEntry(content, files, self.allTags, self.allSubContents, self.reportSheet,
                                        self.commentTag, self.showTags, self.paragraphTitle, self.labels, nextLevel)
-                    cr.generate(writer)
+                    self.lineGenerated = self.lineGenerated + cr.generate(writer)
                     files = cr.elseFiles
             else:
                 json_count = self.getCount()
@@ -371,6 +373,7 @@ class MhReportEntry(MhEntry):
                     writer.writelines("|What|Count|\n|-|-|")
                     for key, value in json_count.items():
                         writer.writelines("\n| {} | {} |".format(key, MhCountEntry(value, self.filteredFiles, self.allSubContents).getCount()))
+                        self.lineGenerated = self.lineGenerated + 1
                 else:
                     for name, file in self.filteredFiles.items():
                         comment = ""
@@ -399,15 +402,16 @@ class MhReportEntry(MhEntry):
                             writer.writelines("| [[{}]] | {} | {} |\n".format(name, ctags, comment))
                         else:
                             writer.writelines("[[{}]]  {} \n".format(name, ctags))
+                        self.lineGenerated = self.lineGenerated + 1
 
         if len(self.elseFiles) > 0:
             try:
-                MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
+                self.lineGenerated = self.lineGenerated + MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
                               self.allSubContents, self.reportSheet, self.commentTag, self.showTags, "",
                               self.labels, nextLevel).generate(writer)
             except KeyError:
                 pass
-
+        return self.lineGenerated
 
 class MhReport:
 
@@ -446,4 +450,7 @@ class MhReport:
                 writer.writelines("```\n")
             except KeyError:
                 pass  # no about set
-            rootReport.generate(writer)
+            lineDisplayedCount = rootReport.generate(writer)
+            writer.writelines("\n")
+            writer.writelines("----")
+            writer.writelines("$$Selection : {}$$".format(lineDisplayedCount))
