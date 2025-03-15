@@ -347,9 +347,10 @@ class MhReportEntry(MhEntry):
 
             return self.lineGenerated
 
-        logging.debug("MDR |  | {} {} [in:{}->match:{}/else:{}] (tags:{} / paths:{})".format(LONG_BLANK[0:len(self.level) * 2], self.paragraphTitle,
+        logging.debug("MDR |  | {} {} [in:{}->match:{}/else:{}] ( {} {} tags:{} / paths:{})".format(LONG_BLANK[0:len(self.level) * 2], self.paragraphTitle,
                                                                     len(self.inputFiles), len(self.filteredFiles),
-                                                                    len(self.elseFiles), self.tags, self.paths))
+                                                                    len(self.elseFiles), self.inverseCondition, self.multiCondition,
+                                                                    self.tags, self.paths))
 
         nextLevel = self.level
         if len(self.filteredFiles) > 0:
