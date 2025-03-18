@@ -938,7 +938,7 @@ class OLAGameSessions(OLASharedGameListWidget):
 
 
 class OLAReportLine(QWidget):
-    def __init__(self, row, col, layout, sheetPath, about, customLabel=None):
+    def __init__(self, row, col, layout, sheetPath, about, customLabel=None, generateButtonState=True):
         super().__init__()
 
         self.sheet = sheetPath
@@ -981,7 +981,7 @@ class OLAReportLine(QWidget):
             bRedo.setStatusTip("Regenerate only this report")
             bRedo.setIcon(Icons.REPORT)
             bRedo.clicked.connect(self.startSingleReport)
-            # bRedo.setEnabled(False)
+            bRedo.setEnabled(generateButtonState)
             bPanel.layout().addWidget(bRedo)
             self.bRedo = bRedo
         else:
@@ -1007,7 +1007,7 @@ class OLAReportLine(QWidget):
 
 
 class OLAReports(QWidget):
-    def __init__(self):
+    def __init__(self, generateButtonState=True):
         super().__init__()
         OLAGui.REPORTS = self
         self.reports = dict()
@@ -1039,7 +1039,7 @@ class OLAReports(QWidget):
         layout.addWidget(statusLine)
 
         if OLABackend.VAULT.reports is not None:
-            OLAGui.REPORTS.setReports(OLABackend.VAULT.reports)
+            OLAGui.REPORTS.setReports(OLABackend.VAULT.reports, generateButtonState=generateButtonState)
 
     def reportAvailable(self, name, sheetPath):
         self.setStatus("{} ({}) generated".format(name, sheetPath))
@@ -1056,13 +1056,13 @@ class OLAReports(QWidget):
         else:
             self.linkErrorMessage.setToolTip("\n".join(detailed))
 
-    def setReports(self, sheetPaths):
+    def setReports(self, sheetPaths, generateButtonState=False):
         self.reports["Readme"] = OLAReportLine(0, 0, self.reportPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, "All reports description", customLabel="Reports description")
         self.reports["Readme"].enableVault()
         row = 0
         col = 2
         for sheetPath, about in sheetPaths.items():
-            self.reports[sheetPath] = OLAReportLine(row, col, self.reportPanelLayout, sheetPath, about)
+            self.reports[sheetPath] = OLAReportLine(row, col, self.reportPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
             if col == 0:
                 col = 2
             elif col == 2:
@@ -1169,7 +1169,7 @@ class OLATabPanel(QTabWidget):
         self.removeTabByName(OLAGui.REPORTS_TAB_NAME)
 
     def showReportsTab(self):
-        self.declareTab(OLAReports(), OLAGui.REPORTS_TAB_NAME)
+        self.declareTab(OLAReports(generateButtonState=False), OLAGui.REPORTS_TAB_NAME)
         self.setCurrentIndex(self.tabsIndex[OLAGui.REPORTS_TAB_NAME])
 
     def tabSelected(self):
