@@ -96,7 +96,15 @@ class MarkdownHelper:
                 about = report["about"]
             except KeyError:
                 about = "no description available..."
-            self.reports[report["target"]] = about
+            try:
+                group = report["group"]
+            except KeyError:
+                group = "default"
+            try:
+                self.reports[group][report["target"]] = about
+            except KeyError:
+                self.reports[group] = dict()
+                self.reports[group][report["target"]] = about
         return self.reports
 
     def parseVault(self, initReportsList=False):

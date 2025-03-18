@@ -34,7 +34,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.NEXT"
+    VERSION = "2025.03.18"
     PREVIOUS = "2025.03.15"
 
 
@@ -961,6 +961,8 @@ class OLAReportLine(QWidget):
             sheet = QLabel(sname)
         else:
             sheet = QLabel(customLabel)
+        if sheetPath == "":
+            sheet.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
         sheet.setToolTip(about)
         layout.addWidget(sheet, row, colUpdated)
 
@@ -968,13 +970,14 @@ class OLAReportLine(QWidget):
         bPanel.setLayout(QHBoxLayout())
         bPanel.layout().setContentsMargins(0, 0, 0, 0)
 
-        bVault = QPushButton("")
-        bVault.setStatusTip("Open in obsidian Vault")
-        bVault.setIcon(Icons.OBSIDIAN)
-        bVault.clicked.connect(self.openReportInVault)
-        # bVault.setEnabled(False)
-        bPanel.layout().addWidget(bVault)
-        self.bVault = bVault
+        if sheetPath != "":
+            bVault = QPushButton("")
+            bVault.setStatusTip("Open in obsidian Vault")
+            bVault.setIcon(Icons.OBSIDIAN)
+            bVault.clicked.connect(self.openReportInVault)
+            # bVault.setEnabled(False)
+            bPanel.layout().addWidget(bVault)
+            self.bVault = bVault
 
         if customLabel is None:
             bRedo = QPushButton("")
@@ -1056,23 +1059,31 @@ class OLAReports(QWidget):
         else:
             self.linkErrorMessage.setToolTip("\n".join(detailed))
 
-    def setReports(self, sheetPaths, generateButtonState=False):
-        self.reports["Readme"] = OLAReportLine(0, 0, self.reportPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, "All reports description", customLabel="Reports description")
-        self.reports["Readme"].enableVault()
+    def setReports(self, sheetPathsByGroup, generateButtonState=False):
         row = 0
-        col = 2
-        for sheetPath, about in sheetPaths.items():
-            self.reports[sheetPath] = OLAReportLine(row, col, self.reportPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
-            if col == 0:
-                col = 2
-            elif col == 2:
-                col = 5
-            elif col == 5:
-                col = 8
-            else:
-                row = row + 1
-                col = 0
-        self.reports["Duplicate files"] = OLAReportLine(row, col, self.reportPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, "Report that identify duplicate files in predefined folders",
+        col = 0
+        for group, sheetPaths in sheetPathsByGroup.items():
+            self.reports[group] = OLAReportLine(row, 0, self.reportPanelLayout, "", group, group)
+            self.reports[group] = OLAReportLine(row, 2, self.reportPanelLayout, "", group, "{} reports".format(len(sheetPaths)))
+            row = row + 1
+            for sheetPath, about in sheetPaths.items():
+                self.reports[sheetPath] = OLAReportLine(row, col, self.reportPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
+                if col == 0:
+                    col = 2
+                elif col == 2:
+                    col = 5
+                elif col == 5:
+                    col = 8
+                else:
+                    row = row + 1
+                    col = 0
+            col = 0
+            row = row + 1
+
+        self.reports["Readme"] = OLAReportLine(row, 0, self.reportPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, "All reports description", customLabel="Reports description")
+        self.reports["Readme"].enableVault()
+
+        self.reports["Duplicate files"] = OLAReportLine(row, 2, self.reportPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, "Report that identify duplicate files in predefined folders",
                                                         customLabel="Files duplication")
         self.reports["Duplicate files"].enableVault()
 
