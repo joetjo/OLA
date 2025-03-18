@@ -1165,8 +1165,10 @@ class OLATabPanel(QTabWidget):
         except KeyError:
             pass  # was not here
 
-    def clearAndShowReportsTab(self):
+    def clearReportsTab(self):
         self.removeTabByName(OLAGui.REPORTS_TAB_NAME)
+
+    def showReportsTab(self):
         self.declareTab(OLAReports(), OLAGui.REPORTS_TAB_NAME)
         self.setCurrentIndex(self.tabsIndex[OLAGui.REPORTS_TAB_NAME])
 
@@ -1319,7 +1321,7 @@ class OLAApplication(QApplication):
         if OLALock.takeMdEngine():
             if OLAGui.REPORTS is not None:
                 OLAGui.REPORTS.start = time.time()
-            OLAGui.TAB_PANEL.clearAndShowReportsTab()
+            OLAGui.TAB_PANEL.clearReportsTab()
             OLAGui.ASSISTANT.vaultReportInProgress()
             mdgen = MdReportGenerator(allReports=True)
             mdgen.signals.md_report_generation_finished.connect(self.mdParsed)
@@ -1372,7 +1374,7 @@ class OLAApplication(QApplication):
         OLAGui.PLAYING_PANEL.refreshVault()
 
     def mdStarting(self, reports):
-        OLAGui.REPORTS.setReports(reports)
+        OLAGui.TAB_PANEL.showReportsTab()
         OLAGui.ASSISTANT.vaultAllReportsInProgress()
 
     def mdReportsGenerated(self):

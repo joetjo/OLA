@@ -97,6 +97,7 @@ class MarkdownHelper:
             except KeyError:
                 about = "no description available..."
             self.reports[report["target"]] = about
+        return self.reports
 
     def parseVault(self, initReportsList=False):
         logging.info("MDR | Markdown vault: {}".format(self.VAULT))
@@ -146,8 +147,7 @@ class MarkdownHelper:
             if reload or len(self.SORTED_FILES) == 0:
                 self.parseVault()
 
-            self.cacheReportsList()
-
+            signal_reports.emit(self.cacheReportsList())
             current = 1
             for reportTitle, report in self.REPORTS.items():
                 self.processReport(reportTitle, report, current, len(self.REPORTS), signal_report)
