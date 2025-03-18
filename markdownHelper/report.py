@@ -21,6 +21,7 @@ LONG_BLANK = "                                                                  
 
 ALLOWED_ATTRIBUTES = ["target",  # 1st level only: target file path
                       "title",  # mandatory on each bloc
+                      "group",
                       "about",
                       "tag_condition",  # optional: tag list to filter content ( can be tag prefix )
                       "tag_refs",  # optional : references by name to tag list in shared data
