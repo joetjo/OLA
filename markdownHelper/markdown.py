@@ -50,6 +50,8 @@ class MarkdownHelper:
         self.PLAY_TAGS_UNSORTED = set()
         self.PLAY_TAGS = []
         self.REPORTS_SHEET = MhReportDescriptionSheet("# Reports description\n\n> Automatic reports description\n", self.REPORTS_SHEET_NAME)
+        # Initialized only when loading has been requested.
+        self.reports = None
 
     # folder: Path
     # shift: String ( String length provide the indentation level )
@@ -87,7 +89,16 @@ class MarkdownHelper:
 
         return entryCount
 
-    def parseVault(self):
+    def cacheReportsList(self):
+        self.reports = dict()
+        for report in self.REPORTS.values():
+            try:
+                about = report["about"]
+            except KeyError:
+                about = "no description available..."
+            self.reports[report["target"]] = about
+
+    def parseVault(self, initReportsList=False):
         logging.info("MDR | Markdown vault: {}".format(self.VAULT))
         count = self.processFolder(Path(self.VAULT), "")
 
@@ -102,6 +113,9 @@ class MarkdownHelper:
 
         for t in sorted(self.PLAY_TAGS_UNSORTED):
             self.PLAY_TAGS.append(t)
+
+        if initReportsList:
+            self.cacheReportsList()
 
     def processReport(self, reportTitle, report, current, total, signal_report):
         logging.info("MDR | Processing report \"{}\" {}/{}".format(reportTitle, current, total))
@@ -132,20 +146,11 @@ class MarkdownHelper:
             if reload or len(self.SORTED_FILES) == 0:
                 self.parseVault()
 
-            total = len(self.REPORTS)
-            reportTargets = dict()
-
-            for report in self.REPORTS.values():
-                try:
-                    about = report["about"]
-                except KeyError:
-                    about = "no description available..."
-                reportTargets[report["target"]] = about
-            signal_reports.emit(reportTargets)
+            self.cacheReportsList()
 
             current = 1
             for reportTitle, report in self.REPORTS.items():
-                self.processReport(reportTitle, report, current, total, signal_report)
+                self.processReport(reportTitle, report, current, len(self.REPORTS), signal_report)
                 current = current + 1
 
         except Exception as e:

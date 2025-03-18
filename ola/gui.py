@@ -34,8 +34,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.15"
-    PREVIOUS = "2025.03.09"
+    VERSION = "2025.03.NEXT"
+    PREVIOUS = "2025.03.15"
 
 
 class OLAGuiSetup:
@@ -972,7 +972,7 @@ class OLAReportLine(QWidget):
         bVault.setStatusTip("Open in obsidian Vault")
         bVault.setIcon(Icons.OBSIDIAN)
         bVault.clicked.connect(self.openReportInVault)
-        bVault.setEnabled(False)
+        # bVault.setEnabled(False)
         bPanel.layout().addWidget(bVault)
         self.bVault = bVault
 
@@ -981,7 +981,7 @@ class OLAReportLine(QWidget):
             bRedo.setStatusTip("Regenerate only this report")
             bRedo.setIcon(Icons.REPORT)
             bRedo.clicked.connect(self.startSingleReport)
-            bRedo.setEnabled(False)
+            # bRedo.setEnabled(False)
             bPanel.layout().addWidget(bRedo)
             self.bRedo = bRedo
         else:
@@ -1038,8 +1038,11 @@ class OLAReports(QWidget):
         statusLine.layout().addWidget(self.linkErrorMessage)
         layout.addWidget(statusLine)
 
-    def reportAvailable(self, sheetPath):
-        self.setStatus("{} generated".format(sheetPath))
+        if OLABackend.VAULT.reports is not None:
+            OLAGui.REPORTS.setReports(OLABackend.VAULT.reports)
+
+    def reportAvailable(self, name, sheetPath):
+        self.setStatus("{} ({}) generated".format(name, sheetPath))
         self.reports[sheetPath].enableVault()
 
     def setStatus(self, message):
@@ -1102,6 +1105,10 @@ class OLAObsidianAssistant(OLASharedGameListWidget):
         self.title = "Vault report generation in progress"
         self.col1.setText(self.title)
 
+    def vaultAllReportsInProgress(self):
+        self.title = "Vault all reports generation in progress"
+        self.col1.setText(self.title)
+
     def vaultParsingInProgress(self):
         self.title = "Vault loading in progress"
         self.col1.setText(self.title)
@@ -1138,6 +1145,7 @@ class OLATabPanel(QTabWidget):
         self.tabsName = []
         self.declareTab(OLAGameSessions(), OLAGui.SESSIONS_TAB_NAME)
         self.declareTab(OLAObsidianAssistant(), OLAGui.ASSISTANT_TAB_NAME)
+        self.declareTab(OLAReports(), OLAGui.REPORTS_TAB_NAME)
         #self.declareTab(OLAExcludedGame(), OLAGui.EXCLUDED_TAB_NAME)
 
         self.currentChanged.connect(self.tabSelected)
@@ -1237,7 +1245,7 @@ class OLAApplication(QApplication):
         self.processEvents()
 
         # Blocking parsing of vault or display will be wrong
-        mdgen = MdReportGenerator(allReports=False)
+        mdgen = MdReportGenerator(allReports=False, initReportsList=True)
         mdgen.run()
 
         self.processEvents()
@@ -1354,7 +1362,7 @@ class OLAApplication(QApplication):
         OLAGui.PLAYING_PANEL.gameLaunchFailure()
 
     def mdReportGenerated(self, reportName, sheet):
-        OLAGui.REPORTS.reportAvailable(sheet)
+        OLAGui.REPORTS.reportAvailable(reportName, sheet)
 
     def mdParsed(self):
         self.checkSplash()
@@ -1365,6 +1373,7 @@ class OLAApplication(QApplication):
 
     def mdStarting(self, reports):
         OLAGui.REPORTS.setReports(reports)
+        OLAGui.ASSISTANT.vaultAllReportsInProgress()
 
     def mdReportsGenerated(self):
         self.mdParsed()

@@ -49,9 +49,9 @@ class LauncherSignals(QObject):
 
 
 class MdReportGeneratorSignals(QObject):
-    md_report_generation_finished = Signal()
-    md_report_generation_failure = Signal(object)
-    md_report_generation_starting = Signal(object)
+    md_report_generation_finished = Signal()       # to notify parsing all md files is complete
+    md_report_generation_failure = Signal(object)  # to send report failure message
+    md_report_generation_starting = Signal(object) # to notify all reports has been loaded and generation is starting
     md_last_report = Signal(object, object)
 
 
@@ -69,11 +69,14 @@ class SbSGLSignals(QObject):
 
 
 class MdReportGenerator(QRunnable):
-    def __init__(self, allReports=True, target=None):
+    def __init__(self, allReports=True, initReportsList=False, target=None):
         super().__init__()
         self.signals = MdReportGeneratorSignals()
         self.allReports = allReports
+        self.initReportsList = initReportsList
         self.target = target
+        # Cache for report once data has been loaded
+        self.reports = None
 
     @Slot()  # QtCore.Slot
     def run(self):
@@ -91,9 +94,10 @@ class MdReportGenerator(QRunnable):
                 logging.info("Generation Markdown single report finished")
             else:
                 logging.info("Loading vault...")
-                OLABackend.VAULT.parseVault()
+                OLABackend.VAULT.parseVault(initReportsList=self.initReportsList)
                 logging.info("Parse Vault finished")
                 OLABackend.VAULT_READY = True
+
         finally:
             self.signals.md_report_generation_finished.emit()
 
