@@ -49,6 +49,7 @@ class MarkdownHelper:
         self.TYPE_TAGS = []
         self.PLAY_TAGS_UNSORTED = set()
         self.PLAY_TAGS = []
+        self.REPORTS_GROUP = []
         self.REPORTS_SHEET = MhReportDescriptionSheet("# Reports description\n\n> Automatic reports description\n", self.REPORTS_SHEET_NAME)
         # Initialized only when loading has been requested.
         self.reports = None
@@ -105,6 +106,8 @@ class MarkdownHelper:
             except KeyError:
                 self.reports[group] = dict()
                 self.reports[group][report["target"]] = about
+
+        self.REPORTS_GROUP = self.reports.keys()
         return self.reports
 
     def parseVault(self, initReportsList=False):

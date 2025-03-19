@@ -52,6 +52,7 @@ class OLAGuiSetup:
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
     SHEET_VIEW_FILTER_TAG = "#TYPE"
     SESSION_VIEW_FILTER_TAG = "#PLAY"
+    REPORT_VIEW_FILTER_ID = "Group"
     DEFAULT_SESSION_FILTER = "INPROGRESS"
     DEFAULT_INSTALL_MODE_FILTER = True
     DEFAULT_VN_MODE_FILTER = True
@@ -234,7 +235,7 @@ class OLAFilter(QGroupBox):
         self.tag = tag
         self.value = defaultValue
         self.filterValue = None
-
+        self.textListener = listener
         self.searchToken = None
 
         layout = QGridLayout()
@@ -243,8 +244,8 @@ class OLAFilter(QGroupBox):
         if tag is not None:
             self.filterValue = QComboBox()
             self.filterValue.setMaxVisibleItems(OLAGuiSetup.VISIBLE_TYPE_COUNT)
-            self.filterValue.currentTextChanged.connect(listener)
             self.filterValue.setCurrentText(self.value)
+            self.filterValue.currentTextChanged.connect(self.textListener)
             tagLabel = QLabel("{}".format(self.tag))
             tagLabel.setMinimumWidth(OLAGuiSetup.TAG_MIN_WIDTH)
             layout.addWidget(tagLabel, 0, 0)
@@ -300,12 +301,24 @@ class OLAFilter(QGroupBox):
         if len(self.searchToken) == 0:
             self.searchToken = None
 
+    def setNoSelection(self):
+        if self.textListener is not None:
+            self.filterValue.currentTextChanged.disconnect(self.textListener)
+        self.filterValue.setCurrentText(None)
+        self.value = None
+        if self.textListener is not None:
+            self.filterValue.currentTextChanged.connect(self.textListener)
+
     def setValues(self):
+        if self.textListener is not None:
+            self.filterValue.currentTextChanged.disconnect(self.textListener)
         if self.tag is not None:
             if self.tag == OLAGuiSetup.SHEET_VIEW_FILTER_TAG:
                 choices = OLABackend.VAULT.TYPE_TAGS
             elif self.tag == OLAGuiSetup.SESSION_VIEW_FILTER_TAG:
                 choices = OLABackend.VAULT.PLAY_TAGS
+            elif self.tag == OLAGuiSetup.REPORT_VIEW_FILTER_ID:
+                choices = OLABackend.VAULT.REPORTS_GROUP
             else:
                 choices = ["{} not supported".format(self.tag)]
             currentValue = self.value
@@ -317,6 +330,8 @@ class OLAFilter(QGroupBox):
             if count > OLAGuiSetup.VISIBLE_TYPE_COUNT:
                 count = OLAGuiSetup.VISIBLE_TYPE_COUNT
             self.filterValue.setMaxVisibleItems(count)
+        if self.textListener is not None:
+            self.filterValue.currentTextChanged.connect(self.textListener)
 
 
 class OLAPlayingPanel(QWidget):
@@ -384,6 +399,7 @@ class OLAPlayingPanel(QWidget):
                                                            defaultInstallMode=OLAGuiSetup.DEFAULT_INSTALL_MODE_FILTER,
                                                            linkListener=self.applyCheck)
         self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.SHEET_VIEW_FILTER_TAG, self.applyFilter)
+        self.filters[OLAGui.REPORTS_TAB_NAME] = OLAFilter(OLAGuiSetup.REPORT_VIEW_FILTER_ID, self.applyFilter)
         self.filter = self.defaultFilter
 
         self.layout().addWidget(self.defaultFilter)
@@ -391,6 +407,8 @@ class OLAPlayingPanel(QWidget):
         self.filters[OLAGui.SESSIONS_TAB_NAME].setVisible(False)
         self.layout().addWidget(self.filters[OLAGui.ASSISTANT_TAB_NAME])
         self.filters[OLAGui.ASSISTANT_TAB_NAME].setVisible(False)
+        self.layout().addWidget(self.filters[OLAGui.REPORTS_TAB_NAME])
+        self.filters[OLAGui.REPORTS_TAB_NAME].setVisible(False)
 
     def activateFilter(self, tabName):
         selectedFilter = None
@@ -415,6 +433,7 @@ class OLAPlayingPanel(QWidget):
             self.filter.value = None
         OLAGui.ASSISTANT.vaultParsed()
         OLAGui.SESSIONS.loadSessions()
+        OLAGui.REPORTS.applyFiltering()
 
     def applyCheck(self):
         OLAGui.SESSIONS.showUnlink = self.filters[OLAGui.SESSIONS_TAB_NAME].linkSelector.isChecked()
@@ -830,8 +849,6 @@ class OLASharedGameListWidget(QWidget):
         else:
             return True
 
-
-
     def doBack(self):
         if self.currentPage > 1:
             self.currentPage = self.currentPage - 1
@@ -941,6 +958,7 @@ class OLAReportLine(QWidget):
         super().__init__()
 
         self.sheet = sheetPath
+        self.widgets = []
 
         if col == 2:
             layout.addWidget(QLabel(" | "), row, 2)
@@ -960,8 +978,7 @@ class OLAReportLine(QWidget):
             sheet = QLabel(sname)
         else:
             sheet = QLabel(customLabel)
-        if sheetPath == "":
-            sheet.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+
         sheet.setToolTip(about)
         layout.addWidget(sheet, row, colUpdated)
 
@@ -999,6 +1016,10 @@ class OLAReportLine(QWidget):
     def startSingleReport(self):
         OLAGui.APP.startSingleReport(self.sheet)
 
+    def disableGenerate(self):
+        if self.bRedo is not None:
+            self.bRedo.setEnabled(False)
+
     def enableVault(self):
         self.bVault.setEnabled(True)
         if self.bRedo is not None:
@@ -1013,16 +1034,19 @@ class OLAReports(QWidget):
         super().__init__()
         OLAGui.REPORTS = self
         self.reports = dict()
+        self.reportsPanel = dict()
+        self.currentFiltering = None
         self.start = time.time()
 
         layout = QVBoxLayout()
         self.setLayout(layout)
         scroll = QScrollArea()
         scroll.setWidgetResizable(OLAGuiSetup.VISIBLE_SESSION_COUNT)
+
         content = QWidget()
         content.setLayout(QHBoxLayout())
         reportPanel = QWidget()
-        self.reportPanelLayout = QGridLayout()
+        self.reportPanelLayout = QVBoxLayout()
         reportPanel.setLayout(self.reportPanelLayout)
         content.layout().addWidget(reportPanel)
         content.layout().addStretch()
@@ -1058,40 +1082,83 @@ class OLAReports(QWidget):
         else:
             self.linkErrorMessage.setToolTip("\n".join(detailed))
 
-    def setReports(self, sheetPathsByGroup, generateButtonState=False):
-        grow = 0
-        row = 0
+    def disableGeneration(self):
+        for line in self.reports.values():
+            try:
+                line.disableGenerate()
+            except AttributeError:
+                pass
+
+    def applyFiltering(self):
+        OLAGui.REPORTS.setReports(OLABackend.VAULT.reports)
+
+    def addReportGroup(self, group, sheetPaths, generateButtonState=False):
         col = 0
-        groupPanelLayout = None
+        row = 0
+        groupPanel = QGroupBox()
+        groupPanelLayout = QGridLayout()
+        groupPanel.setLayout(groupPanelLayout)
+        self.reportsPanel[group] = groupPanel
+        if len(sheetPaths) > 0:
+            extraInfo = " - {} reports".format(len(sheetPaths))
+        else:
+            extraInfo = ""
+        self.reports[group] = QLabel("{}{}".format(group, extraInfo))
+        self.reports[group].setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        self.reportPanelLayout.addWidget(self.reports[group])
+        self.reportPanelLayout.addWidget(groupPanel)
+
+        for sheetPath, about in sheetPaths.items():
+            self.reports[sheetPath] = OLAReportLine(row, col, groupPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
+            if col == 0:
+                col = 2
+            elif col == 2:
+                col = 5
+            elif col == 5:
+                col = 8
+            else:
+                row = row + 1
+                col = 0
+        return groupPanelLayout
+
+    def setReports(self, sheetPathsByGroup, generateButtonState=False):
+        selectedGroup = OLAGui.PLAYING_PANEL.filters[OLAGui.REPORTS_TAB_NAME].value
+        if selectedGroup is not None and len(selectedGroup) == 0:
+            selectedGroup = None
+
         for group, sheetPaths in sheetPathsByGroup.items():
-            groupPanel = QGroupBox()
-            groupPanelLayout = QGridLayout()
-            groupPanel.setLayout(groupPanelLayout)
-            self.reports[group] = OLAReportLine(grow, 0, self.reportPanelLayout, "", group,  "{} - {} reports".format(group, len(sheetPaths)))
-            self.reportPanelLayout.addWidget(groupPanel, grow+1, 0)
-            grow = grow + 2
-            row = row + 1
-            for sheetPath, about in sheetPaths.items():
-                self.reports[sheetPath] = OLAReportLine(row, col, groupPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
-                if col == 0:
-                    col = 2
-                elif col == 2:
-                    col = 5
-                elif col == 5:
-                    col = 8
-                else:
-                    row = row + 1
-                    col = 0
-            col = 0
-            row = 0
+            if selectedGroup is None or selectedGroup == group:
+                try:
+                    self.reportsPanel[group].setVisible(True)
+                    self.reports[group].setVisible(True)
+                except KeyError:
+                    self.addReportGroup(group, sheetPaths, generateButtonState)
+            elif selectedGroup is not None:
+                try:
+                    self.reportsPanel[group].setVisible(False)
+                    self.reports[group].setVisible(False)
+                except KeyError:
+                    pass
 
-        self.reports["Readme"] = OLAReportLine(grow, 0, groupPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, "All reports description", customLabel="Reports description")
-        self.reports["Readme"].enableVault()
+        if selectedGroup is None:
+            try:
+                self.reportsPanel["Files"].setVisible(True)
+                self.reports["Files"].setVisible(True)
+            except KeyError:
+                groupPanelLayout = self.addReportGroup("Files", dict(), generateButtonState)
+                self.reports["Readme"] = OLAReportLine(1, 0, groupPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, "All reports description", customLabel="Reports description")
+                self.reports["Readme"].enableVault()
+                self.reports["Duplicate files"] = OLAReportLine(1, 2, groupPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, "Report that identify duplicate files in predefined folders",
+                                                            customLabel="Files duplication")
+                self.reports["Duplicate files"].enableVault()
 
-        self.reports["Duplicate files"] = OLAReportLine(grow, 2, groupPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, "Report that identify duplicate files in predefined folders",
-                                                        customLabel="Files duplication")
-        self.reports["Duplicate files"].enableVault()
-
+                self.reportPanelLayout.addStretch()
+        else:
+            try:
+                self.reportsPanel["Files"].setVisible(False)
+                self.reports["Files"].setVisible(False)
+            except KeyError:
+                pass
 
 class OLAObsidianAssistant(OLASharedGameListWidget):
     def __init__(self):
@@ -1179,10 +1246,11 @@ class OLATabPanel(QTabWidget):
             pass  # was not here
 
     def clearReportsTab(self):
-        self.removeTabByName(OLAGui.REPORTS_TAB_NAME)
+        OLAGui.PLAYING_PANEL.filters[OLAGui.REPORTS_TAB_NAME].setNoSelection()
+        OLAGui.REPORTS.disableGeneration()
+        OLAGui.REPORTS.applyFiltering()
 
     def showReportsTab(self):
-        self.declareTab(OLAReports(generateButtonState=False), OLAGui.REPORTS_TAB_NAME)
         self.setCurrentIndex(self.tabsIndex[OLAGui.REPORTS_TAB_NAME])
 
     def tabSelected(self):
