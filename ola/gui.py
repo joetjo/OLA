@@ -34,8 +34,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.18"
-    PREVIOUS = "2025.03.15"
+    VERSION = "2025.03.Next"
+    PREVIOUS = "2025.03.18"
 
 
 class OLAGuiSetup:
@@ -56,7 +56,6 @@ class OLAGuiSetup:
     DEFAULT_INSTALL_MODE_FILTER = True
     DEFAULT_VN_MODE_FILTER = True
     DEFAULT_VNA_MODE_FILTER = False
-    LINE_REPORTS_COUNT = 18
     # CONFIGURABLE ENTRIES
     POSX = "posx"
     POSY = "posy"
@@ -1060,14 +1059,20 @@ class OLAReports(QWidget):
             self.linkErrorMessage.setToolTip("\n".join(detailed))
 
     def setReports(self, sheetPathsByGroup, generateButtonState=False):
+        grow = 0
         row = 0
         col = 0
+        groupPanelLayout = None
         for group, sheetPaths in sheetPathsByGroup.items():
-            self.reports[group] = OLAReportLine(row, 0, self.reportPanelLayout, "", group, group)
-            self.reports[group] = OLAReportLine(row, 2, self.reportPanelLayout, "", group, "{} reports".format(len(sheetPaths)))
+            groupPanel = QGroupBox()
+            groupPanelLayout = QGridLayout()
+            groupPanel.setLayout(groupPanelLayout)
+            self.reports[group] = OLAReportLine(grow, 0, self.reportPanelLayout, "", group,  "{} - {} reports".format(group, len(sheetPaths)))
+            self.reportPanelLayout.addWidget(groupPanel, grow+1, 0)
+            grow = grow + 2
             row = row + 1
             for sheetPath, about in sheetPaths.items():
-                self.reports[sheetPath] = OLAReportLine(row, col, self.reportPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
+                self.reports[sheetPath] = OLAReportLine(row, col, groupPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
                 if col == 0:
                     col = 2
                 elif col == 2:
@@ -1078,17 +1083,14 @@ class OLAReports(QWidget):
                     row = row + 1
                     col = 0
             col = 0
-            row = row + 1
+            row = 0
 
-        self.reports["Readme"] = OLAReportLine(row, 0, self.reportPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, "All reports description", customLabel="Reports description")
+        self.reports["Readme"] = OLAReportLine(grow, 0, groupPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, "All reports description", customLabel="Reports description")
         self.reports["Readme"].enableVault()
 
-        self.reports["Duplicate files"] = OLAReportLine(row, 2, self.reportPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, "Report that identify duplicate files in predefined folders",
+        self.reports["Duplicate files"] = OLAReportLine(grow, 2, groupPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, "Report that identify duplicate files in predefined folders",
                                                         customLabel="Files duplication")
         self.reports["Duplicate files"].enableVault()
-
-        for idx in range(row, OLAGuiSetup.LINE_REPORTS_COUNT):
-            self.reportPanelLayout.addWidget(QLabel(""), idx, 0)
 
 
 class OLAObsidianAssistant(OLASharedGameListWidget):
