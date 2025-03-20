@@ -34,7 +34,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.Next"
+    VERSION = "2025.03.20"
     PREVIOUS = "2025.03.18"
 
 
@@ -952,13 +952,51 @@ class OLAGameSessions(OLASharedGameListWidget):
     def reload(self):
         self.loadSessions()
 
-
-class OLAReportLine(QWidget):
-    def __init__(self, row, col, layout, sheetPath, about, customLabel=None, generateButtonState=True):
+class OLABaseReportLine():
+    def __init__(self, layout, sheetPath, about, customLabel=None, generateButtonState=True):
         super().__init__()
 
         self.sheet = sheetPath
-        self.widgets = []
+
+        if sheetPath != "":
+            bVault = QPushButton("")
+            bVault.setStatusTip("Open in obsidian Vault")
+            bVault.setIcon(Icons.OBSIDIAN)
+            bVault.clicked.connect(self.openReportInVault)
+            # bVault.setEnabled(False)
+            self.bVault = bVault
+
+        if customLabel is None:
+            bRedo = QPushButton("")
+            bRedo.setStatusTip("Regenerate only this report")
+            bRedo.setIcon(Icons.REPORT)
+            bRedo.clicked.connect(self.startSingleReport)
+            bRedo.setEnabled(generateButtonState)
+            self.bRedo = bRedo
+        else:
+            self.bRedo = None
+
+    def openReportInVault(self):
+        OLABackend.openInVault(sheetName=self.sheet)
+
+    def startSingleReport(self):
+        OLAGui.APP.startSingleReport(self.sheet)
+
+    def disableGenerate(self):
+        if self.bRedo is not None:
+            self.bRedo.setEnabled(False)
+
+    def enableVault(self):
+        self.bVault.setEnabled(True)
+        if self.bRedo is not None:
+            self.bRedo.setEnabled(True)
+
+    def regenerateReport(self):
+        OLAGui.APP.startSingleReport(self.sheet)
+
+class OLAReportLine(OLABaseReportLine):
+    def __init__(self, row, col, layout, sheetPath, about, customLabel=None, generateButtonState=True):
+        super().__init__(layout, sheetPath, about, customLabel, generateButtonState)
 
         if col == 2:
             layout.addWidget(QLabel(" | "), row, 2)
@@ -987,54 +1025,56 @@ class OLAReportLine(QWidget):
         bPanel.layout().setContentsMargins(0, 0, 0, 0)
 
         if sheetPath != "":
-            bVault = QPushButton("")
-            bVault.setStatusTip("Open in obsidian Vault")
-            bVault.setIcon(Icons.OBSIDIAN)
-            bVault.clicked.connect(self.openReportInVault)
-            # bVault.setEnabled(False)
-            bPanel.layout().addWidget(bVault)
-            self.bVault = bVault
+            bPanel.layout().addWidget(self.bVault)
 
         if customLabel is None:
-            bRedo = QPushButton("")
-            bRedo.setStatusTip("Regenerate only this report")
-            bRedo.setIcon(Icons.REPORT)
-            bRedo.clicked.connect(self.startSingleReport)
-            bRedo.setEnabled(generateButtonState)
-            bPanel.layout().addWidget(bRedo)
-            self.bRedo = bRedo
-        else:
-            self.bRedo = None
+            bPanel.layout().addWidget(self.bRedo)
 
         bPanel.layout().addStretch()
 
         layout.addWidget(bPanel, row, colUpdated + 1)
 
-    def openReportInVault(self):
-        OLABackend.openInVault(sheetName=self.sheet)
+class OLADetailedReportLine(OLABaseReportLine):
+    def __init__(self, row, layout, sheetPath, about, customLabel=None, generateButtonState=True):
+        super().__init__(layout, sheetPath, about, customLabel, generateButtonState)
 
-    def startSingleReport(self):
-        OLAGui.APP.startSingleReport(self.sheet)
+        bPanel = QWidget()
+        bPanel.setLayout(QHBoxLayout())
+        bPanel.layout().setContentsMargins(0, 0, 0, 0)
 
-    def disableGenerate(self):
-        if self.bRedo is not None:
-            self.bRedo.setEnabled(False)
+        if sheetPath != "":
+            bPanel.layout().addWidget(self.bVault)
 
-    def enableVault(self):
-        self.bVault.setEnabled(True)
-        if self.bRedo is not None:
-            self.bRedo.setEnabled(True)
+        if customLabel is None:
+            bPanel.layout().addWidget(self.bRedo)
 
-    def regenerateReport(self):
-        OLAGui.APP.startSingleReport(self.sheet)
+        layout.addWidget(bPanel, row, 1)
 
+        if customLabel is None:
+            sname = os.path.basename(sheetPath)
+            sname = sname[0:len(sname) - 3]
+            sheet = QLabel(sname)
+        else:
+            sheet = QLabel(customLabel)
+        layout.addWidget(sheet, row, 2)
+
+        aboutL = QLabel(about)
+        layout.addWidget(aboutL, row, 3)
+
+        bPanel = QWidget()
+        bPanel.setLayout(QHBoxLayout())
+        bPanel.layout().setContentsMargins(0, 0, 0, 0)
+        bPanel.layout().addStretch()
+        layout.addWidget(bPanel, row, 4)
 
 class OLAReports(QWidget):
     def __init__(self, generateButtonState=True):
         super().__init__()
         OLAGui.REPORTS = self
         self.reports = dict()
+        self.reportsDetailed = dict()
         self.reportsPanel = dict()
+        self.reportsPanelDetailed = dict()
         self.currentFiltering = None
         self.start = time.time()
 
@@ -1043,14 +1083,11 @@ class OLAReports(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(OLAGuiSetup.VISIBLE_SESSION_COUNT)
 
-        content = QWidget()
-        content.setLayout(QHBoxLayout())
         reportPanel = QWidget()
         self.reportPanelLayout = QVBoxLayout()
         reportPanel.setLayout(self.reportPanelLayout)
-        content.layout().addWidget(reportPanel)
-        content.layout().addStretch()
-        scroll.setWidget(content)
+        reportPanel.setContentsMargins(0, 0, 0, 0)
+        scroll.setWidget(reportPanel)
 
         layout.addWidget(scroll)
 
@@ -1092,22 +1129,34 @@ class OLAReports(QWidget):
     def applyFiltering(self):
         OLAGui.REPORTS.setReports(OLABackend.VAULT.reports)
 
-    def addReportGroup(self, group, sheetPaths, generateButtonState=False):
-        col = 0
-        row = 0
+    def createGroupBox(self, group, sheetPaths, reportsList, reportPanelsList):
         groupPanel = QGroupBox()
         groupPanelLayout = QGridLayout()
         groupPanel.setLayout(groupPanelLayout)
-        self.reportsPanel[group] = groupPanel
+        reportPanelsList[group] = groupPanel
         if len(sheetPaths) > 0:
             extraInfo = " - {} reports".format(len(sheetPaths))
         else:
             extraInfo = ""
-        self.reports[group] = QLabel("{}{}".format(group, extraInfo))
-        self.reports[group].setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
-        self.reportPanelLayout.addWidget(self.reports[group])
+        reportsList[group] = QLabel("{}{}".format(group, extraInfo))
+        reportsList[group].setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        self.reportPanelLayout.addWidget(reportsList[group])
         self.reportPanelLayout.addWidget(groupPanel)
 
+        return groupPanelLayout
+
+    def addDetailedReportGroup(self, group, sheetPaths, generateButtonState=False):
+        groupPanelLayout = self.createGroupBox(group, sheetPaths, self.reportsDetailed, self.reportsPanelDetailed)
+        row = 0
+        for sheetPath, about in sheetPaths.items():
+            self.reportsDetailed[sheetPath] = OLADetailedReportLine(row, groupPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
+            row = row + 1
+
+    def addReportGroup(self, group, sheetPaths, generateButtonState=False):
+        groupPanelLayout = self.createGroupBox(group, sheetPaths, self.reports, self.reportsPanel)
+
+        col = 0
+        row = 0
         for sheetPath, about in sheetPaths.items():
             self.reports[sheetPath] = OLAReportLine(row, col, groupPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
             if col == 0:
@@ -1126,39 +1175,40 @@ class OLAReports(QWidget):
         if selectedGroup is not None and len(selectedGroup) == 0:
             selectedGroup = None
 
+        if len(self.reportsPanel) == 0: # 1st call : init all widgets
+            for group, sheetPaths in sheetPathsByGroup.items():
+                self.addDetailedReportGroup(group, sheetPaths, generateButtonState)
+                self.addReportGroup(group, sheetPaths, generateButtonState)
+            groupPanelLayout = self.addReportGroup("Files", dict(), generateButtonState)
+            self.reports["Readme"] = OLAReportLine(1, 0, groupPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, "All reports description", customLabel="Reports description")
+            self.reports["Readme"].enableVault()
+            self.reports["Duplicate files"] = OLAReportLine(1, 2, groupPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, "Report that identify duplicate files in predefined folders",
+                                                        customLabel="Files duplication")
+            self.reportPanelLayout.addStretch()
+
         for group, sheetPaths in sheetPathsByGroup.items():
-            if selectedGroup is None or selectedGroup == group:
-                try:
-                    self.reportsPanel[group].setVisible(True)
-                    self.reports[group].setVisible(True)
-                except KeyError:
-                    self.addReportGroup(group, sheetPaths, generateButtonState)
-            elif selectedGroup is not None:
-                try:
-                    self.reportsPanel[group].setVisible(False)
-                    self.reports[group].setVisible(False)
-                except KeyError:
-                    pass
+            # hide all
+            self.reportsPanelDetailed[group].setVisible(False)
+            self.reportsDetailed[group].setVisible(False)
+
+            self.reportsPanel[group].setVisible(False)
+            self.reports[group].setVisible(False)
+
+            # display only what applicable
+            if selectedGroup == group:
+                self.reportsPanelDetailed[group].setVisible(True)
+                self.reportsDetailed[group].setVisible(True)
+            elif selectedGroup is None:
+                self.reportsPanel[group].setVisible(True)
+                self.reports[group].setVisible(True)
 
         if selectedGroup is None:
-            try:
                 self.reportsPanel["Files"].setVisible(True)
                 self.reports["Files"].setVisible(True)
-            except KeyError:
-                groupPanelLayout = self.addReportGroup("Files", dict(), generateButtonState)
-                self.reports["Readme"] = OLAReportLine(1, 0, groupPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, "All reports description", customLabel="Reports description")
-                self.reports["Readme"].enableVault()
-                self.reports["Duplicate files"] = OLAReportLine(1, 2, groupPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, "Report that identify duplicate files in predefined folders",
-                                                            customLabel="Files duplication")
-                self.reports["Duplicate files"].enableVault()
-
-                self.reportPanelLayout.addStretch()
         else:
-            try:
                 self.reportsPanel["Files"].setVisible(False)
                 self.reports["Files"].setVisible(False)
-            except KeyError:
-                pass
+
 
 class OLAObsidianAssistant(OLASharedGameListWidget):
     def __init__(self):
