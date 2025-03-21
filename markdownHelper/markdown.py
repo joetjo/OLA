@@ -14,6 +14,7 @@
 import logging
 import os
 
+from base.pair import Pair
 from base.setup import GhSetup
 
 from pathlib import Path
@@ -98,14 +99,18 @@ class MarkdownHelper:
             except KeyError:
                 about = "no description available..."
             try:
+                description = report["description"]
+            except KeyError:
+                description = None
+            try:
                 group = report["group"]
             except KeyError:
                 group = "default"
             try:
-                self.reports[group][report["target"]] = about
+                self.reports[group][report["target"]] = Pair(about, description)
             except KeyError:
                 self.reports[group] = dict()
-                self.reports[group][report["target"]] = about
+                self.reports[group][report["target"]] = Pair(about, description)
 
         self.REPORTS_GROUP = self.reports.keys()
         return self.reports

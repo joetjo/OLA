@@ -34,8 +34,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.20"
-    PREVIOUS = "2025.03.18"
+    VERSION = "2025.03.21"
+    PREVIOUS = "2025.03.20"
 
 
 class OLAGuiSetup:
@@ -50,6 +50,7 @@ class OLAGuiSetup:
     PAGE_BUTTON_SIZE = 20
     VISIBLE_TYPE_COUNT = 15
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
+    STYLE_QLABEL_COMMENT = "QLabel{font: italic;}"
     SHEET_VIEW_FILTER_TAG = "#TYPE"
     SESSION_VIEW_FILTER_TAG = "#PLAY"
     REPORT_VIEW_FILTER_ID = "Group"
@@ -230,7 +231,7 @@ class OLAStatusBar(QStatusBar):
 
 
 class OLAFilter(QGroupBox):
-    def __init__(self, tag, listener, defaultValue=None, defaultInstallMode=False, linkListener=None):
+    def __init__(self, tag, listener, defaultValue=None, defaultInstallMode=False, linkListener=None, searchEnabled=True):
         super().__init__()
         self.tag = tag
         self.value = defaultValue
@@ -267,6 +268,8 @@ class OLAFilter(QGroupBox):
             layout.addWidget(QLabel(":"), 1, 1)
             self.search = QLineEdit()
             self.search.setMinimumWidth(10)
+            self.search.setDisabled(not searchEnabled)
+            self.search.setEnabled(searchEnabled)
             self.search.editingFinished.connect(listener)
             layout.addWidget(self.search, 1, 2)
 
@@ -399,7 +402,7 @@ class OLAPlayingPanel(QWidget):
                                                            defaultInstallMode=OLAGuiSetup.DEFAULT_INSTALL_MODE_FILTER,
                                                            linkListener=self.applyCheck)
         self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.SHEET_VIEW_FILTER_TAG, self.applyFilter)
-        self.filters[OLAGui.REPORTS_TAB_NAME] = OLAFilter(OLAGuiSetup.REPORT_VIEW_FILTER_ID, self.applyFilter)
+        self.filters[OLAGui.REPORTS_TAB_NAME] = OLAFilter(OLAGuiSetup.REPORT_VIEW_FILTER_ID, self.applyFilter, searchEnabled=False)
         self.filter = self.defaultFilter
 
         self.layout().addWidget(self.defaultFilter)
@@ -1035,7 +1038,7 @@ class OLAReportLine(OLABaseReportLine):
         layout.addWidget(bPanel, row, colUpdated + 1)
 
 class OLADetailedReportLine(OLABaseReportLine):
-    def __init__(self, row, layout, sheetPath, about, customLabel=None, generateButtonState=True):
+    def __init__(self, row, layout, sheetPath, about, description=None, customLabel=None, generateButtonState=True):
         super().__init__(layout, sheetPath, about, customLabel, generateButtonState)
 
         bPanel = QWidget()
@@ -1059,6 +1062,7 @@ class OLADetailedReportLine(OLABaseReportLine):
         layout.addWidget(sheet, row, 2)
 
         aboutL = QLabel(about)
+        aboutL.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
         layout.addWidget(aboutL, row, 3)
 
         bPanel = QWidget()
@@ -1066,6 +1070,13 @@ class OLADetailedReportLine(OLABaseReportLine):
         bPanel.layout().setContentsMargins(0, 0, 0, 0)
         bPanel.layout().addStretch()
         layout.addWidget(bPanel, row, 4)
+
+        if description is not None:
+            layout.addWidget( QLabel("More info:"), row+1, 2)
+            desc = QLabel(description)
+            #desc.setWordWrap(True)
+            desc.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_COMMENT)
+            layout.addWidget( desc, row+1, 3)
 
 class OLAReports(QWidget):
     def __init__(self, generateButtonState=True):
@@ -1148,17 +1159,18 @@ class OLAReports(QWidget):
     def addDetailedReportGroup(self, group, sheetPaths, generateButtonState=False):
         groupPanelLayout = self.createGroupBox(group, sheetPaths, self.reportsDetailed, self.reportsPanelDetailed)
         row = 0
-        for sheetPath, about in sheetPaths.items():
-            self.reportsDetailed[sheetPath] = OLADetailedReportLine(row, groupPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
-            row = row + 1
+        for sheetPath, pair in sheetPaths.items():
+            self.reportsDetailed[sheetPath] = OLADetailedReportLine(row, groupPanelLayout, sheetPath, pair.one,
+                                                                    description=pair.two, generateButtonState=generateButtonState)
+            row = row + 2 # only +1 if description = None
 
     def addReportGroup(self, group, sheetPaths, generateButtonState=False):
         groupPanelLayout = self.createGroupBox(group, sheetPaths, self.reports, self.reportsPanel)
 
         col = 0
         row = 0
-        for sheetPath, about in sheetPaths.items():
-            self.reports[sheetPath] = OLAReportLine(row, col, groupPanelLayout, sheetPath, about, generateButtonState=generateButtonState)
+        for sheetPath, pair in sheetPaths.items():
+            self.reports[sheetPath] = OLAReportLine(row, col, groupPanelLayout, sheetPath, pair.one, generateButtonState=generateButtonState)
             if col == 0:
                 col = 2
             elif col == 2:
@@ -1186,7 +1198,7 @@ class OLAReports(QWidget):
                                                         customLabel="Files duplication")
             self.reportPanelLayout.addStretch()
 
-        for group, sheetPaths in sheetPathsByGroup.items():
+        for group in sheetPathsByGroup.keys():
             # hide all
             self.reportsPanelDetailed[group].setVisible(False)
             self.reportsDetailed[group].setVisible(False)
