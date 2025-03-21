@@ -13,6 +13,7 @@
 #   limitations under the License.
 import logging
 import os
+from re import search
 
 from base.pair import Pair
 from base.setup import GhSetup
@@ -91,26 +92,62 @@ class MarkdownHelper:
 
         return entryCount
 
+    def search1stContentRef(self, bloc):
+        try:
+            result = bloc["content_ref"]
+            if bloc is not None:
+                return result
+        except KeyError:
+            try:
+                contents = bloc["contents"]
+                for content in contents:
+                    result = self.search1stContentRef(content)
+                    if result is not None:
+                        return result
+            except KeyError:
+                # suspicious : no contents, no content ref... strange report
+                pass
+        return None
+
     def cacheReportsList(self):
         self.reports = dict()
         for report in self.REPORTS.values():
+            data = dict()
+            data["about"] = "no description available..."
+            data["description"] = None
+            data["content-ref"] = None
             try:
-                about = report["about"]
-            except KeyError:
-                about = "no description available..."
-            try:
-                description = report["description"]
-            except KeyError:
-                description = None
-            try:
-                group = report["group"]
-            except KeyError:
-                group = "default"
-            try:
-                self.reports[group][report["target"]] = Pair(about, description)
-            except KeyError:
-                self.reports[group] = dict()
-                self.reports[group][report["target"]] = Pair(about, description)
+                target = report["target"]
+                try:
+                    data["about"] = report["about"]
+                except KeyError: # no about set in this report
+                    pass
+                try:
+                    data["description"] = report["description"]
+                except KeyError: # no description set in this report
+                    pass
+                try:
+                    group = report["group"]
+                except KeyError:
+                    group = "default"
+                try:
+                    self.reports[group][target] = data
+                except KeyError:
+                    self.reports[group] = dict()
+                    self.reports[group][target] = data
+                contentref = self.search1stContentRef(report)
+                if contentref is not None:
+                    data["content-ref"] = contentref
+                    try:
+                        data["content-ref"] = ">{}<\n{}".format(contentref, self.SUBCONTENT[contentref][0]["description"])
+                    except KeyError: # invalid content ref or no description
+                        pass
+                    except IndexError: # empty bloc ?
+                        pass
+
+
+            except KeyError: # no target set, report is invalid
+                pass
 
         self.REPORTS_GROUP = self.reports.keys()
         return self.reports

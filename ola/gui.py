@@ -34,7 +34,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.21"
+    VERSION = "2025.03.21b"
     PREVIOUS = "2025.03.20"
 
 
@@ -1159,9 +1159,13 @@ class OLAReports(QWidget):
     def addDetailedReportGroup(self, group, sheetPaths, generateButtonState=False):
         groupPanelLayout = self.createGroupBox(group, sheetPaths, self.reportsDetailed, self.reportsPanelDetailed)
         row = 0
-        for sheetPath, pair in sheetPaths.items():
-            self.reportsDetailed[sheetPath] = OLADetailedReportLine(row, groupPanelLayout, sheetPath, pair.one,
-                                                                    description=pair.two, generateButtonState=generateButtonState)
+        for sheetPath, data in sheetPaths.items():
+            if data["content-ref"] is not None:
+                description = "{}\n{}".format(data["description"],data["content-ref"])
+            else:
+                description = data["description"]
+            self.reportsDetailed[sheetPath] = OLADetailedReportLine(row, groupPanelLayout, sheetPath, data["about"],
+                                                                    description=description, generateButtonState=generateButtonState)
             row = row + 2 # only +1 if description = None
 
     def addReportGroup(self, group, sheetPaths, generateButtonState=False):
@@ -1169,8 +1173,8 @@ class OLAReports(QWidget):
 
         col = 0
         row = 0
-        for sheetPath, pair in sheetPaths.items():
-            self.reports[sheetPath] = OLAReportLine(row, col, groupPanelLayout, sheetPath, pair.one, generateButtonState=generateButtonState)
+        for sheetPath, data in sheetPaths.items():
+            self.reports[sheetPath] = OLAReportLine(row, col, groupPanelLayout, sheetPath, data["about"], generateButtonState=generateButtonState)
             if col == 0:
                 col = 2
             elif col == 2:
