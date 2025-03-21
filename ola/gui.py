@@ -34,7 +34,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.21b"
+    VERSION = "2025.03.21c"
     PREVIOUS = "2025.03.20"
 
 
@@ -51,6 +51,8 @@ class OLAGuiSetup:
     VISIBLE_TYPE_COUNT = 15
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
     STYLE_QLABEL_COMMENT = "QLabel{font: italic;}"
+    STYLE_QLINE_EDITABLE = "QLineEdit{border-width: 2px; border-style: outset; border-color: lightgray}"
+    STYLE_QLINE_EDITED = "QLineEdit{border-width: 2px; border-style: outset; border-color: red; background-color: white}"
     SHEET_VIEW_FILTER_TAG = "#TYPE"
     SESSION_VIEW_FILTER_TAG = "#PLAY"
     REPORT_VIEW_FILTER_ID = "Group"
@@ -1053,10 +1055,12 @@ class OLADetailedReportLine(OLABaseReportLine):
 
         layout.addWidget(bPanel, row, 1)
 
+        notes = ""
         if customLabel is None:
-            sname = os.path.basename(sheetPath)
-            sname = sname[0:len(sname) - 3]
-            sheet = QLabel(sname)
+            self.sname = os.path.basename(sheetPath)
+            self.sname = self.sname[0:len(self.sname) - 3]
+            sheet = QLabel(self.sname)
+            notes = OLABackend.VAULT.NOTES.get(self.sname)
         else:
             sheet = QLabel(customLabel)
         layout.addWidget(sheet, row, 2)
@@ -1077,6 +1081,29 @@ class OLADetailedReportLine(OLABaseReportLine):
             #desc.setWordWrap(True)
             desc.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_COMMENT)
             layout.addWidget( desc, row+1, 3)
+
+        layout.addWidget(QLabel("Note:"), row + 2, 2)
+        self.info = QLineEdit()
+        self.info.setText(notes)
+        self.noteEdited = False
+        self.info.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITABLE)
+        self.info.textChanged.connect(self.noteTextUpdated)
+        self.info.editingFinished.connect(self.noteTextFinished)
+
+        layout.addWidget(self.info, row + 2, 3)
+
+    def noteTextUpdated(self):
+        if not self.noteEdited:
+            self.info.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITED)
+            self.noteEdited = True
+
+    def noteTextFinished(self):
+        self.info.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITABLE)
+        self.noteEdited = False
+        if self.sname is not None:
+            OLABackend.VAULT.NOTES.set(self.sname, self.info.text())
+            OLABackend.VAULT.NOTES.save()
+
 
 class OLAReports(QWidget):
     def __init__(self, generateButtonState=True):
@@ -1166,7 +1193,7 @@ class OLAReports(QWidget):
                 description = data["description"]
             self.reportsDetailed[sheetPath] = OLADetailedReportLine(row, groupPanelLayout, sheetPath, data["about"],
                                                                     description=description, generateButtonState=generateButtonState)
-            row = row + 2 # only +1 if description = None
+            row = row + 3 # only +1 if description = None
 
     def addReportGroup(self, group, sheetPaths, generateButtonState=False):
         groupPanelLayout = self.createGroupBox(group, sheetPaths, self.reports, self.reportsPanel)

@@ -21,6 +21,7 @@ from base.setup import GhSetup
 from pathlib import Path
 
 from markdownHelper.markdownfile import MhMarkdownFile
+from markdownHelper.notes import MhNotes
 from markdownHelper.report import MhReport, MhReportDescriptionSheet
 
 
@@ -45,6 +46,7 @@ class MarkdownHelper:
         self.FILES = dict()
         self.PLAY = []
         self.SHEETS = dict()
+        self.NOTES = MhNotes("{}/{}".format(self.VAULT,self.SETUP.getBloc("global")["notes_path"]))
         self.SORTED_FILES = dict()
         self.TAGS = dict()
         self.TYPE_TAGS_UNSORTED = set()
@@ -113,8 +115,8 @@ class MarkdownHelper:
         self.reports = dict()
         for report in self.REPORTS.values():
             data = dict()
-            data["about"] = "no description available..."
-            data["description"] = None
+            data["about"] = ">-- about not filled --<"
+            data["description"] = ">-- description not filled --<"
             data["content-ref"] = None
             try:
                 target = report["target"]
@@ -137,9 +139,9 @@ class MarkdownHelper:
                     self.reports[group][target] = data
                 contentref = self.search1stContentRef(report)
                 if contentref is not None:
-                    data["content-ref"] = contentref
+                    data["content-ref"] = ">-- {} --<".format(contentref)
                     try:
-                        data["content-ref"] = ">{}<\n{}".format(contentref, self.SUBCONTENT[contentref][0]["description"])
+                        data["content-ref"] = ">-- {} --<\n{}".format(contentref, self.SUBCONTENT[contentref][0]["description"])
                     except KeyError: # invalid content ref or no description
                         pass
                     except IndexError: # empty bloc ?
