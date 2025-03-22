@@ -51,7 +51,7 @@ class OLAGuiSetup:
     VISIBLE_TYPE_COUNT = 15
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
     STYLE_QLABEL_EXTRAINFO = "QLabel{font: italic;color: gray;}"
-    STYLE_QLABEL_COMMENT = "QLabel{font: italic;}"
+    STYLE_QLABEL_COMMENT = "border-width: 1px; border-style: dotted; border-color: gray;"
     STYLE_QLINE_EDITABLE = "QLineEdit{border-width: 2px; border-style: outset; border-color: lightgray; font-weight: bold}"
     STYLE_QLINE_EDITED = "QLineEdit{border-width: 2px; border-style: outset; border-color: red; background-color: white; font-weight: bold}"
     SHEET_VIEW_FILTER_TAG = "#TYPE"
@@ -1081,23 +1081,18 @@ class OLADetailedReportLine(OLABaseReportLine):
         mdFile.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_EXTRAINFO)
         layout.addWidget(mdFile, row + 1, 2)
 
-        if reportData["content-ref"] is not None:
-            description = "{}\n{}".format(reportData["description"], reportData["content-ref"])
-        else:
-            description = reportData["description"]
-        desc = QLabel(description)
-        desc.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_COMMENT)
-        layout.addWidget( desc, row+1, 3)
-
-        layout.addWidget(QLabel("Note:"), row + 2, 2)
         self.info = QLineEdit()
         self.info.setText(notes)
         self.noteEdited = False
         self.info.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITABLE)
         self.info.textChanged.connect(self.noteTextUpdated)
         self.info.editingFinished.connect(self.noteTextFinished)
+        layout.addWidget(self.info, row + 1, 3)
 
-        layout.addWidget(self.info, row + 2, 3)
+        desc = QLabel(reportData["description"])
+        desc.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_COMMENT)
+        layout.addWidget( desc, row+2, 3)
+
 
     def noteTextUpdated(self):
         if not self.noteEdited:

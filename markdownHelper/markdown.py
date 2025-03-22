@@ -22,7 +22,7 @@ from pathlib import Path
 
 from markdownHelper.markdownfile import MhMarkdownFile
 from markdownHelper.notes import MhNotes
-from markdownHelper.report import MhReport, MhReportDescriptionSheet
+from markdownHelper.report import MhReport, MhReportDescriptionSheet, ReferenceUtil
 
 
 #
@@ -111,23 +111,71 @@ class MarkdownHelper:
                 pass
         return None
 
+    @staticmethod
+    def readValue(report, name, default):
+        try:
+            return report[name]
+        except KeyError:
+            return default
+
+    def generateReportDescription(self, report):
+        desc = ["Comment tag: <b>{}</b>, Search path: {}".format(
+            self.readValue(report, "commentTag", "no comment tag set"),
+            self.readValue(report, "path_ref", "ERROR : search path not set"))]
+        try:
+            for bloc in report["contents"]:
+                 self.generateReportBlocDescription(bloc, desc, "")
+        except KeyError:
+            desc.append("ERROR: no contents found in report")
+        return "<br>".join(str(x) for x in desc)
+
+    def generateReportBlocDescription(self, bloc, desc, level ):
+        shift = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| "
+        # TITLE
+        title = self.readValue(bloc, "title", None)
+        if title is not None and len(title) > 0:
+            desc.append("{}<b>{}</b>".format(level, title))
+        # TAGGING
+        tags = ReferenceUtil.getTags(bloc, self.SUBCONTENT)
+        condition = " </font><b>{}</b><font color=\"blue\">".format(self.readValue( bloc, "multi_condition", "or"))
+        logic = self.readValue( bloc, "condition_type", "is")
+        tagfilter = ""
+        if len(tags) > 0:
+            tags = condition.join(str(x) for x in tags)
+            tagfilter = "{} <font color=\"blue\">{}</font>".format(logic, tags)
+            desc.append("{}{}".format(level, tagfilter))
+        # CONTENT
+        try:
+            for subbloc in bloc["contents"]:
+                 self.generateReportBlocDescription(subbloc, desc, "{}{}".format(shift, level))
+        except KeyError:
+            pass
+        try:
+            contentref = bloc["content_ref"]
+            for subbloc in self.SUBCONTENT[contentref]:
+                 self.generateReportBlocDescription(subbloc, desc, "{}{}".format(shift, level))
+        except KeyError:
+            pass
+
+        try:
+            elsebloc = bloc["else"]
+            desc.append("{} <b>else of</b> (<i>{} {}</i>):".format(level, title, tagfilter))
+            self.generateReportBlocDescription(elsebloc, desc, "{}{}".format(shift, level))
+        except KeyError:
+            pass
+
     def cacheReportsList(self):
         self.reports = dict()
         for reportName, report in self.REPORTS.items():
             data = dict()
             data["name"] = reportName
             data["about"] = ">-- about not filled --<"
-            data["description"] = ">-- description not filled --<"
-            data["content-ref"] = None
+            data["description"] = self.generateReportDescription(report)
             try:
                 target = report["target"]
                 try:
                     data["about"] = report["about"]
                 except KeyError: # no about set in this report
-                    pass
-                try:
-                    data["description"] = report["description"]
-                except KeyError: # no description set in this report
                     pass
                 try:
                     group = report["group"]
@@ -138,17 +186,6 @@ class MarkdownHelper:
                 except KeyError:
                     self.reports[group] = dict()
                     self.reports[group][target] = data
-                contentref = self.search1stContentRef(report)
-                if contentref is not None:
-                    data["content-ref"] = ">-- {} --<".format(contentref)
-                    try:
-                        data["content-ref"] = ">-- {} --<\n{}".format(contentref, self.SUBCONTENT[contentref][0]["description"])
-                    except KeyError: # invalid content ref or no description
-                        pass
-                    except IndexError: # empty bloc ?
-                        pass
-
-
             except KeyError: # no target set, report is invalid
                 pass
 
