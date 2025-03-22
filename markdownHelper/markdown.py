@@ -113,8 +113,9 @@ class MarkdownHelper:
 
     def cacheReportsList(self):
         self.reports = dict()
-        for report in self.REPORTS.values():
+        for reportName, report in self.REPORTS.items():
             data = dict()
+            data["name"] = reportName
             data["about"] = ">-- about not filled --<"
             data["description"] = ">-- description not filled --<"
             data["content-ref"] = None
