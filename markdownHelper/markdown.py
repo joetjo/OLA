@@ -91,23 +91,6 @@ class MarkdownHelper:
 
         return entryCount
 
-    def search1stContentRef(self, bloc):
-        try:
-            result = bloc["content_ref"]
-            if bloc is not None:
-                return result
-        except KeyError:
-            try:
-                contents = bloc["contents"]
-                for content in contents:
-                    result = self.search1stContentRef(content)
-                    if result is not None:
-                        return result
-            except KeyError:
-                # suspicious : no contents, no content ref... strange report
-                pass
-        return None
-
     @staticmethod
     def readValue(report, name, default):
         try:
@@ -119,14 +102,17 @@ class MarkdownHelper:
         desc = ["Comment tag: <b>{}</b>, Search path: {}".format(
             self.readValue(report, "commentTag", "no comment tag set"),
             self.readValue(report, "path_ref", "ERROR : search path not set"))]
+        allTagsDetected = dict()
         try:
             for bloc in report["contents"]:
-                 self.generateReportBlocDescription(bloc, desc, "")
+                 self.generateReportBlocDescription(bloc, desc, allTagsDetected, "")
         except KeyError:
             desc.append("ERROR: no contents found in report")
+        desc.append("<hr>\nAll tags detected in this report:")
+        desc.append("\n #{}".format(" #".join(str(x) for x in allTagsDetected.keys())))
         return "<br>".join(str(x) for x in desc)
 
-    def generateReportBlocDescription(self, bloc, desc, level ):
+    def generateReportBlocDescription(self, bloc, desc, allTagsDetected, level ):
         shift = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| "
         # TITLE
         title = self.readValue(bloc, "title", None)
@@ -138,26 +124,28 @@ class MarkdownHelper:
         logic = self.readValue( bloc, "condition_type", "is")
         tagfilter = ""
         if len(tags) > 0:
+            for tag in tags:
+                allTagsDetected[tag] = True
             tags = condition.join(str(x) for x in tags)
             tagfilter = "{} <font color=\"blue\">{}</font>".format(logic, tags)
             desc.append("{}{}".format(level, tagfilter))
         # CONTENT
         try:
             for subbloc in bloc["contents"]:
-                 self.generateReportBlocDescription(subbloc, desc, "{}{}".format(shift, level))
+                 self.generateReportBlocDescription(subbloc, desc, allTagsDetected, "{}{}".format(shift, allTagsDetected, level))
         except KeyError:
             pass
         try:
             contentref = bloc["content_ref"]
             for subbloc in self.SUBCONTENT[contentref]:
-                 self.generateReportBlocDescription(subbloc, desc, "{}{}".format(shift, level))
+                 self.generateReportBlocDescription(subbloc, desc, allTagsDetected, "{}{}".format(shift, level))
         except KeyError:
             pass
 
         try:
             elsebloc = bloc["else"]
             desc.append("{} <b>else of</b> (<i>{} {}</i>):".format(level, title, tagfilter))
-            self.generateReportBlocDescription(elsebloc, desc, "{}{}".format(shift, level))
+            self.generateReportBlocDescription(elsebloc, desc, allTagsDetected, "{}{}".format(shift, level))
         except KeyError:
             pass
 
