@@ -34,7 +34,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.22"
+    VERSION = "2025.03.22c"
     PREVIOUS = "2025.03.20"
 
 
@@ -1089,10 +1089,19 @@ class OLADetailedReportLine(OLABaseReportLine):
         self.info.editingFinished.connect(self.noteTextFinished)
         layout.addWidget(self.info, row + 1, 3)
 
-        desc = QLabel(reportData["description"])
-        desc.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_COMMENT)
-        layout.addWidget( desc, row+2, 3)
+        bDesc = QPushButton("")
+        bDesc.setStatusTip("Show report explanation")
+        bDesc.setIcon(Icons.QUESTION)
+        bDesc.clicked.connect(self.showHideDescription)
+        layout.addWidget( bDesc, row+1, 1)
 
+        self.desc = QLabel(reportData["description"])
+        self.desc.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_COMMENT)
+        self.desc.setVisible(False)
+        layout.addWidget( self.desc, row+3, 3)
+
+    def showHideDescription(self):
+        self.desc.setVisible(not self.desc.isVisible())
 
     def noteTextUpdated(self):
         if not self.noteEdited:
@@ -1190,7 +1199,7 @@ class OLAReports(QWidget):
         row = 0
         for sheetPath, data in sheetPaths.items():
             self.reportsDetailed[sheetPath] = OLADetailedReportLine(row, groupPanelLayout, sheetPath, data, generateButtonState=generateButtonState)
-            row = row + 3 # only +1 if description = None
+            row = row + 4
 
     def addReportGroup(self, group, sheetPaths, generateButtonState=False):
         groupPanelLayout = self.createGroupBox(group, sheetPaths, self.reports, self.reportsPanel)
