@@ -124,15 +124,15 @@ class MarkdownHelper:
         logic = self.readValue( bloc, "condition_type", "is")
         tagfilter = ""
         if len(tags) > 0:
-            for tag in tags:
-                allTagsDetected[tag] = True
-            tags = condition.join(str(x) for x in tags)
-            tagfilter = "{} <font color=\"blue\">{}</font>".format(logic, tags)
+            strtags = condition.join(str(x) for x in tags)
+            tagfilter = "{} <font color=\"blue\">{}</font>".format(logic, strtags)
             desc.append("{}{}".format(level, tagfilter))
+            for tmptag in tags:
+                allTagsDetected[tmptag] = True
         # CONTENT
         try:
             for subbloc in bloc["contents"]:
-                 self.generateReportBlocDescription(subbloc, desc, allTagsDetected, "{}{}".format(shift, allTagsDetected, level))
+                 self.generateReportBlocDescription(subbloc, desc, allTagsDetected, "{}{}".format(shift, level))
         except KeyError:
             pass
         try:
