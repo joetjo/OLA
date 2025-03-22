@@ -221,7 +221,7 @@ class MarkdownHelper:
             ctag = "X"
         self.REPORTS_SHEET.addTarget(reportTitle, sname, ctag)
         report["title"] = reportTitle
-        MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT, self.REPORTS_SHEET).generate()
+        MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT, self.REPORTS_SHEET, self.reports).generate()
 
         with open("{}/{}".format(self.VAULT, self.REPORTS_SHEET_NAME), 'w', encoding='utf-8') as writer:
             for line in self.REPORTS_SHEET.lines:

@@ -418,13 +418,14 @@ class MhReportEntry(MhEntry):
 
 class MhReport:
 
-    def __init__(self, json, baseFolder, inputFiles, allTags, allSubContents, reportSheet):
+    def __init__(self, json, baseFolder, inputFiles, allTags, allSubContents, reportSheet, allReportsData):
         self.json = json
         self.baseFolder = baseFolder
         self.inputFiles = inputFiles
         self.allTags = allTags
         self.allSubContents = allSubContents
         self.reportSheet = reportSheet
+        self.allReportsData = allReportsData
 
         # Setup comment tag
         try:
@@ -456,4 +457,8 @@ class MhReport:
             lineDisplayedCount = rootReport.generate(writer)
             writer.writelines("\n")
             writer.writelines("----\n")
-            writer.writelines("# Entries: {}\n".format(lineDisplayedCount))
+            writer.writelines("# Entries: {} - Report explanation\n".format(lineDisplayedCount))
+            try:
+                writer.writelines("\n---\n{}\n\n---".format(self.allReportsData[self.json["group"]][self.json["target"]]["description"].replace("&nbsp;"," ")))
+            except KeyError:
+                pass
