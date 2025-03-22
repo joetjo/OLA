@@ -121,53 +121,6 @@ class ReferenceUtil:
         except KeyError:
             return []
 
-
-class MhReportDescriptionSheet:
-    def __init__(self, title, reportLink):
-        self.reportLink = reportLink
-        self.lines = [title]
-        self.lines.append("\n| Sheet | Filtering |\n")
-        self.lines.append("|-|-|\n")
-
-    @staticmethod
-    def valuesToConditionStr(separator, values):
-        empty = True
-        condition = ""
-        for val in values:
-            if not empty:
-                condition = "{}{}``{}``".format(condition, separator, val)
-            else:
-                condition = "{} ``{}``".format(condition, val)
-                empty = False
-        return condition
-
-    def addTarget(self, title, name, commentTag):
-        self.lines.append("| {} : [[{}]] | comment tag: {} |\n".format(title, name, commentTag))
-
-    def addExpandBy(self, tags):
-        self.lines.append("| | > Expand by tag {} | \n".format(tags))
-
-    def addFiltering(self, tags, paths, isNot, isAnd):
-        logOperator = " **OR** "
-        if isAnd == "and":
-            logOperator = " **AND** "
-        notOperator = ""
-        if len(isNot) > 0:
-            notOperator = " **NOT** "
-        hasTags = tags is not None and len(tags) > 0
-        hasPaths = paths is not None and len(paths) > 0
-        condition = ""
-        if hasTags:
-            condition = "*tags* ( {} )".format(MhReportDescriptionSheet.valuesToConditionStr(logOperator, tags))
-        if hasPaths:
-            if hasTags:
-                condition = "{}{}*Paths* ( {} )".format(condition, logOperator, MhReportDescriptionSheet.valuesToConditionStr(logOperator, paths))
-            else:
-                condition = "*Paths* ( {} )".format(MhReportDescriptionSheet.valuesToConditionStr(logOperator, paths))
-        if len(condition) > 0:
-            self.lines.append("| | {}{} |\n".format(notOperator, condition))
-
-
 class MhEntry:
     def __init__(self, json, inputFiles, allSubContents):
         self.json = json
@@ -244,11 +197,10 @@ class MhCountEntry(MhEntry):
 class MhReportEntry(MhEntry):
 
     # inputFiles: dict of name, MhMarkdownFiles
-    def __init__(self, json, inputFiles, allTags, allSubContents, reportSheet, commentTag, showTags, parentTitle, labels=None, level="#", isRoot=False):
+    def __init__(self, json, inputFiles, allTags, allSubContents, commentTag, showTags, parentTitle, labels=None, level="#", isRoot=False):
         super().__init__(json, inputFiles, allSubContents)
         self.level = level
         self.allTags = allTags
-        self.reportSheet = reportSheet
         self.commentTag = commentTag
         self.showTags = showTags
         if labels is None:
@@ -330,8 +282,6 @@ class MhReportEntry(MhEntry):
                                                                         self.paths))
             if len(self.filteredFiles) > 0:
                 # virtual content that must be expanded !
-                if self.reportSheet is not None:
-                    self.reportSheet.addExpandBy(self.tags)
                 for tag in sorted(self.mappingTags(self.tags, self.allTags)):
                     content = self.json.copy()
                     del content["else"]
@@ -339,11 +289,11 @@ class MhReportEntry(MhEntry):
                     content["tag_condition"] = [tag[1:]]  # and use the expanded tag to filer
                     if len(content["title"]) > 0:
                         self.lineGenerated = self.lineGenerated + MhReportEntry(content, self.filteredFiles.copy(), self.allTags,
-                                      self.allSubContents, None, self.commentTag, self.showTags, self.paragraphTitle, self.labels, self.level).generate(writer)
+                                      self.allSubContents, self.commentTag, self.showTags, self.paragraphTitle, self.labels, self.level).generate(writer)
             # Proceed to else of VIRTUAL block
             try:
                 self.lineGenerated = self.lineGenerated + MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
-                              self.allSubContents, self.reportSheet, self.commentTag, self.showTags, self.paragraphTitle, self.labels, self.level).generate(writer)
+                              self.allSubContents, self.commentTag, self.showTags, self.paragraphTitle, self.labels, self.level).generate(writer)
             except KeyError:
                 pass
 
@@ -358,15 +308,13 @@ class MhReportEntry(MhEntry):
         if len(self.filteredFiles) > 0:
             currentTitle = "{} {} ({})\n".format(self.level, self.paragraphTitle, len(self.filteredFiles))
             # writer.writelines(currentTitle)  # this display a title for each hierarchy to the report, lot of titles
-            if self.reportSheet is not None:
-                self.reportSheet.addFiltering(self.tags, self.paths, self.inverseCondition, self.multiCondition)
             titleToGenerate = True
 
             json_contents = self.getContents()
             if json_contents is not None:
                 files = self.filteredFiles
                 for content in json_contents:
-                    cr = MhReportEntry(content, files, self.allTags, self.allSubContents, self.reportSheet,
+                    cr = MhReportEntry(content, files, self.allTags, self.allSubContents,
                                        self.commentTag, self.showTags, self.paragraphTitle, self.labels, nextLevel)
                     self.lineGenerated = self.lineGenerated + cr.generate(writer)
                     files = cr.elseFiles
@@ -410,7 +358,7 @@ class MhReportEntry(MhEntry):
         if len(self.elseFiles) > 0:
             try:
                 self.lineGenerated = self.lineGenerated + MhReportEntry(self.json["else"], self.elseFiles, self.allTags,
-                              self.allSubContents, self.reportSheet, self.commentTag, self.showTags, "",
+                              self.allSubContents, self.commentTag, self.showTags, "",
                               self.labels, nextLevel).generate(writer)
             except KeyError:
                 pass
@@ -418,13 +366,12 @@ class MhReportEntry(MhEntry):
 
 class MhReport:
 
-    def __init__(self, json, baseFolder, inputFiles, allTags, allSubContents, reportSheet, allReportsData):
+    def __init__(self, json, baseFolder, inputFiles, allTags, allSubContents, allReportsData):
         self.json = json
         self.baseFolder = baseFolder
         self.inputFiles = inputFiles
         self.allTags = allTags
         self.allSubContents = allSubContents
-        self.reportSheet = reportSheet
         self.allReportsData = allReportsData
 
         # Setup comment tag
@@ -440,13 +387,12 @@ class MhReport:
         return self.baseFolder + '/' + self.json["target"]
 
     def generate(self):
-        rootReport = MhReportEntry(self.json, self.inputFiles, self.allTags, self.allSubContents, self.reportSheet,
+        rootReport = MhReportEntry(self.json, self.inputFiles, self.allTags, self.allSubContents,
                                    self.commentTag, self.showTags, "", isRoot=True)
         logging.info("MDR | Generate report \"{}\" to {}".format(self.json["title"], self.target()))
         with open(self.target(), 'w', encoding='utf-8') as writer:
             writer.writelines(
-                "> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit* - see [[{}]] for description\n\n".format(
-                    self.reportSheet.reportLink[0:len(self.reportSheet.reportLink) - 3]))  # adding an empty line at the beginning avoid having the title selected when selecting the sheet
+                "> *Markdown generated report by [joetjo](https://github.com/joetjo/OLA) - do not edit* - report explanation available after the report\n\n")
             try:
                 about = self.json["about"]
                 writer.writelines("*CONTENT*\n```")
@@ -460,5 +406,6 @@ class MhReport:
             writer.writelines("# Entries: {} - Report explanation\n".format(lineDisplayedCount))
             try:
                 writer.writelines("\n---\n{}\n\n---".format(self.allReportsData[self.json["group"]][self.json["target"]]["description"].replace("&nbsp;"," ")))
-            except KeyError:
+            except TypeError or KeyError:
+                writer.writelines("\n---\ngenerated only when all reports are generated\n\n---")
                 pass

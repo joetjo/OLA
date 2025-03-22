@@ -15,14 +15,13 @@ import logging
 import os
 from re import search
 
-from base.pair import Pair
 from base.setup import GhSetup
 
 from pathlib import Path
 
 from markdownHelper.markdownfile import MhMarkdownFile
 from markdownHelper.notes import MhNotes
-from markdownHelper.report import MhReport, MhReportDescriptionSheet, ReferenceUtil
+from markdownHelper.report import MhReport, ReferenceUtil
 
 
 #
@@ -36,7 +35,6 @@ class MarkdownHelper:
             self.VAULT = vault
         else:
             self.VAULT = self.SETUP.getBloc("global")["base_folder"]
-        self.REPORTS_SHEET_NAME = self.SETUP.getBloc("global")["reports_readme"]
         self.REPORTS_DUPFILE_NAME = self.SETUP.getBloc("global")["reports_dupfiles"]
         self.vaultLenPath = len(self.VAULT) + 1
         self.playtag = playtag
@@ -54,7 +52,6 @@ class MarkdownHelper:
         self.PLAY_TAGS_UNSORTED = set()
         self.PLAY_TAGS = []
         self.REPORTS_GROUP = []
-        self.REPORTS_SHEET = MhReportDescriptionSheet("# Reports description\n\n> Automatic reports description\n", self.REPORTS_SHEET_NAME)
         # Initialized only when loading has been requested.
         self.reports = None
 
@@ -219,17 +216,13 @@ class MarkdownHelper:
             ctag = report["commentTag"]
         except KeyError:
             ctag = "X"
-        self.REPORTS_SHEET.addTarget(reportTitle, sname, ctag)
         report["title"] = reportTitle
-        MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT, self.REPORTS_SHEET, self.reports).generate()
+        MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT, self.reports).generate()
 
-        with open("{}/{}".format(self.VAULT, self.REPORTS_SHEET_NAME), 'w', encoding='utf-8') as writer:
-            for line in self.REPORTS_SHEET.lines:
-                writer.writelines(line)
         signal_report.emit(reportTitle, report["target"])
 
     def generateReport(self, target, signal_reports, signal_report):
-        self.parseVault()
+        self.parseVault(initReportsList=True)
 
         for reportTitle, report in self.REPORTS.items():
             if report["target"] == target:

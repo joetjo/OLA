@@ -1221,11 +1221,8 @@ class OLAReports(QWidget):
                 self.addReportGroup(group, sheetPaths, generateButtonState)
             groupPanelLayout = self.addReportGroup("Files", dict(), generateButtonState)
             tmpData = dict()
-            tmpData["about"] = "All reports description"
-            self.reports["Readme"] = OLAReportLine(1, 0, groupPanelLayout, OLABackend.VAULT.REPORTS_SHEET_NAME, tmpData, customLabel="Reports description")
-            self.reports["Readme"].enableVault()
             tmpData["about"] = "Report that identify duplicate files in predefined folders"
-            self.reports["Duplicate files"] = OLAReportLine(1, 2, groupPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, tmpData,
+            self.reports["Duplicate files"] = OLAReportLine(1, 0, groupPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, tmpData,
                                                         customLabel="Files duplication")
             self.reportPanelLayout.addStretch()
 
