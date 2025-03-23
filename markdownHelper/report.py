@@ -409,3 +409,4 @@ class MhReport:
             except TypeError or KeyError:
                 writer.writelines("\n---\ngenerated only when all reports are generated\n\n---")
                 pass
+        return lineDisplayedCount

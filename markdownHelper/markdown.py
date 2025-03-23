@@ -20,7 +20,7 @@ from base.setup import GhSetup
 from pathlib import Path
 
 from markdownHelper.markdownfile import MhMarkdownFile
-from markdownHelper.notes import MhNotes
+from base.persistentList import GhPersistentList
 from markdownHelper.report import MhReport, ReferenceUtil
 
 
@@ -44,7 +44,8 @@ class MarkdownHelper:
         self.FILES = dict()
         self.PLAY = []
         self.SHEETS = dict()
-        self.NOTES = MhNotes("{}/{}".format(self.VAULT,self.SETUP.getBloc("global")["notes_path"]))
+        self.NOTES = GhPersistentList("{}/{}".format(self.VAULT,self.SETUP.getBloc("global")["notes_path"]))
+        self.REPORT_INFO = GhPersistentList("{}/{}".format(self.VAULT,self.SETUP.getBloc("global")["reports_info_path"]))
         self.SORTED_FILES = dict()
         self.TAGS = dict()
         self.TYPE_TAGS_UNSORTED = set()
@@ -205,8 +206,9 @@ class MarkdownHelper:
         except KeyError:
             ctag = "X"
         report["title"] = reportTitle
-        MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT, self.reports).generate()
-
+        lineDisplayedCount = MhReport(report, self.VAULT, self.SORTED_FILES, self.TAGS, self.SUBCONTENT, self.reports).generate()
+        self.REPORT_INFO.set(sname, lineDisplayedCount)
+        self.REPORT_INFO.save()
         signal_report.emit(reportTitle, report["target"])
 
     def generateReport(self, target, signal_reports, signal_report):

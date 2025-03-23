@@ -34,7 +34,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.23b"
+    VERSION = "2025.03.23c"
     PREVIOUS = "2025.03.20"
 
 
@@ -1017,11 +1017,12 @@ class OLAReportLine(OLABaseReportLine):
             colUpdated = col
 
         if customLabel is None:
-            sname = os.path.basename(sheetPath)
-            sname = sname[0:len(sname) - 3]
+            self.sname = os.path.basename(sheetPath)
+            self.sname = self.sname[0:len(self.sname) - 3]
             sheet = QLabel(reportData["name"])
-            tips = "{} ({})".format(reportData["about"], sname)
+            tips = "{} ({})".format(reportData["about"], self.sname)
         else:
+            self.sname = customLabel
             sheet = QLabel(customLabel)
             tips = reportData["about"]
         sheet.setToolTip(tips)
@@ -1044,9 +1045,17 @@ class OLAReportLine(OLABaseReportLine):
         if customLabel is None:
             bPanel.layout().addWidget(self.bRedo)
 
+        self.countLabel = QLabel("")
+        bPanel.layout().addWidget(self.countLabel)
+        layout.addWidget(bPanel, row, 1)
+        self.refreshSize()
+
         bPanel.layout().addStretch()
 
         layout.addWidget(bPanel, row, colUpdated + 1)
+
+    def refreshSize(self):
+        self.countLabel.setText("{}".format(OLABackend.VAULT.REPORT_INFO.get(self.sname)))
 
 class OLADetailedReportLine(OLABaseReportLine):
     def __init__(self, row, layout, sheetPath, reportData, customLabel=None, generateButtonState=True):
@@ -1062,6 +1071,8 @@ class OLADetailedReportLine(OLABaseReportLine):
         if customLabel is None:
             bPanel.layout().addWidget(self.bRedo)
 
+        self.countLabel = QLabel("")
+        bPanel.layout().addWidget(self.countLabel)
         layout.addWidget(bPanel, row, 1)
 
         notes = ""
@@ -1074,6 +1085,7 @@ class OLADetailedReportLine(OLABaseReportLine):
             sheet = QLabel(customLabel)
         sheet.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
         layout.addWidget(sheet, row, 2)
+        self.refreshSize()
 
         aboutL = QLabel(reportData["about"])
         layout.addWidget(aboutL, row, 3)
@@ -1107,6 +1119,9 @@ class OLADetailedReportLine(OLABaseReportLine):
         self.desc.setVisible(False)
         layout.addWidget( self.desc, row+3, 3)
 
+    def refreshSize(self):
+        self.countLabel.setText("{}".format(OLABackend.VAULT.REPORT_INFO.get(self.sname)))
+
     def showHideDescription(self):
         self.desc.setVisible(not self.desc.isVisible())
 
@@ -1131,6 +1146,7 @@ class OLAReports(QWidget):
         self.reportsDetailed = dict()
         self.reportsPanel = dict()
         self.reportsPanelDetailed = dict()
+        self.reportLines = []
         self.currentFiltering = None
         self.start = time.time()
 
@@ -1167,6 +1183,8 @@ class OLAReports(QWidget):
     def setStatus(self, message):
         elapsed = str(round(time.time() - self.start, 1))
         self.reportStatus.setText("{}s | {}".format(elapsed, message))
+        for r in self.reportLines:
+            r.refreshSize()
 
     def setLinkCheckStatus(self, message, detailed=None):
         self.linkErrorMessage.setText(message)
@@ -1206,6 +1224,7 @@ class OLAReports(QWidget):
         row = 0
         for sheetPath, data in sheetPaths.items():
             self.reportsDetailed[sheetPath] = OLADetailedReportLine(row, groupPanelLayout, sheetPath, data, generateButtonState=generateButtonState)
+            self.reportLines.append(self.reportsDetailed[sheetPath])
             row = row + 4
 
     def addReportGroup(self, group, sheetPaths, generateButtonState=False):
@@ -1215,6 +1234,7 @@ class OLAReports(QWidget):
         row = 0
         for sheetPath, data in sheetPaths.items():
             self.reports[sheetPath] = OLAReportLine(row, col, groupPanelLayout, sheetPath, data, generateButtonState=generateButtonState)
+            self.reportLines.append(self.reports[sheetPath])
             if col == 0:
                 col = 2
             elif col == 2:

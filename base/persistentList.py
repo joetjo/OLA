@@ -1,26 +1,26 @@
 import json
 
 
-class MhNotes:
+class GhPersistentList:
 
     def __init__(self, path):
         self.path = path
         try:
             with open(path, 'r') as openfile:
-                self.notes = json.load(openfile)
+                self.values = json.load(openfile)
         except FileNotFoundError:
-            self.notes = dict()
+            self.values = dict()
             self.save()
 
     def save(self):
         with open(self.path, "w") as outfile:
-            json.dump(self.notes, outfile)
+            json.dump(self.values, outfile)
 
     def get(self, name):
         try:
-            return self.notes[name]
+            return self.values[name]
         except KeyError:
             return ""
 
     def set(self, name, value):
-        self.notes[name] = value
+        self.values[name] = value
