@@ -126,7 +126,7 @@ class MarkdownHelper:
         tagfilter = ""
         if len(tags) > 0:
             strtags = condition.join(str(x) for x in tags)
-            tagfilter = "{} <font color=\"blue\">{}</font>".format(logic, strtags)
+            tagfilter = " {} <font color=\"blue\">{}</font>".format(logic, strtags)
             desc.append("{}{}".format(level, tagfilter))
             for tmptag in tags:
                 allTagsDetected[tmptag] = True

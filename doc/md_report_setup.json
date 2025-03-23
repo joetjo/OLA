@@ -6,8 +6,9 @@
         "reports_info_path": "reports/reports_info.json",
         "reports_readme": "reports.md",
         "reports_dupfiles": "disk content - duplicate stuff",
-        "ignore" : [ ".git", ".obsidian", ".gitignore", ".gitattributes", "Readme.md",
-            "_glist", "reports", "reports/reports_episodic", "reports/reports_next", "reports/reports_play", "reports/reports_wish"
+        "ignore" : [ ".git", ".obsidian", ".gitignore", ".gitattributes", "Readme.md", "_glist",
+            "_glist", "external sources", "Modding", "notes", "Platform Check","reports", "Current Play", "Tips - Howto",
+            "reports/reports_episodic", "reports/reports_next" ,"reports/reports_play", "reports/reports_wish"
         ],
         "reports" : {
           "FPS to be done": {
@@ -1106,7 +1107,6 @@
             "commentTag" : "info",
             "showTags": "allGameTags",
             "contents": [
-
               {
                 "title": "Wished and Done",
                 "tag_condition": [
@@ -1134,11 +1134,26 @@
                     "condition_type": "not"
                   }
                 ]
+              },
+              {
+                "title": "TESTED and any tag for test is finished",
+                "tag_condition": [
+                  "PLAY/TESTED"
+                ],
+                "contents" : [
+                  {
+                  "title": "#PLAY/TESTED and in to be done state",
+                  "tag_refs": [
+                      "isWaitUpdate", "isWaitMod", "isUpdateAvailable", "isWaitCompleted", "isToBeContinued", "isAltRoute"
+                    ]
+                  }
+                ]
               }
             ]
           },
           "Some stats": {
             "group" : "Misc",
+            "about" : "Some numbers...",
             "target": "reports\\Stats.md",
             "path_ref": "game_available_and_in_development",
             "count": {
@@ -1519,7 +1534,15 @@
                       }
                     ],
                     "else" : {
-                      "content_ref": "contentByNext"
+                      "contents" : [
+                        {
+                          "title" : "Most expected",
+                          "tag_condition" : [ "PLAY/EXPECTED"]
+                        },
+                        {
+                          "content_ref": "contentByNext"
+                        }
+                      ]
                     }
                   }
                 ],
@@ -1546,7 +1569,15 @@
                         "isDone"
                       ],
                       "condition_type": "not",
-                      "content_ref": "contentByNext"
+                      "contents" : [
+                        {
+                          "title" : "Most expected",
+                          "tag_condition" : [ "PLAY/EXPECTED"]
+                        },
+                        {
+                          "content_ref": "contentByNext"
+                        }
+                      ]
                     }
                   }
                 ],
@@ -1604,7 +1635,15 @@
                           "isWished"
                         ],
                         "condition_type": "not",
-                        "content_ref": "contentByNext"
+                        "contents" : [
+                          {
+                            "title" : "Most expected",
+                            "tag_condition" : [ "PLAY/EXPECTED"]
+                          },
+                          {
+                            "content_ref": "contentByNext"
+                          }
+                        ]
                       }
                     ],
           "contentByNext": [

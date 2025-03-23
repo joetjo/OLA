@@ -1087,8 +1087,8 @@ class OLADetailedReportLine(OLABaseReportLine):
         layout.addWidget(sheet, row, 2)
         self.refreshSize()
 
-        aboutL = QLabel(reportData["about"])
-        layout.addWidget(aboutL, row, 3)
+        self.aboutL = QLabel(reportData["about"])
+        layout.addWidget(self.aboutL, row, 3)
 
         bPanel = QWidget()
         bPanel.setLayout(QHBoxLayout())
