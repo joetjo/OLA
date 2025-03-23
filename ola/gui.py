@@ -34,7 +34,7 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.23a"
+    VERSION = "2025.03.23b"
     PREVIOUS = "2025.03.20"
 
 
@@ -1003,7 +1003,7 @@ class OLABaseReportLine():
 class OLAReportLine(OLABaseReportLine):
     def __init__(self, row, col, layout, sheetPath, reportData, customLabel=None, generateButtonState=True):
         super().__init__(sheetPath, customLabel, generateButtonState)
-
+        self.sheetMaxLen = 40
         if col == 2:
             layout.addWidget(QLabel(" | "), row, 2)
             colUpdated = 3
@@ -1025,6 +1025,13 @@ class OLAReportLine(OLABaseReportLine):
             sheet = QLabel(customLabel)
             tips = reportData["about"]
         sheet.setToolTip(tips)
+        # Sheet adjustement to be less "disaligned"
+        current = sheet.text()
+        if len(current)>self.sheetMaxLen:
+            current = "{}...".format(current[0:self.sheetMaxLen])
+        else:
+            current = current + ' ' * ( self.sheetMaxLen - len(current))
+        sheet.setText(current)
         layout.addWidget(sheet, row, colUpdated)
 
         bPanel = QWidget()
