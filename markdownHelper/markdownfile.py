@@ -16,6 +16,8 @@ import re
 
 
 class MhMarkdownFile:
+    LONG_SHEET_HEADER_LINE = 60
+    LONG_SHEET_COMMENT_LEN = 50
 
     # name : String
     # path : Path from PathLib
@@ -33,10 +35,26 @@ class MhMarkdownFile:
         self.play_tags = []
         self.loadTags()
         self.matchTag = None
+        self.long = False
 
     def loadTags(self):
         with open(self.path, 'r', encoding='utf8') as reader:
+            count = 0
             for line in reader:
+                count = count + 1
+                if line.startswith("|"):
+                    self.tags.append("#LONGSHEET/PIPE/LINE/{}".format(count))
+
+                if count > MhMarkdownFile.LONG_SHEET_HEADER_LINE:
+                    self.long = True
+                    self.tags.append("#LONGSHEET/SIZE/{}".format(os.path.getsize(self.path)))
+                    if len(line) > MhMarkdownFile.LONG_SHEET_COMMENT_LEN:
+                        comment = "{}...".format(line[0:MhMarkdownFile.LONG_SHEET_COMMENT_LEN])
+                    else:
+                        comment = line[0:len(line)-1]
+                    self.tagsComment["#INFO"] = [ "<pre>{}</pre>".format(comment.replace("|", " ")) ]
+                    return
+
                 # Search for tag beginning of line for extended comment
                 if line.startswith("#"):
                     lineTags = re.findall(r"^#[\w|/_-]+", line)
