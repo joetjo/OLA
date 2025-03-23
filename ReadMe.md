@@ -52,6 +52,8 @@ Screenshot from _Version 2024.22.12:_
 
 ![ola reports generation](screen4.png "Detailed report view and obsidian display")
 
+![game lifecycle managed with obsidoan tags](screen3.png "Game sheet Lifecycle")
+
 # Dev corner  
 
 Not documented currently
