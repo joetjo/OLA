@@ -177,7 +177,7 @@ class MarkdownHelper:
         self.REPORTS_GROUP = self.reports.keys()
         return self.reports
 
-    def parseVault(self, initReportsList=False):
+    def parseVault(self, initReportsList=True):
         logging.info("MDR | Markdown vault: {}".format(self.VAULT))
         count = self.processFolder(Path(self.VAULT), "")
 

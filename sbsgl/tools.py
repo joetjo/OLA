@@ -69,7 +69,7 @@ class SbSGLSignals(QObject):
 
 
 class MdReportGenerator(QRunnable):
-    def __init__(self, allReports=True, initReportsList=False, target=None):
+    def __init__(self, allReports=True, initReportsList=True, target=None):
         super().__init__()
         self.signals = MdReportGeneratorSignals()
         self.allReports = allReports
