@@ -240,10 +240,10 @@
             ]
           },
 
-          "Adult VN to be done": {
+          "Adult VN to be done (new)": {
             "group" : "Next Game (Adult section)",
             "target": "reports/reports_next\\next_adult_vn.md",
-            "about": "To choose the next adult VN to be done ( all - no filtering )",
+            "about": "To choose the next new adult VN to be done ( all - no filtering )",
             "path_ref": "game_available_and_in_development",
             "commentTag": "NEXT",
             "showTags": "allGameTags",
@@ -254,7 +254,15 @@
                   "isVNA"
                 ],
                 "multi_condition": "or",
-                "content_ref" : "contentInProgressAndByNext"
+                "contents" : [
+                  {
+                    "tag_refs": [
+                      "isToBeContinued", "isWaitCompleted", "isUpdateAvailable", "isWaitUpdate", "isWaitMod"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentInProgressAndByNext"
+                  }
+                ]
               }
             ]
           },
@@ -472,6 +480,21 @@
                   }
                 ]
               }
+            ]
+          },
+          "Test in progress or Tested": {
+            "group" : "Development Follow UP",
+            "target": "reports/reports_next\\next_wait_complete_update_available.md",
+            "about": "Waiting for completion but game has been updated since last play",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "waitedGameTags",
+            "contents": [
+                  {
+                    "tag_condition" : [ "PLAY/TESTED"],
+                    "multi_condition": "or",
+                    "content_ref": "contentInProgressAndByNext"
+                  }
             ]
           },
           "Game available with expected update": {

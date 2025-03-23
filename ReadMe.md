@@ -50,6 +50,8 @@ Screenshot from _Version 2024.22.12:_
 
 ![ola session](screen2.png "Last sessions launched tab ( visual novels disabled )")
 
+![ola reports generation](screen4.png "Detailed report view and obsidian display")
+
 # Dev corner  
 
 Not documented currently
