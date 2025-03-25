@@ -323,54 +323,19 @@
               }
             ]
           },
-
-          "VNs - Alt Path to be done": {
-            "group" : "To be restarted, Alternate Play",
-            "target": "reports/reports_next\\VNs_alt_paths.md",
-            "about" : "VN available already started, done once but alternative route available",
+          "Test in progress or Tested": {
+            "group" : "Next Game (Adult section)",
+            "target": "reports/reports_next\\in_test_or_tested.md",
+            "about": "Waiting for completion but game has been updated since last play",
             "path_ref": "game_available_and_in_development",
-            "commentTag": "DONE",
-            "showTags": "allGameTags",
+            "commentTag": "NEXT",
+            "showTags": "waitedGameTags",
             "contents": [
-              {
-                "tag_refs": [
-                  "isVNS"
-                ],
-                "content_ref": "contentByAlternateToBeDone"
-              }
-            ]
-          },
-          "Adult VNs - Alt Path to be done": {
-            "group" : "To be restarted, Alternate Play",
-            "target": "reports/reports_next\\VNAs_alt_paths.md",
-            "about" : "Adult VNs available already started, done once but alternative route available",
-            "path_ref": "game_available_and_in_development",
-            "commentTag": "DONE",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "tag_refs": [
-                  "isVNA"
-                ],
-                "content_ref": "contentByAlternateToBeDone"
-              }
-            ]
-          },
-          "Except VNs - Alt Path to be done": {
-            "group" : "To be restarted, Alternate Play",
-            "target": "reports/reports_next\\not_vn_alt_paths.md",
-            "about" : "Game available already started, done once but alternative route/choice/skill selection available",
-            "path_ref": "game_available_and_in_development",
-            "commentTag": "DONE",
-            "showTags": "allGameTags",
-            "contents": [
-              {
-                "tag_refs": [
-                  "isVN"
-                ],
-                "condition_type": "not",
-                "content_ref": "contentByAlternateToBeDone"
-              }
+                  {
+                    "tag_condition" : [ "PLAY/TESTED"],
+                    "multi_condition": "or",
+                    "content_ref": "contentInProgressAndByNext"
+                  }
             ]
           },
 
@@ -396,7 +361,7 @@
                     "contents" : [
                       {
                         "tag_refs": [
-                          "isWaitCompleted", "isWaitUpdate", "isUpdateAvailable"
+                          "isWaitCompleted", "isWaitUpdate", "isUpdateAvailable", "isTested"
                         ],
                         "multi_condition": "or",
                         "condition_type": "not",
@@ -457,6 +422,57 @@
                   }
             ]
           },
+
+          "VNs - Alt Path to be done": {
+            "group" : "To be restarted, Alternate Play",
+            "target": "reports/reports_next\\VNs_alt_paths.md",
+            "about" : "VN available already started, done once but alternative route available",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "DONE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNS"
+                ],
+                "content_ref": "contentByAlternateToBeDone"
+              }
+            ]
+          },
+          "Adult VNs - Alt Path to be done": {
+            "group" : "To be restarted, Alternate Play",
+            "target": "reports/reports_next\\VNAs_alt_paths.md",
+            "about" : "Adult VNs available already started, done once but alternative route available",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "DONE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "content_ref": "contentByAlternateToBeDone"
+              }
+            ]
+          },
+          "Except VNs - Alt Path to be done": {
+            "group" : "To be restarted, Alternate Play",
+            "target": "reports/reports_next\\not_vn_alt_paths.md",
+            "about" : "Game available already started, done once but alternative route/choice/skill selection available",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "DONE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVN"
+                ],
+                "condition_type": "not",
+                "content_ref": "contentByAlternateToBeDone"
+              }
+            ]
+          },
+
           "Development followed": {
             "group" : "Development Follow UP",
             "target": "reports/reports_next\\wait_completion.md",
@@ -480,21 +496,6 @@
                   }
                 ]
               }
-            ]
-          },
-          "Test in progress or Tested": {
-            "group" : "Development Follow UP",
-            "target": "reports/reports_next\\next_wait_complete_update_available.md",
-            "about": "Waiting for completion but game has been updated since last play",
-            "path_ref": "game_available_and_in_development",
-            "commentTag": "NEXT",
-            "showTags": "waitedGameTags",
-            "contents": [
-                  {
-                    "tag_condition" : [ "PLAY/TESTED"],
-                    "multi_condition": "or",
-                    "content_ref": "contentInProgressAndByNext"
-                  }
             ]
           },
           "Game available with expected update": {

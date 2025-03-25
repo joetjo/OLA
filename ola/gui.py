@@ -17,6 +17,7 @@ import os
 import subprocess
 import time
 from datetime import datetime
+from operator import index
 
 from PySide6 import QtGui
 from PySide6.QtCore import QCoreApplication, QSize, QThreadPool, QTimer, Qt
@@ -34,8 +35,8 @@ from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScann
 
 
 class OLAVersionInfo:
-    VERSION = "2025.03.23c"
-    PREVIOUS = "2025.03.20"
+    VERSION = "2025.03.WIP"
+    PREVIOUS = "2025.03.23c"
 
 
 class OLAGuiSetup:
@@ -52,11 +53,13 @@ class OLAGuiSetup:
     STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
     STYLE_QLABEL_EXTRAINFO = "QLabel{font: italic;color: gray;}"
     STYLE_QLABEL_COMMENT = "border-width: 1px; border-style: dotted; border-color: gray;"
+    STYLE_QCOMBO_EDITABLE = "QComboBox{border-width: 2px; border-style: outset; border-color: lightgray; font-weight: bold}"
     STYLE_QLINE_EDITABLE = "QLineEdit{border-width: 2px; border-style: outset; border-color: lightgray; font-weight: bold}"
     STYLE_QLINE_EDITED = "QLineEdit{border-width: 2px; border-style: outset; border-color: red; background-color: white; font-weight: bold}"
     SHEET_VIEW_FILTER_TAG = "#TYPE"
     SESSION_VIEW_FILTER_TAG = "#PLAY"
     REPORT_VIEW_FILTER_ID = "Group"
+    REPORT_EDITOR_VIEW_FILTER_ID = "?????"  # TODO not sure yet
     DEFAULT_SESSION_FILTER = "INPROGRESS"
     DEFAULT_INSTALL_MODE_FILTER = True
     DEFAULT_VN_MODE_FILTER = True
@@ -84,7 +87,7 @@ class OLAGuiSetup:
         self.posy = self.initSetupEntry(OLAGuiSetup.POSY, 10)
         self.height = self.initSetupEntry(OLAGuiSetup.HEIGHT, 0)
         self.width = self.initSetupEntry(OLAGuiSetup.WIDTH, 0)
-        self.default_game_folder = self.initSetupEntry(OLAGuiSetup.DEFAULT_GAME_FOLDER, "" )
+        self.default_game_folder = self.initSetupEntry(OLAGuiSetup.DEFAULT_GAME_FOLDER, "")
 
     def initSetupEntry(self, name, default_value):
         reset = ""
@@ -116,6 +119,7 @@ class OLAGuiSetup:
         self.setupFile.save()
         self.dirty = False
 
+
 class OLALock:
     MDENGINE = False
 
@@ -139,11 +143,13 @@ class OLAGui:
     PLAYING_PANEL = None
     SESSIONS = None
     REPORTS = None
+    REPORTS_EDITOR = None
     SESSIONS_TAB_NAME = "Sessions"
     ASSISTANT = None
     ASSISTANT_TAB_NAME = "Obsidian Sheets"
     EXCLUDED_TAB_NAME = "Excluded launchers"
     REPORTS_TAB_NAME = "Reports"
+    REPORTS_EDITOR_TAB_NAME = "Reports Editor"
 
     @staticmethod
     def createContainerPanel(layout):
@@ -264,7 +270,7 @@ class OLAFilter(QGroupBox):
             self.vnaSelector = OLAFilter.createCheckbox(layout, 0, 5, linkListener,
                                                         Icons.STORY2,
                                                         "Display also Adult Story game (VNA)",
-                                                       default=OLAGuiSetup.DEFAULT_VNA_MODE_FILTER )
+                                                        default=OLAGuiSetup.DEFAULT_VNA_MODE_FILTER)
 
         if listener is not None:
             layout.addWidget(QLabel("Search"), 1, 0)
@@ -280,10 +286,10 @@ class OLAFilter(QGroupBox):
             self.linkSelector = OLAFilter.createCheckbox(layout, 1, 3,
                                                          linkListener, Icons.QUESTION, "Display also game not properly declared in Obsidian")
             self.installSelector = OLAFilter.createCheckbox(layout, 1, 5,
-                                                            linkListener, Icons.PLAY, "Display only installed game", default = defaultInstallMode )
+                                                            linkListener, Icons.PLAY, "Display only installed game", default=defaultInstallMode)
 
     @staticmethod
-    def createCheckbox(layout, line, pos, listener, icon, tip, default = False ):
+    def createCheckbox(layout, line, pos, listener, icon, tip, default=False):
         linkLabel = QLabel()
         linkLabel.setPixmap(icon)
         linkLabel.setToolTip(tip)
@@ -293,7 +299,7 @@ class OLAFilter(QGroupBox):
             result.setCheckState(Qt.CheckState.Checked)
         result.setToolTip(tip)
         result.stateChanged.connect(listener)
-        layout.addWidget(result, line, pos+1)
+        layout.addWidget(result, line, pos + 1)
         return result
 
     def isFiltering(self):
@@ -406,6 +412,7 @@ class OLAPlayingPanel(QWidget):
                                                            linkListener=self.applyCheck)
         self.filters[OLAGui.ASSISTANT_TAB_NAME] = OLAFilter(OLAGuiSetup.SHEET_VIEW_FILTER_TAG, self.applyFilter)
         self.filters[OLAGui.REPORTS_TAB_NAME] = OLAFilter(OLAGuiSetup.REPORT_VIEW_FILTER_ID, self.applyFilter, searchEnabled=False)
+        self.filters[OLAGui.REPORTS_EDITOR_TAB_NAME] = OLAFilter(OLAGuiSetup.REPORT_EDITOR_VIEW_FILTER_ID, self.applyFilter, searchEnabled=False)
         self.filter = self.defaultFilter
 
         self.layout().addWidget(self.defaultFilter)
@@ -415,6 +422,8 @@ class OLAPlayingPanel(QWidget):
         self.filters[OLAGui.ASSISTANT_TAB_NAME].setVisible(False)
         self.layout().addWidget(self.filters[OLAGui.REPORTS_TAB_NAME])
         self.filters[OLAGui.REPORTS_TAB_NAME].setVisible(False)
+        self.layout().addWidget(self.filters[OLAGui.REPORTS_EDITOR_TAB_NAME])
+        self.filters[OLAGui.REPORTS_EDITOR_TAB_NAME].setVisible(False)
 
     def activateFilter(self, tabName):
         selectedFilter = None
@@ -617,7 +626,7 @@ class OLAGameLine(QWidget):
             self.dialog = QFileDialog(self)
             self.dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptOpen)
             self.dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
-            self.dialog.setNameFilters([ "Executable (*.exe)", "Script (*.bat)", "All Files (*)" ])
+            self.dialog.setNameFilters(["Executable (*.exe)", "Script (*.bat)", "All Files (*)"])
             self.dialog.setWindowTitle('Select game executable...')
             self.dialog.setDirectory(OLAGuiSetup.getSetupEntry(OLAGuiSetup.DEFAULT_GAME_FOLDER))
             self.dialog.finished.connect(self.doLocaliseDone)
@@ -804,7 +813,7 @@ class OLASharedGameListWidget(QWidget):
     def sessionMatchFilter(self, session):
         try:
             sheet = OLABackend.VAULT.SHEETS[session.getSheet()]
-        except :
+        except:
             sheet = None
         # Discard of session with no sheet if sheet is requested by filter
         if not self.showUnlink and sheet is None:
@@ -820,7 +829,7 @@ class OLASharedGameListWidget(QWidget):
             return self.sheetMatchFilter(sheet)
         # No sheet but no filter selected -> let's display it ( game not conform to OLA )
         elif self.filter.value is None:
-                return True
+            return True
         # else: no  sheet, filter value is set
         elif self.showUnlink:
             return True
@@ -851,7 +860,7 @@ class OLASharedGameListWidget(QWidget):
         if self.filter.value is not None:
             for t in tags:
                 if t.startswith(self.filter.value):
-                        return True
+                    return True
         else:
             return True
 
@@ -902,11 +911,11 @@ class OLASharedGameListWidget(QWidget):
 
     def load(self, rawList):
         self.filter.onLoad()
-        filteringNeeded = ( not self.showUnlink
-                or self.showOnlyInstalled
-                or self.showVN
-                or self.showVNA
-                or self.filter.isFiltering() )
+        filteringNeeded = (not self.showUnlink
+                           or self.showOnlyInstalled
+                           or self.showVN
+                           or self.showVNA
+                           or self.filter.isFiltering())
         if filteringNeeded:
             logging.debug("Loading session with filter {} / {}".format(self.filter.tag, self.filter.value))
             selList = []
@@ -958,6 +967,7 @@ class OLAGameSessions(OLASharedGameListWidget):
     def reload(self):
         self.loadSessions()
 
+
 class OLABaseReportLine():
     def __init__(self, sheetPath, customLabel=None, generateButtonState=True):
         super().__init__()
@@ -1000,6 +1010,7 @@ class OLABaseReportLine():
     def regenerateReport(self):
         OLAGui.APP.startSingleReport(self.sheet)
 
+
 class OLAReportLine(OLABaseReportLine):
     def __init__(self, row, col, layout, sheetPath, reportData, customLabel=None, generateButtonState=True):
         super().__init__(sheetPath, customLabel, generateButtonState)
@@ -1028,10 +1039,10 @@ class OLAReportLine(OLABaseReportLine):
         sheet.setToolTip(tips)
         # Sheet adjustement to be less "disaligned"
         current = sheet.text()
-        if len(current)>self.sheetMaxLen:
+        if len(current) > self.sheetMaxLen:
             current = "{}...".format(current[0:self.sheetMaxLen])
         else:
-            current = current + ' ' * ( self.sheetMaxLen - len(current))
+            current = current + ' ' * (self.sheetMaxLen - len(current))
         sheet.setText(current)
         layout.addWidget(sheet, row, colUpdated)
 
@@ -1056,6 +1067,7 @@ class OLAReportLine(OLABaseReportLine):
 
     def refreshSize(self):
         self.countLabel.setText("{}".format(OLABackend.VAULT.REPORT_INFO.get(self.sname)))
+
 
 class OLADetailedReportLine(OLABaseReportLine):
     def __init__(self, row, layout, sheetPath, reportData, customLabel=None, generateButtonState=True):
@@ -1112,12 +1124,12 @@ class OLADetailedReportLine(OLABaseReportLine):
         bDesc.setStatusTip("Show report explanation")
         bDesc.setIcon(Icons.QUESTION)
         bDesc.clicked.connect(self.showHideDescription)
-        layout.addWidget( bDesc, row+1, 1)
+        layout.addWidget(bDesc, row + 1, 1)
 
         self.desc = QLabel(reportData["description"])
         self.desc.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_COMMENT)
         self.desc.setVisible(False)
-        layout.addWidget( self.desc, row+3, 3)
+        layout.addWidget(self.desc, row + 3, 3)
 
     def refreshSize(self):
         self.countLabel.setText("{}".format(OLABackend.VAULT.REPORT_INFO.get(self.sname)))
@@ -1239,8 +1251,8 @@ class OLAReports(QWidget):
                 col = 2
             elif col == 2:
                 col = 5
-#            elif col == 5:
-#                col = 8
+            #            elif col == 5:
+            #                col = 8
             else:
                 row = row + 1
                 col = 0
@@ -1251,7 +1263,7 @@ class OLAReports(QWidget):
         if selectedGroup is not None and len(selectedGroup) == 0:
             selectedGroup = None
 
-        if len(self.reportsPanel) == 0: # 1st call : init all widgets
+        if len(self.reportsPanel) == 0:  # 1st call : init all widgets
             for group, sheetPaths in sheetPathsByGroup.items():
                 self.addDetailedReportGroup(group, sheetPaths, generateButtonState)
                 self.addReportGroup(group, sheetPaths, generateButtonState)
@@ -1259,7 +1271,7 @@ class OLAReports(QWidget):
             tmpData = dict()
             tmpData["about"] = "Report that identify duplicate files in predefined folders"
             self.reports["Duplicate files"] = OLAReportLine(1, 0, groupPanelLayout, OLABackend.VAULT.REPORTS_DUPFILE_NAME, tmpData,
-                                                        customLabel="Files duplication")
+                                                            customLabel="Files duplication")
             self.reportPanelLayout.addStretch()
 
         for group in sheetPathsByGroup.keys():
@@ -1279,11 +1291,381 @@ class OLAReports(QWidget):
                 self.reports[group].setVisible(True)
 
         if selectedGroup is None:
-                self.reportsPanel["Files"].setVisible(True)
-                self.reports["Files"].setVisible(True)
+            self.reportsPanel["Files"].setVisible(True)
+            self.reports["Files"].setVisible(True)
         else:
-                self.reportsPanel["Files"].setVisible(False)
-                self.reports["Files"].setVisible(False)
+            self.reportsPanel["Files"].setVisible(False)
+            self.reports["Files"].setVisible(False)
+
+
+class OLAExpandPanel(QWidget):
+    def __init__(self, label, content):
+        super().__init__()
+        self.content = content
+
+        self.setLayout(QVBoxLayout())
+        self.layout().setSpacing(0)
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
+        #Line 1 - header
+        header = QWidget()
+        header.setLayout(QHBoxLayout())
+        header.layout().setSpacing(0)
+        header.layout().setContentsMargins(0, 0, 0, 0)
+        header.layout().addWidget(QLabel(label))
+        bExpand = QPushButton("")
+        bExpand.setStatusTip("Expand this bloc")
+        bExpand.setIcon(Icons.PENCIL)
+        bExpand.clicked.connect(self.expand)
+        header.layout().addWidget(bExpand)
+        header.layout().addStretch()
+        self.layout().addWidget(header)
+
+        # Line 2 - body
+        self.body = QWidget()
+        self.body.setLayout(QHBoxLayout())
+        self.body.layout().addWidget(QLabel("|-"))
+        self.body.layout().setSpacing(0)
+        self.body.layout().setContentsMargins(0, 0, 0, 0)
+
+        self.contentPanel = QGroupBox()
+        self.contentPanel.setLayout(QVBoxLayout())
+        self.contentPanel.layout().setContentsMargins(0, 0, 0, 0)
+        self.contentPanel.layout().setSpacing(0)
+        self.contentPanel.layout().addWidget(self.content)
+        self.body.layout().addWidget(self.contentPanel)
+
+        self.body.layout().addStretch()
+
+        self.body.setVisible(False)
+        self.layout().addWidget(self.body)
+
+    def expand(self):
+        self.body.setVisible(not self.body.isVisible())
+
+
+class OLAValueManage(QWidget):
+    def __init__(self, parentDataBloc, name, valueIndex=-1):
+        super().__init__()
+        self.parentDataBloc = parentDataBloc
+        self.name = name
+        self.valueIndex = valueIndex
+        self.edited = False
+
+    def get(self):
+        if self.valueIndex == -1:
+            try:
+                return self.parentDataBloc[self.name]
+            except KeyError:
+                return ""
+        else:
+            return self.parentDataBloc[self.name][self.valueIndex]
+
+    def set(self, value):
+        if self.valueIndex == -1:
+            self.parentDataBloc[self.name] = value
+        else:
+            self.parentDataBloc[self.name][self.valueIndex] = value
+
+
+class OLAPropertyEditor(OLAValueManage):
+    def __init__(self, parentDataBloc, name, valueIndex=-1):
+        super().__init__(parentDataBloc, name, valueIndex=valueIndex)
+
+        self.setLayout(QHBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
+        self.input = QLineEdit()
+        #self.input.setFixedWidth(500)
+        self.input.setText(self.get())
+        self.input.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITABLE)
+        self.input.textChanged.connect(self.textUpdated)
+        self.input.editingFinished.connect(self.textFinished)
+        self.layout().addWidget(self.input)
+
+    def textUpdated(self):
+        if not self.edited:
+            self.input.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITED)
+            self.edited = True
+
+    def textFinished(self):
+        self.input.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITABLE)
+        self.edited = False
+        self.set(self.input.text())
+
+class OLAChoiceSelection(OLAValueManage):
+    def __init__(self, parentDataBloc, name, values, valueIndex=-1):
+        super().__init__(parentDataBloc, name, valueIndex=valueIndex)
+
+        self.setLayout(QHBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
+
+        self.input = QComboBox()
+        self.input.setStyleSheet(OLAGuiSetup.STYLE_QCOMBO_EDITABLE)
+        self.input.setMaxVisibleItems(OLAGuiSetup.VISIBLE_TYPE_COUNT)
+        self.input.setMinimumWidth(50)
+        self.input.addItems(values)
+        self.input.setCurrentText(self.get())
+        self.input.currentTextChanged.connect(self.textListener)
+
+        self.layout().addWidget(self.input)
+
+    def textListener(self):
+        self.set(self.input.currentText())
+
+
+class OLAPropertiesEditor(OLAValueManage):
+    def __init__(self, parentDataBloc, name):
+        super().__init__(parentDataBloc, name)
+
+        self.setLayout(QVBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
+        i = 0
+        for s in self.get():
+            self.layout().addWidget(OLAPropertyEditor(parentDataBloc, name, valueIndex=i))
+            i = i + 1
+
+
+class OLAChoicesSelection(OLAValueManage):
+    def __init__(self, parentDataBloc, name, values):
+        super().__init__(parentDataBloc, name)
+
+        self.setLayout(QVBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
+        i = 0
+        for s in self.get():
+            self.layout().addWidget(OLAChoiceSelection(parentDataBloc, name, values, valueIndex=i))
+            i = i + 1
+
+
+
+class OLAContentEditor(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.layout = QGridLayout()
+        self.setLayout(self.layout)
+        self.layout.setContentsMargins(5, 5, 5, 5)
+        self.layout.setSpacing(0)
+        self.lineCount = 0
+
+        self.content = None
+
+    def addSeparator(self, label):
+        self.layout.addWidget(QLabel("--------"), self.lineCount, 0)
+        self.layout.addWidget(QLabel(label), self.lineCount, 2)
+        self.lineCount = self.lineCount + 1
+
+    def addChoiceSelection(self, parentBloc, name, values):
+        self.layout.addWidget(QLabel(name), self.lineCount, 0)
+        self.layout.addWidget(QLabel(" : "), self.lineCount, 1)
+        self.layout.addWidget(OLAChoiceSelection(parentBloc, name, values), self.lineCount, 2)
+        self.lineCount = self.lineCount + 1
+
+    def addChoicesSelection(self, parentBloc, name, values):
+        self.layout.addWidget(QLabel(name), self.lineCount, 0)
+        self.layout.addWidget(QLabel(" : "), self.lineCount, 1)
+        comment = QLabel("list of choice")
+        comment.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_EXTRAINFO)
+        self.layout.addWidget(comment, self.lineCount, 2)
+        self.lineCount = self.lineCount + 1
+        self.layout.addWidget(OLAChoicesSelection(parentBloc, name, values), self.lineCount, 2)
+        self.lineCount = self.lineCount + 1
+
+    def addPropertyEdit(self, parentBloc, name):
+        self.layout.addWidget(QLabel(name), self.lineCount, 0)
+        self.layout.addWidget(QLabel(" : "), self.lineCount, 1)
+        self.layout.addWidget(OLAPropertyEditor(parentBloc, name), self.lineCount, 2)
+        self.lineCount = self.lineCount + 1
+
+    def addPropertiesEdit(self, parentBloc, name):
+        self.layout.addWidget(QLabel(name), self.lineCount, 0)
+        self.layout.addWidget(QLabel(" : "), self.lineCount, 1)
+        comment = QLabel("list of string")
+        comment.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_EXTRAINFO)
+        self.layout.addWidget(comment, self.lineCount, 2)
+        self.lineCount = self.lineCount + 1
+        self.layout.addWidget(OLAPropertiesEditor(parentBloc, name), self.lineCount, 2)
+        self.lineCount = self.lineCount + 1
+
+    def addTestOperatorEdit(self, parentBloc):
+        self.layout.addWidget(QLabel("logical condition"), self.lineCount, 0)
+        self.layout.addWidget(QLabel(" : "), self.lineCount, 1)
+        sub_panel = QWidget()
+        sub_panel.setLayout(QHBoxLayout())
+
+        sub_panel.layout().addWidget(OLAChoiceSelection(parentBloc, "condition_type", [ "", "not"] ))
+        sub_panel.layout().addWidget(QLabel(" , "))
+        sub_panel.layout().addWidget(OLAChoiceSelection(parentBloc, "multi_condition", [ "or", "and"] ))
+        sub_panel.layout().addStretch()
+
+        self.layout.addWidget(sub_panel, self.lineCount, 2)
+        self.lineCount = self.lineCount + 1
+
+    def addContentBloc(self, parentBloc, content_refs, tag_refs, blocname="contents"):
+        content = OLAContentEditor()
+        content.addPropertyEdit(parentBloc, "title")
+        operator = QWidget()
+        operator.setLayout(QHBoxLayout())
+        try:
+            if parentBloc["tag_refs"] or parentBloc["tag_condition"]:
+                content.addTestOperatorEdit(parentBloc)
+        except KeyError:
+            pass
+        try:
+            if parentBloc["tag_refs"]:
+                content.addChoicesSelection(parentBloc, "tag_refs", tag_refs)
+        except KeyError:
+            pass
+        try:
+            if parentBloc["tag_condition"]:
+                content.addPropertiesEdit(parentBloc, "tag_condition")
+        except KeyError:
+            pass
+        try:
+            if parentBloc["content_ref"]:
+                content.addChoiceSelection(parentBloc, "content_ref", content_refs)
+        except KeyError:
+            pass
+        try:
+            for subcontent in parentBloc["contents"]:
+                content.addContentBloc(subcontent, content_refs, tag_refs)
+        except KeyError:
+            pass
+        try:
+            content.addContentBloc(parentBloc["else"], content_refs, tag_refs, blocname="else")
+        except KeyError:
+            pass
+
+        self.layout.addWidget(OLAExpandPanel(blocname, content), self.lineCount, 2)
+        self.lineCount = self.lineCount+1
+
+
+    @staticmethod
+    def addProperContentEditor(reportEditor, parentBloc, content_refs, tag_refs):
+        try:
+            if parentBloc["content_ref"]:
+                reportEditor.addPropertyEdit(parentBloc, "title")
+                reportEditor.addChoiceSelection(parentBloc, "content_ref", content_refs)
+            return True
+        except KeyError:
+            pass
+        try:
+            for content in parentBloc["contents"]:
+                reportEditor.addContentBloc(content, content_refs, tag_refs)
+            return True
+        except KeyError:
+            pass
+
+class OLAReportsEditor(QWidget):
+    def __init__(self, generateButtonState=True):
+        super().__init__()
+        OLAGui.REPORTS_EDITOR = self
+
+        self.all = OLABackend.VAULT.SETUP.data()
+        self.reports = self.all["global"]["reports"]
+        self.shared = self.all["global"]["shared_contents"]
+        self.paths = list(self.shared["paths"].keys())
+        self.tags = list(self.shared["tags"].keys())
+        self.info_tags = list(self.shared["info_tags"].keys())
+        self.content_refs = list(self.shared.keys())
+        self.content_refs.remove("paths")
+        self.content_refs.remove("tags")
+        self.content_refs.remove("info_tags")
+        self.disk = self.all["disk"]
+
+        # init base vertical layout
+        layout = QVBoxLayout()
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(10)  # to have the same size the session view...
+        editorPanel = QWidget()
+        self.editorPanelLayout = QVBoxLayout()
+        self.editorPanelLayout.setSpacing(0)
+        editorPanel.setLayout(self.editorPanelLayout)
+        editorPanel.setContentsMargins(0, 0, 0, 0)
+        scroll.setWidget(editorPanel)
+        layout.addWidget(scroll)
+
+        # Title line
+        self.title = QLabel("Markdown configuration - {} reports, {} shared elements, {} disk entries"
+                            .format(len(self.reports), len(self.shared), len(self.disk["folders"])))
+        self.title.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        self.editorPanelLayout.addWidget(self.title)
+
+        # EDITOR
+        self.headerEditor = OLAContentEditor()
+        props = ["base_folder", "notes_path", "reports_info_path", "reports_readme", "reports_dupfiles"]
+        #  "ignore" is a list
+        for prop in props:
+            self.headerEditor.addPropertyEdit(self.all["global"], prop)
+        self.headerEditor.addPropertiesEdit(self.all["global"], "ignore")
+        self.editorPanelLayout.addWidget(OLAExpandPanel("Header", self.headerEditor))
+
+        self.titleReport = QLabel(">>> Reports section")
+        self.titleReport.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        self.editorPanelLayout.addWidget(self.titleReport)
+        self.reportsPanels = dict()
+
+        allReportsPanel = QWidget()
+        allReportsPanel.setContentsMargins(0,0,0,0)
+        self.allReportPanelLayout = QVBoxLayout()
+        allReportsPanel.setLayout(self.allReportPanelLayout)
+
+        props = ["group", "target", "about", "commentTag"]
+        for reportName, reportData in self.reports.items():
+            reportEditor = OLAContentEditor()
+            for prop in props:
+                reportEditor.addPropertyEdit(reportData, prop)
+            reportEditor.addChoiceSelection(reportData, "path_ref", self.paths)
+            reportEditor.addChoiceSelection(reportData, "showTags", self.info_tags)
+            OLAContentEditor.addProperContentEditor(reportEditor, reportData, self.content_refs, self.tags)
+            self.reportsPanels[reportName] = reportEditor
+            self.allReportPanelLayout.addWidget(OLAExpandPanel(reportName, reportEditor))
+        self.editorPanelLayout.addWidget(OLAExpandPanel("All reports", allReportsPanel))
+
+        self.titleShared = QLabel(">>> Shared elements section")
+        self.titleShared.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        self.editorPanelLayout.addWidget(self.titleShared)
+
+        allContentRefPanel = QWidget()
+        allContentRefPanel.setContentsMargins(0,0,0,0)
+        self.allContentRefPanelLayout = QVBoxLayout()
+        self.allContentRefPanelLayout.setSpacing(0)
+        allContentRefPanel.setLayout(self.allContentRefPanelLayout)
+
+        for sharedBlocName, sharedblocData in self.shared.items():
+            if sharedBlocName == "paths" or sharedBlocName == "tags" or sharedBlocName == "info_tags":
+                contentPanel = OLAContentEditor()
+                for name in sharedblocData.keys():
+                    contentPanel.addPropertiesEdit(sharedblocData, name)
+                self.editorPanelLayout.addWidget(OLAExpandPanel(sharedBlocName, contentPanel))
+            else:
+                for subcontent in sharedblocData:
+                    contentPanel = OLAContentEditor()
+                    contentPanel.addContentBloc(subcontent, self.content_refs, self.tags,blocname=sharedBlocName)
+                    self.allContentRefPanelLayout.addWidget(contentPanel)
+        self.editorPanelLayout.addWidget(OLAExpandPanel("All content references", allContentRefPanel))
+
+        self.titleFiles = QLabel("Files section")
+        self.titleFiles.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        self.editorPanelLayout.addWidget(self.titleFiles)
+        self.fileEditor = OLAContentEditor()
+        props = ["targetAll", "targetErrors" ]
+        #  "ignore" is a list
+        for prop in props:
+            self.fileEditor.addPropertyEdit(self.disk, prop)
+        props = ["folders", "ignoreDuplicateOn", "suffixToCheck" ]
+        for prop in props:
+            self.fileEditor.addPropertiesEdit(self.disk, prop)
+        self.editorPanelLayout.addWidget(OLAExpandPanel("Files", self.fileEditor))
+
+        # FOOTER
+        self.editorPanelLayout.addStretch()
 
 
 class OLAObsidianAssistant(OLASharedGameListWidget):
@@ -1352,6 +1734,7 @@ class OLATabPanel(QTabWidget):
         self.declareTab(OLAGameSessions(), OLAGui.SESSIONS_TAB_NAME)
         self.declareTab(OLAObsidianAssistant(), OLAGui.ASSISTANT_TAB_NAME)
         self.declareTab(OLAReports(), OLAGui.REPORTS_TAB_NAME)
+        self.declareTab(OLAReportsEditor(), OLAGui.REPORTS_EDITOR_TAB_NAME)
         #self.declareTab(OLAExcludedGame(), OLAGui.EXCLUDED_TAB_NAME)
 
         self.currentChanged.connect(self.tabSelected)
@@ -1403,10 +1786,11 @@ class OLAMainWindow(QMainWindow):
         width = OLAGuiSetup.getSetupEntry(OLAGuiSetup.WIDTH)
         if width < size.width():
             width = size.width()
-        logging.info("OLAMainWindow - initial position from setup file: {},{} and size {} * {}\nNote : Edit configuration file <HOMEDIR>/ola.json if startup position windows is not visible due to screen configuration change."
-                     .format(posx, posy, height, width))
-        self.move( posx, posy )
-        self.resize( width, height )
+        logging.info(
+            "OLAMainWindow - initial position from setup file: {},{} and size {} * {}\nNote : Edit configuration file <HOMEDIR>/ola.json if startup position windows is not visible due to screen configuration change."
+            .format(posx, posy, height, width))
+        self.move(posx, posy)
+        self.resize(width, height)
 
         self.status = OLAStatusBar()
         self.setStatusBar(self.status)
@@ -1439,6 +1823,7 @@ class OLAMainWindow(QMainWindow):
         olaSetup.set(OLAGuiSetup.POSY, self.y())
         olaSetup.set(OLAGuiSetup.HEIGHT, size.height())
         olaSetup.set(OLAGuiSetup.WIDTH, size.width())
+
 
 class OLAApplication(QApplication):
 
