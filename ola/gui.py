@@ -30,6 +30,7 @@ from base.fileutil import GhFileUtil
 from base.formatutil import FormatUtil
 from base.setup import GhSetup
 from resources.resources import Icons
+from resources.olagui import GhGui, GhStyle
 from sbsgl.sbsgl import SBSGL
 from sbsgl.tools import MdReportGenerator, FileUsageGenerator, SgSGLProcessScanner, OLABackend
 
@@ -50,12 +51,6 @@ class OLAGuiSetup:
     PAGE_COUNT_WIDTH = 40
     PAGE_BUTTON_SIZE = 20
     VISIBLE_TYPE_COUNT = 15
-    STYLE_QLABEL_TITLE = "QLabel{ border-width: 1px; border-style: dotted; border-color: darkblue; font-weight: bold;}"
-    STYLE_QLABEL_EXTRAINFO = "QLabel{font: italic;color: gray;}"
-    STYLE_QLABEL_COMMENT = "border-width: 1px; border-style: dotted; border-color: gray;"
-    STYLE_QCOMBO_EDITABLE = "QComboBox{border-width: 2px; border-style: outset; border-color: lightgray; font-weight: bold}"
-    STYLE_QLINE_EDITABLE = "QLineEdit{border-width: 2px; border-style: outset; border-color: lightgray; font-weight: bold}"
-    STYLE_QLINE_EDITED = "QLineEdit{border-width: 2px; border-style: outset; border-color: red; background-color: white; font-weight: bold}"
     SHEET_VIEW_FILTER_TAG = "#TYPE"
     SESSION_VIEW_FILTER_TAG = "#PLAY"
     REPORT_VIEW_FILTER_ID = "Group"
@@ -143,30 +138,13 @@ class OLAGui:
     PLAYING_PANEL = None
     SESSIONS = None
     REPORTS = None
-    REPORTS_EDITOR = None
+    REPORTS_EDITOR = None                               # OLAReportsEditor
     SESSIONS_TAB_NAME = "Sessions"
     ASSISTANT = None
     ASSISTANT_TAB_NAME = "Obsidian Sheets"
     EXCLUDED_TAB_NAME = "Excluded launchers"
     REPORTS_TAB_NAME = "Reports"
     REPORTS_EDITOR_TAB_NAME = "Reports Editor"
-
-    @staticmethod
-    def createContainerPanel(layout):
-        pane = QWidget()
-        pane.setContentsMargins(0, 0, 0, 0)
-        pane.setLayout(layout)
-        return pane
-
-    @staticmethod
-    def createToolbarButton(label, tip, icon, action):
-        button = QPushButton(label)
-        button.setStatusTip(tip)
-        button.setIcon(icon)
-        button.setIconSize(QSize(24, 24))
-        button.clicked.connect(action)
-        return button
-
 
 class OlaAbout(QDialog):
     def __init__(self, vault):
@@ -211,21 +189,21 @@ class OLAToolbar(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
-        leftPane = OLAGui.createContainerPanel(QHBoxLayout())
-        leftPane.layout().addWidget(OLAGui.createToolbarButton("", "Scan now to detect game process running",
+        leftPane = GhGui.createContainerPanel(QHBoxLayout())
+        leftPane.layout().addWidget(GhGui.createToolbarButton("", "Scan now to detect game process running",
                                                                Icons.REFRESH, OLAGui.APP.startProcessCheck))
-        leftPane.layout().addWidget(OLAGui.createToolbarButton("", "Generate Markdown report and file usage",
+        leftPane.layout().addWidget(GhGui.createToolbarButton("", "Generate Markdown report and file usage",
                                                                Icons.REPORT, OLAGui.APP.startReporting))
-        leftPane.layout().addWidget(OLAGui.createToolbarButton("", "Parse content of Obsidian vault",
+        leftPane.layout().addWidget(GhGui.createToolbarButton("", "Parse content of Obsidian vault",
                                                                Icons.IMPORT, OLAGui.APP.parseVault))
         layout.addWidget(leftPane)
 
         layout.addStretch()
 
-        rightPane = OLAGui.createContainerPanel(QHBoxLayout())
-        rightPane.layout().addWidget(OLAGui.createToolbarButton("", "Maybe display some stiff about this wonderful application",
+        rightPane = GhGui.createContainerPanel(QHBoxLayout())
+        rightPane.layout().addWidget(GhGui.createToolbarButton("", "Maybe display some stiff about this wonderful application",
                                                                 Icons.ABOUT, OLAGui.APP.showAbout))
-        rightPane.layout().addWidget(OLAGui.createToolbarButton("", "Don't know, maybe, stop the App",
+        rightPane.layout().addWidget(GhGui.createToolbarButton("", "Don't know, maybe, stop the App",
                                                                 Icons.EXIT, OLAGui.APP.shutdown))
         layout.addWidget(rightPane)
 
@@ -761,7 +739,7 @@ class OLASharedGameListWidget(QWidget):
             self.col1.setText("Game")
         else:
             self.col1.setText(title)
-        self.col1.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        self.col1.setStyleSheet(GhStyle.STYLE_QLABEL_TITLE)
         layout.addWidget(self.col1, 0, 1)
         layout.addWidget(QLabel("Total play time"), 0, 2)
         layout.addWidget(QLabel("Last play duration"), 0, 3)
@@ -1095,7 +1073,7 @@ class OLADetailedReportLine(OLABaseReportLine):
             notes = OLABackend.VAULT.NOTES.get(self.sname)
         else:
             sheet = QLabel(customLabel)
-        sheet.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        sheet.setStyleSheet(GhStyle.STYLE_QLABEL_TITLE)
         layout.addWidget(sheet, row, 2)
         self.refreshSize()
 
@@ -1109,13 +1087,13 @@ class OLADetailedReportLine(OLABaseReportLine):
         layout.addWidget(bPanel, row, 4)
 
         mdFile = QLabel(self.sname)
-        mdFile.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_EXTRAINFO)
+        mdFile.setStyleSheet(GhStyle.STYLE_QLABEL_EXTRAINFO)
         layout.addWidget(mdFile, row + 1, 2)
 
         self.info = QLineEdit()
         self.info.setText(notes)
         self.noteEdited = False
-        self.info.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITABLE)
+        self.info.setStyleSheet(GhStyle.STYLE_QLINE_EDITABLE)
         self.info.textChanged.connect(self.noteTextUpdated)
         self.info.editingFinished.connect(self.noteTextFinished)
         layout.addWidget(self.info, row + 1, 3)
@@ -1127,7 +1105,7 @@ class OLADetailedReportLine(OLABaseReportLine):
         layout.addWidget(bDesc, row + 1, 1)
 
         self.desc = QLabel(reportData["description"])
-        self.desc.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_COMMENT)
+        self.desc.setStyleSheet(GhStyle.STYLE_QLABEL_COMMENT)
         self.desc.setVisible(False)
         layout.addWidget(self.desc, row + 3, 3)
 
@@ -1139,11 +1117,11 @@ class OLADetailedReportLine(OLABaseReportLine):
 
     def noteTextUpdated(self):
         if not self.noteEdited:
-            self.info.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITED)
+            self.info.setStyleSheet(GhStyle.STYLE_QLINE_EDITED)
             self.noteEdited = True
 
     def noteTextFinished(self):
-        self.info.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITABLE)
+        self.info.setStyleSheet(GhStyle.STYLE_QLINE_EDITABLE)
         self.noteEdited = False
         if self.sname is not None:
             OLABackend.VAULT.NOTES.set(self.sname, self.info.text())
@@ -1225,7 +1203,7 @@ class OLAReports(QWidget):
         else:
             extraInfo = ""
         reportsList[group] = QLabel("{}{}".format(group, extraInfo))
-        reportsList[group].setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        reportsList[group].setStyleSheet(GhStyle.STYLE_QLABEL_TITLE)
         self.reportPanelLayout.addWidget(reportsList[group])
         self.reportPanelLayout.addWidget(groupPanel)
 
@@ -1303,35 +1281,28 @@ class OLAExpandPanel(QWidget):
         super().__init__()
         self.content = content
 
-        self.setLayout(QVBoxLayout())
-        self.layout().setSpacing(0)
-        self.layout().setContentsMargins(0, 0, 0, 0)
+        GhGui.setupLayout(self,QVBoxLayout())
 
         #Line 1 - header
-        header = QWidget()
-        header.setLayout(QHBoxLayout())
-        header.layout().setSpacing(0)
-        header.layout().setContentsMargins(0, 0, 0, 0)
-        header.layout().addWidget(QLabel(label))
-        bExpand = QPushButton("")
-        bExpand.setStatusTip("Expand this bloc")
-        bExpand.setIcon(Icons.PENCIL)
-        bExpand.clicked.connect(self.expand)
+        header = GhGui.createContainerPanel(QHBoxLayout(), margin=5)
+        bExpand = GhGui.createDefaultButton( "", "Expand this bloc", Icons.EXPAND, self.expand )
         header.layout().addWidget(bExpand)
+        label = QLabel(label)
+        label.setStyleSheet(GhStyle.STYLE_QLABEL_COMMENT)
+        label.setMinimumWidth(100)
+        header.layout().addWidget(label)
         header.layout().addStretch()
         self.layout().addWidget(header)
 
         # Line 2 - body
-        self.body = QWidget()
-        self.body.setLayout(QHBoxLayout())
-        self.body.layout().addWidget(QLabel("|-"))
-        self.body.layout().setSpacing(0)
-        self.body.layout().setContentsMargins(0, 0, 0, 0)
+        self.body = GhGui.createContainerPanel(QHBoxLayout())
+        p = GhGui.createContainerPanel(QVBoxLayout())
+        p.layout().addWidget(QLabel("|-"))
+        p.layout().addStretch()
+        self.body.layout().addWidget(p)
 
         self.contentPanel = QGroupBox()
-        self.contentPanel.setLayout(QVBoxLayout())
-        self.contentPanel.layout().setContentsMargins(0, 0, 0, 0)
-        self.contentPanel.layout().setSpacing(0)
+        GhGui.setupLayout(self.contentPanel,QVBoxLayout())
         self.contentPanel.layout().addWidget(self.content)
         self.body.layout().addWidget(self.contentPanel)
 
@@ -1345,12 +1316,14 @@ class OLAExpandPanel(QWidget):
 
 
 class OLAValueManage(QWidget):
-    def __init__(self, parentDataBloc, name, valueIndex=-1):
+    def __init__(self, parentDataBloc, name, parentPanel=None, valueIndex=-1):
         super().__init__()
         self.parentDataBloc = parentDataBloc
         self.name = name
         self.valueIndex = valueIndex
+        self.parentPanel = parentPanel
         self.edited = False
+        self.listenerEnabled = True
 
     def get(self):
         if self.valueIndex == -1:
@@ -1359,39 +1332,91 @@ class OLAValueManage(QWidget):
             except KeyError:
                 return ""
         else:
-            return self.parentDataBloc[self.name][self.valueIndex]
+            try:
+                return self.parentDataBloc[self.name][self.valueIndex]
+            except IndexError:
+                return "no value available at index {}".format(self.valueIndex)
 
     def set(self, value):
+        if self.get() != value:
+            OLAGui.REPORTS_EDITOR.setDirty()
         if self.valueIndex == -1:
-            self.parentDataBloc[self.name] = value
+                self.parentDataBloc[self.name] = value
         else:
             self.parentDataBloc[self.name][self.valueIndex] = value
 
+    def remove(self):
+        self.listenerEnabled = False
+        del(self.parentDataBloc[self.name][self.valueIndex])
+        self.parentPanel.reload() # reload -> all index are corrupted on removal
+        OLAGui.REPORTS_EDITOR.setDirty()
+
+    def add(self):
+        self.parentDataBloc[self.name].append("")
+        self.addEntry("")
+        OLAGui.REPORTS_EDITOR.setDirty()
+
+    def up(self):
+        v1 = self.parentDataBloc[self.name][self.valueIndex-1]
+        v2 = self.parentDataBloc[self.name][self.valueIndex]
+        self.parentDataBloc[self.name][self.valueIndex] = v1
+        self.parentDataBloc[self.name][self.valueIndex-1] = v2
+        self.parentPanel.refresh()
+        OLAGui.REPORTS_EDITOR.setDirty()
+
+    def down(self):
+        v1 = self.parentDataBloc[self.name][self.valueIndex+1]
+        v2 = self.parentDataBloc[self.name][self.valueIndex]
+        self.parentDataBloc[self.name][self.valueIndex] = v1
+        self.parentDataBloc[self.name][self.valueIndex+1] = v2
+        self.parentPanel.refresh()
+        OLAGui.REPORTS_EDITOR.setDirty()
+
+    # To be overridden for automatic UI update triggered by indirect value modification
+    def refresh(self):
+        """
+        reload the dato into the ui
+        """
+        pass
+
+    def reload(self):
+        """
+        rebuild the UI
+        """
+        pass
+
+    def addEntry(self, value):
+        """
+        add empty entry
+        """
 
 class OLAPropertyEditor(OLAValueManage):
-    def __init__(self, parentDataBloc, name, valueIndex=-1):
-        super().__init__(parentDataBloc, name, valueIndex=valueIndex)
+    def __init__(self, parentDataBloc, name, parentPanel=None, valueIndex=-1):
+        super().__init__(parentDataBloc, name, parentPanel=parentPanel, valueIndex=valueIndex)
 
-        self.setLayout(QHBoxLayout())
-        self.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().setSpacing(0)
-        self.input = QLineEdit()
-        #self.input.setFixedWidth(500)
-        self.input.setText(self.get())
-        self.input.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITABLE)
-        self.input.textChanged.connect(self.textUpdated)
-        self.input.editingFinished.connect(self.textFinished)
+        GhGui.setupLayout(self, QHBoxLayout())
+        self.input = GhGui.createLineEdit( self.get(),
+                                           self.textUpdated,
+                                           self.textFinished,
+                                           style=GhStyle.STYLE_QLINE_EDITABLE)
         self.layout().addWidget(self.input)
 
+    def refresh(self):
+        # refresh trigger listener !
+        self.listenerEnabled = False
+        self.input.setText(self.get())
+        self.listenerEnabled = True
+
     def textUpdated(self):
-        if not self.edited:
-            self.input.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITED)
+        if self.listenerEnabled and not self.edited:
+            self.input.setStyleSheet(GhStyle.STYLE_QLINE_EDITED)
             self.edited = True
 
     def textFinished(self):
-        self.input.setStyleSheet(OLAGuiSetup.STYLE_QLINE_EDITABLE)
-        self.edited = False
-        self.set(self.input.text())
+        if self.listenerEnabled:
+            self.input.setStyleSheet(GhStyle.STYLE_QLINE_EDITABLE)
+            self.edited = False
+            self.set(self.input.text())
 
 class OLAChoiceSelection(OLAValueManage):
     def __init__(self, parentDataBloc, name, values, valueIndex=-1):
@@ -1402,7 +1427,7 @@ class OLAChoiceSelection(OLAValueManage):
         self.layout().setSpacing(0)
 
         self.input = QComboBox()
-        self.input.setStyleSheet(OLAGuiSetup.STYLE_QCOMBO_EDITABLE)
+        self.input.setStyleSheet(GhStyle.STYLE_QCOMBO_EDITABLE)
         self.input.setMaxVisibleItems(OLAGuiSetup.VISIBLE_TYPE_COUNT)
         self.input.setMinimumWidth(50)
         self.input.addItems(values)
@@ -1416,16 +1441,74 @@ class OLAChoiceSelection(OLAValueManage):
 
 
 class OLAPropertiesEditor(OLAValueManage):
-    def __init__(self, parentDataBloc, name):
+    def __init__(self, parentDataBloc, name, infoLabel):
         super().__init__(parentDataBloc, name)
 
+        self.propertiesWidget = dict()   # index by "key" and contains  "root"  "edt"  "up"  "down"
         self.setLayout(QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().setSpacing(0)
+        self.infoLabel = infoLabel
+
+        self.loadUI()
+
+    def loadUI(self):
+        content = self.get()
+        lastIndex = len(content)
+        self.infoLabel.setText("list of {} strings".format(lastIndex))
+        lastIndex = lastIndex - 1
         i = 0
-        for s in self.get():
-            self.layout().addWidget(OLAPropertyEditor(parentDataBloc, name, valueIndex=i))
+        for value in content:
+            self.insertPropertyEditor(i, lastIndex, self.parentDataBloc, self.name)
             i = i + 1
+
+    def reload(self):
+        for i, w in self.propertiesWidget.items():
+            w["root"].setVisible(False)
+            self.layout().removeWidget(w["root"])
+        self.propertiesWidget = dict()
+        self.loadUI()
+
+    def insertPropertyEditor(self, i, lastIndex, parentDataBloc, name):
+        p = GhGui.createContainerPanel(QHBoxLayout())
+        e = OLAPropertyEditor(parentDataBloc, name, parentPanel=self, valueIndex=i)
+        p.layout().addWidget(e)
+        bpanel = GhGui.createContainerPanel(QHBoxLayout())
+        bpanel.layout().addWidget(GhGui.createDefaultButton("", "Remove entry", Icons.DELETE, e.remove))
+        if i > 0:
+            bup = GhGui.createDefaultButton("", "Move up", Icons.UP, e.up)
+        else:
+            bup = GhGui.createDefaultButton("", "", Icons.VOID, e.up)
+            bup.setDisabled(True)
+        if i != lastIndex:
+            bdown = GhGui.createDefaultButton("", "Move down", Icons.DOWN, e.down)
+        else:
+            bdown = GhGui.createDefaultButton("", "", Icons.VOID, e.remove)
+            bdown.setDisabled(True)
+        bpanel.layout().addWidget(bup)
+        bpanel.layout().addWidget(bdown)
+        self.propertiesWidget[self.key(i)] = { "root" : p, "edt" : e, "up" : bup, "down": bdown}
+
+
+        p.layout().addWidget(bpanel)
+        p.layout().addStretch()
+        self.layout().addWidget(p)
+
+    def key(self,i):
+        return "k{}".format(i)
+
+    def refresh(self):
+        for i, w in self.propertiesWidget.items():
+            w["edt"].refresh()
+
+    def addEntry(self, value):
+        lastIndex = len(self.get())
+        self.infoLabel.setText("list of {} strings".format(lastIndex))
+        lastIndex = lastIndex - 1
+        w = self.propertiesWidget[self.key(lastIndex-1)]
+        w["down"].setIcon(Icons.DOWN)
+        w["down"].setEnabled(True)
+        self.insertPropertyEditor(lastIndex, lastIndex, self.parentDataBloc, self.name)
 
 
 class OLAChoicesSelection(OLAValueManage):
@@ -1468,7 +1551,7 @@ class OLAContentEditor(QWidget):
         self.layout.addWidget(QLabel(name), self.lineCount, 0)
         self.layout.addWidget(QLabel(" : "), self.lineCount, 1)
         comment = QLabel("list of choice")
-        comment.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_EXTRAINFO)
+        comment.setStyleSheet(GhStyle.STYLE_QLABEL_EXTRAINFO)
         self.layout.addWidget(comment, self.lineCount, 2)
         self.lineCount = self.lineCount + 1
         self.layout.addWidget(OLAChoicesSelection(parentBloc, name, values), self.lineCount, 2)
@@ -1483,19 +1566,22 @@ class OLAContentEditor(QWidget):
     def addPropertiesEdit(self, parentBloc, name):
         self.layout.addWidget(QLabel(name), self.lineCount, 0)
         self.layout.addWidget(QLabel(" : "), self.lineCount, 1)
-        comment = QLabel("list of string")
-        comment.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_EXTRAINFO)
-        self.layout.addWidget(comment, self.lineCount, 2)
+        comment = QLabel()
+        editor = OLAPropertiesEditor(parentBloc, name, comment)
+        p = GhGui.createContainerPanel(QHBoxLayout())
+        p.layout().addWidget(GhGui.createDefaultButton("", "Add entry", Icons.PLUS, editor.add))
+        p.layout().addStretch()
+        comment.setStyleSheet(GhStyle.STYLE_QLABEL_EXTRAINFO_RIGHT)
+        p.layout().addWidget(comment)
+        self.layout.addWidget(p, self.lineCount, 2)
         self.lineCount = self.lineCount + 1
-        self.layout.addWidget(OLAPropertiesEditor(parentBloc, name), self.lineCount, 2)
+        self.layout.addWidget(editor, self.lineCount, 2)
         self.lineCount = self.lineCount + 1
 
     def addTestOperatorEdit(self, parentBloc):
         self.layout.addWidget(QLabel("logical condition"), self.lineCount, 0)
         self.layout.addWidget(QLabel(" : "), self.lineCount, 1)
-        sub_panel = QWidget()
-        sub_panel.setLayout(QHBoxLayout())
-
+        sub_panel = GhGui.createContainerPanel(QHBoxLayout())
         sub_panel.layout().addWidget(OLAChoiceSelection(parentBloc, "condition_type", [ "", "not"] ))
         sub_panel.layout().addWidget(QLabel(" , "))
         sub_panel.layout().addWidget(OLAChoiceSelection(parentBloc, "multi_condition", [ "or", "and"] ))
@@ -1576,26 +1662,31 @@ class OLAReportsEditor(QWidget):
         self.content_refs.remove("info_tags")
         self.disk = self.all["disk"]
 
+        self.modified = False
+
         # init base vertical layout
-        layout = QVBoxLayout()
-        layout.setSpacing(0)
-        layout.setContentsMargins(0, 0, 0, 0)
-        self.setLayout(layout)
+        GhGui.setupLayout(self,  QVBoxLayout(), margin=5)
         scroll = QScrollArea()
         scroll.setWidgetResizable(10)  # to have the same size the session view...
-        editorPanel = QWidget()
-        self.editorPanelLayout = QVBoxLayout()
-        self.editorPanelLayout.setSpacing(0)
-        editorPanel.setLayout(self.editorPanelLayout)
-        editorPanel.setContentsMargins(0, 0, 0, 0)
+        editorPanel = GhGui.createContainerPanel(QVBoxLayout())
+        self.editorPanelLayout = editorPanel.layout()
         scroll.setWidget(editorPanel)
-        layout.addWidget(scroll)
+        self.layout().addWidget(scroll)
 
         # Title line
+        titleBarPanel = GhGui.createContainerPanel(QHBoxLayout())
         self.title = QLabel("Markdown configuration - {} reports, {} shared elements, {} disk entries"
                             .format(len(self.reports), len(self.shared), len(self.disk["folders"])))
-        self.title.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
-        self.editorPanelLayout.addWidget(self.title)
+        self.title.setStyleSheet(GhStyle.STYLE_QLABEL_BOLD)
+        titleBarPanel.layout().addWidget(self.title)
+        titleBarPanel.layout().addStretch()
+        self.titleComment = QLabel("")
+        self.titleComment.setStyleSheet( GhStyle.STYLE_QLABEL_EXTRAINFO)
+        titleBarPanel.layout().addWidget(self.titleComment)
+        self.saveButton = GhGui.createDefaultButton("", "Save the setup", Icons.SAVE, self.save )
+        self.saveButton.setDisabled(True)
+        titleBarPanel.layout().addWidget(self.saveButton)
+        self.editorPanelLayout.addWidget(titleBarPanel)
 
         # EDITOR
         self.headerEditor = OLAContentEditor()
@@ -1606,15 +1697,13 @@ class OLAReportsEditor(QWidget):
         self.headerEditor.addPropertiesEdit(self.all["global"], "ignore")
         self.editorPanelLayout.addWidget(OLAExpandPanel("Header", self.headerEditor))
 
-        self.titleReport = QLabel(">>> Reports section")
-        self.titleReport.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        self.titleReport = QLabel("  >>> Reports section")
+        self.titleReport.setStyleSheet(GhStyle.STYLE_QLABEL_TITLE)
         self.editorPanelLayout.addWidget(self.titleReport)
         self.reportsPanels = dict()
 
-        allReportsPanel = QWidget()
-        allReportsPanel.setContentsMargins(0,0,0,0)
-        self.allReportPanelLayout = QVBoxLayout()
-        allReportsPanel.setLayout(self.allReportPanelLayout)
+        allReportsPanel = GhGui.createContainerPanel(QVBoxLayout())
+        self.allReportPanelLayout = allReportsPanel.layout()
 
         props = ["group", "target", "about", "commentTag"]
         for reportName, reportData in self.reports.items():
@@ -1629,13 +1718,11 @@ class OLAReportsEditor(QWidget):
         self.editorPanelLayout.addWidget(OLAExpandPanel("All reports", allReportsPanel))
 
         self.titleShared = QLabel(">>> Shared elements section")
-        self.titleShared.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        self.titleShared.setStyleSheet(GhStyle.STYLE_QLABEL_TITLE)
         self.editorPanelLayout.addWidget(self.titleShared)
 
-        allContentRefPanel = QWidget()
-        allContentRefPanel.setContentsMargins(0,0,0,0)
-        self.allContentRefPanelLayout = QVBoxLayout()
-        self.allContentRefPanelLayout.setSpacing(0)
+        allContentRefPanel = GhGui.createContainerPanel(QVBoxLayout())
+        self.allContentRefPanelLayout = allContentRefPanel.layout()
         allContentRefPanel.setLayout(self.allContentRefPanelLayout)
 
         for sharedBlocName, sharedblocData in self.shared.items():
@@ -1652,7 +1739,7 @@ class OLAReportsEditor(QWidget):
         self.editorPanelLayout.addWidget(OLAExpandPanel("All content references", allContentRefPanel))
 
         self.titleFiles = QLabel("Files section")
-        self.titleFiles.setStyleSheet(OLAGuiSetup.STYLE_QLABEL_TITLE)
+        self.titleFiles.setStyleSheet(GhStyle.STYLE_QLABEL_TITLE)
         self.editorPanelLayout.addWidget(self.titleFiles)
         self.fileEditor = OLAContentEditor()
         props = ["targetAll", "targetErrors" ]
@@ -1667,6 +1754,20 @@ class OLAReportsEditor(QWidget):
         # FOOTER
         self.editorPanelLayout.addStretch()
 
+    def setDirty(self):
+        if not self.modified:
+            self.saveButton.setDisabled(False)
+            self.titleComment.setText(" *** setup edited *** ")
+            self.modified = True
+
+    def save(self):
+        if self.modified:
+            OLAGui.MAIN.setStatus("Saving VAULT configuration...");
+            OLABackend.VAULT.saveSetup()
+            OLAGui.MAIN.setStatus("VAULT configuration saved");
+            self.titleComment.setText("")
+            self.saveButton.setDisabled(True)
+            self.modified = False
 
 class OLAObsidianAssistant(OLASharedGameListWidget):
     def __init__(self):

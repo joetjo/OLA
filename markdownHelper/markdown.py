@@ -56,6 +56,9 @@ class MarkdownHelper:
         # Initialized only when loading has been requested.
         self.reports = None
 
+    def saveSetup(self):
+        self.SETUP.save();
+
     # folder: Path
     # shift: String ( String length provide the indentation level )
     def processFolder(self, folder, shift):

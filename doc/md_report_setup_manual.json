@@ -1,0 +1,1841 @@
+{
+    "version": 0,
+    "global": {
+        "base_folder": "J:\\Nicol-Documents\\GitHub\\gList2",
+        "notes_path": "reports/notes.json",
+        "reports_info_path": "reports/reports_info.json",
+        "reports_readme": "reports.md",
+        "reports_dupfiles": "disk content - duplicate stuff",
+        "ignore" : [ ".git", ".obsidian", ".gitignore", ".gitattributes", "Readme.md", "_glist",
+            "_glist", "external sources", "Modding", "notes", "Platform Check","reports", "Current Play", "Tips - Howto",
+            "reports/reports_episodic", "reports/reports_next" ,"reports/reports_play", "reports/reports_wish"
+        ],
+        "reports" : {
+          "FPS to be done": {
+            "group" : "Next Action Game",
+            "target": "reports/reports_next\\next_fps.md",
+            "about": "To choose the next FPS to do !",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isFPS"
+                ],
+                "multi_condition": "or",
+                "content_ref": "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+              }
+            ]
+          },
+          "Coop to be done": {
+            "group" : "Next Action Game",
+            "target": "reports/reports_next\\next_coop.md",
+            "about": "To choose the next coop game to do with Willy !",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "description": "main filter: isCoop",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isCoop"
+                ],
+                "multi_condition": "or",
+                "content_ref": "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+              }
+            ]
+          },
+          "Turn Based to be done": {
+            "group" : "Next Action Game",
+            "target": "reports/reports_next\\next_turn_based.md",
+            "about": "To choose the next turn based to do !",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "description": "main filter: isTurnBased",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isTurnBased"
+                ],
+                "multi_condition": "or",
+                "content_ref": "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+              }
+            ]
+          },
+          "Others RPG to be done": {
+            "group" : "Next Action Game",
+            "target": "reports/reports_next\\next_others_rpg.md",
+            "about": "To choose the next RPG ( except classical FPS or turn based ) to do ! Can be arcade, card game, hack n slash...",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "description": "main filter: isRPG",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isRPG"
+                ],
+                "multi_condition": "or",
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isTurnBased",
+                      "isFPS"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+                  }
+                ]
+              }
+            ]
+          },
+
+          "Romance VN to be done": {
+            "group" : "Next VN Game",
+            "target": "reports/reports_next\\next_romance_vn.md",
+            "about": "To choose the next Romance VN to be done ( romance is part of the game and not just for scening purpose )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVN"
+                ],
+                "multi_condition": "or",
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isStrongStory", "isRomanceAdultFocus"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "Female Focus VN to be done": {
+            "group" : "Next VN Game",
+            "target": "reports/reports_next\\next_female_vn.md",
+            "about": "To choose the next Romance VN to be done where the MC is a woman ( romance is part of the game and not just for scening purpose )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVN"
+                ],
+                "multi_condition": "or",
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isFemaleFocus"
+                    ],
+                    "content_ref": "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "Classic VN to be done": {
+            "group" : "Next VN Game",
+            "target": "reports/reports_next\\next_classic_vn.md",
+            "about": "To choose the next classic VN to be done ( romance is part of the game and not just for scening purpose )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVN"
+                ],
+                "multi_condition": "or",
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isClassic"
+                    ],
+                    "content_ref": "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "Others VN to be done": {
+            "group" : "Next VN Game",
+            "target": "reports/reports_next\\next_others_vn.md",
+            "about": "To choose the next Romance VN to be done out side female MC and Classic one ( romance is part of the game and not just for scening purpose )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVN"
+                ],
+                "multi_condition": "or",
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isStrongStory", "isRomanceAdultFocus", "isFemaleFocus", "isClassic"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "VN No Story set" : {
+            "group" : "Next VN Game",
+            "target": "reports/reports_next\\Errors-vn-story.md",
+            "about": "Missing story in a VN will lead to be not selected for next game",
+            "commentTag": "WALK",
+            "path_ref": "game_available_and_in_development",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVN"
+                ],
+                "contents": [
+                  {
+                    "tag_condition": [
+                      "STORY"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentToBeDoneByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "Strong story to be done": {
+            "group" : "Next VN Game",
+            "target": "reports/reports_next\\next_strong_story.md",
+            "about": "To choose the next strong story to read",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isStrongStory"
+                ],
+                "multi_condition": "or",
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isVN"
+                    ],
+                    "multi_condition": "or",
+                    "content_ref": "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+                  }
+               ]
+              }
+            ]
+          },
+
+          "Adult VN to be done (new)": {
+            "group" : "Next Game (Adult section)",
+            "target": "reports/reports_next\\next_adult_vn.md",
+            "about": "To choose the next new adult VN to be done ( all - no filtering )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "description" : "main filter: isVNA",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "multi_condition": "or",
+                "contents" : [
+                  {
+                    "tag_refs": [
+                      "isToBeContinued", "isWaitCompleted", "isUpdateAvailable", "isWaitUpdate", "isWaitMod"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentInProgressAndByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "Adult VN TBD Poly": {
+            "group" : "Next Game (Adult section)",
+            "target": "reports/reports_next\\next_adult_poly.md",
+            "about": "Adult VN with polygamous approach ( harem )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "KEY/VNAH"
+                ],
+                "content_ref" : "contentInProgressAndByNext"
+              }
+            ]
+          },
+          "Adult VN TBD HOT": {
+            "group" : "Next Game (Adult section)",
+            "target": "reports/reports_next\\next_adult_hot.md",
+            "about": "Adult VN very scene oriented",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "WALK",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "KEY/HOT"
+                ],
+                "content_ref" : "contentInProgressAndByStory"
+              }
+            ]
+          },
+          "Complete Adult VN to be done": {
+            "group" : "Next Game (Adult section)",
+            "target": "reports/reports_next\\next_complete_adult_vn.md",
+            "about": "To choose the next complete Adult VN to be done ( romance is part of the game and not just for scening purpose )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "multi_condition": "or",
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+                  }
+                ]
+              }
+            ]
+          },
+          "Test in progress or Tested": {
+            "group" : "Next Game (Adult section)",
+            "target": "reports/reports_next\\in_test_or_tested.md",
+            "about": "Waiting for completion but game has been updated since last play",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "waitedGameTags",
+            "contents": [
+                  {
+                    "tag_condition" : [ "PLAY/TESTED"],
+                    "multi_condition": "or",
+                    "content_ref": "contentInProgressAndByNext"
+                  }
+            ]
+          },
+
+          "EA - Adult VN (not tested yet)": {
+            "group" : "Early access",
+            "target": "reports/reports_next\\next_dev_adult_vn.md",
+            "about": "To choose the next in development adult VN to be done ( not already played pr done )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "description" : "show isVNA and isDevInProgress\nexclude isWaitUpdate and isWaitComplete",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "multi_condition": "or",
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "contents" : [
+                      {
+                        "tag_refs": [
+                          "isWaitCompleted", "isWaitUpdate", "isUpdateAvailable", "isTested"
+                        ],
+                        "multi_condition": "or",
+                        "condition_type": "not",
+                        "content_ref": "contentInProgressAndByNextNotDone"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "EA - update available": {
+            "group" : "Early access",
+            "target": "reports/reports_next\\next_update_available.md",
+            "about": "Game has been updated and can be continued",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "waitedGameTags",
+            "contents": [
+                  {
+                    "tag_refs": [
+                      "isUpdateAvailable"
+                    ],
+                    "multi_condition": "or",
+                    "contents" : [
+                      {
+                        "tag_refs": [
+                          "isWaitCompleted"
+                        ],
+                        "condition_type": "not",
+                        "content_ref": "contentInProgressAndByNext"
+                      }
+                    ]
+                  }
+            ]
+          },
+          "EA - wait completion - update available": {
+            "group" : "Early access",
+            "target": "reports/reports_next\\next_wait_complete_update_available.md",
+            "about": "Waiting for completion but game has been updated since last play",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "waitedGameTags",
+            "contents": [
+                  {
+                    "tag_refs": [
+                      "isUpdateAvailable"
+                    ],
+                    "multi_condition": "or",
+                    "contents" : [
+                      {
+                        "tag_refs": [
+                          "isWaitCompleted"
+                        ],
+                        "content_ref": "contentInProgressAndByNext"
+                      }
+                    ]
+                  }
+            ]
+          },
+
+          "VNs - Alt Path to be done": {
+            "group" : "To be restarted, Alternate Play",
+            "target": "reports/reports_next\\VNs_alt_paths.md",
+            "about" : "VN available already started, done once but alternative route available",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "DONE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNS"
+                ],
+                "content_ref": "contentByAlternateToBeDone"
+              }
+            ]
+          },
+          "Adult VNs - Alt Path to be done": {
+            "group" : "To be restarted, Alternate Play",
+            "target": "reports/reports_next\\VNAs_alt_paths.md",
+            "about" : "Adult VNs available already started, done once but alternative route available",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "DONE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "content_ref": "contentByAlternateToBeDone"
+              }
+            ]
+          },
+          "Except VNs - Alt Path to be done": {
+            "group" : "To be restarted, Alternate Play",
+            "target": "reports/reports_next\\not_vn_alt_paths.md",
+            "about" : "Game available already started, done once but alternative route/choice/skill selection available",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "DONE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVN"
+                ],
+                "condition_type": "not",
+                "content_ref": "contentByAlternateToBeDone"
+              }
+            ]
+          },
+
+          "Development followed": {
+            "group" : "Development Follow UP",
+            "target": "reports/reports_next\\wait_completion.md",
+            "about": "waiting major step on completion ",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "waitedGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "condition_type": "not",
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isWaitCompleted"
+                    ],
+                    "multi_condition": "or",
+                    "content_ref": "contentInProgressAndByDate"
+                  }
+                ]
+              }
+            ]
+          },
+          "Game available with expected update": {
+            "group" : "Development Follow UP",
+            "target": "reports/reports_next\\wait_update.md",
+            "about": "waiting any update",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "waitedGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "condition_type": "not",
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isWaitUpdate"
+                    ],
+                    "multi_condition": "or",
+                    "content_ref": "contentInProgressAndByDate"
+                  }
+                ]
+              }
+            ]
+          },
+          "Adult - Wait completion": {
+            "group" : "Development Follow UP",
+            "target": "reports/reports_next\\adult_wait_completion.md",
+            "about": "waiting major step on completion ",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "waitedGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isWaitCompleted"
+                    ],
+                    "multi_condition": "or",
+                    "content_ref": "contentInProgressAndByDate"
+                  }
+                ]
+              }
+            ]
+          },
+          "Adult - Wait update": {
+            "group" : "Development Follow UP",
+            "target": "reports/reports_next\\adult_wait_update.md",
+            "about": "waiting any update",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "waitedGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isWaitUpdate"
+                    ],
+                    "multi_condition": "or",
+                    "content_ref": "contentInProgressAndByDate"
+                  }
+                ]
+              }
+            ]
+          },
+          "Adult - Wait mod": {
+            "group" : "Development Follow UP",
+            "target": "reports/reports_next\\adult_wait_mod.md",
+            "about": "game has been updated, waiting for mod",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "waitedGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isWaitMod"
+                ],
+                "multi_condition": "or",
+                "content_ref": "contentInProgressAndByNext"
+              }
+            ]
+          },
+          "Still updated": {
+            "group" : "Development Follow UP",
+            "target": "reports/reports_next\\still_updated.md",
+            "about": "complete but update expected (dlc, epilog, ...)",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isWaitExtension"
+                ],
+                "multi_condition": "or",
+                "content_ref": "contentInProgressAndByNext"
+              }
+            ]
+          },
+          "Expected game": {
+            "group" : "Development Follow UP",
+            "target": "reports/reports_next\\expected.md",
+            "about": "waiting any update",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isWaitUpdate"
+                ],
+                "multi_condition": "or",
+                "content_ref": "contentInProgressAndByNext"
+              }
+            ]
+          },
+          "Steam deck - action": {
+            "group" : "Recap",
+            "target": "reports/reports_next\\steam_deck.md",
+            "about": "Action game that may be good for steam deck",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "STEAMDECK"
+                ],
+                "content_ref" : "contentInProgressAndCompleteToBeDoneNotStandbyByNext"
+              }
+            ]
+          },
+          "tested" : {
+            "group" : "Recap",
+            "target": "reports/reports_next\\Tested.md",
+            "about": "Game tested",
+            "commentTag": "NEXT",
+            "path_ref": "game_available_and_in_development",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "PLAY/TESTED"
+                ],
+                "contents": [
+                  {
+                    "title" : "Game tested",
+                    "tag_condition": [
+                      "DONE"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentByType",
+                    "else" : {
+                      "title" : "already done"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "in standby - VNAs": {
+            "group" : "To be restarted, Alternate Play",
+            "target": "reports/reports_next\\standby_vna.md",
+            "about" : "VNAs available already started, not in progress but not finished ( standby, alternative route, sequel, just launch once, ... ) ",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isInProgress", "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents" : [
+                      {
+                        "tag_refs" : [ "isToBeContinued" ],
+                        "content_ref": "contentByPlay"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "in standby - VNs": {
+            "group" : "To be restarted, Alternate Play",
+            "target": "reports/reports_next\\standby_vn.md",
+            "about" : "VNs available already started, not in progress but not finished ( standby, sequel, just launch once, ... ) ",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNS"
+                ],
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isInProgress", "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents" : [
+                      {
+                        "tag_refs" : [ "isToBeContinued" ],
+                        "content_ref": "contentByPlay"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "in standby - RPGs": {
+            "group" : "To be restarted, Alternate Play",
+            "target": "reports/reports_next\\standby_rpg.md",
+            "about": "RPGs already played but in standby ( to be restarted ... or not that is the question )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isRPG"
+                ],
+                "contents": [
+                  {
+                    "tag_refs" : [
+                      "isToBeContinued"
+                    ],
+                    "contents" : [
+                      {
+                        "tag_refs": [
+                          "isDevInProgress",
+                          "isInProgress"
+                        ],
+                        "condition_type": "not",
+                        "contents": [
+                          {
+                            "tag_refs": [
+                              "isDone"
+                            ],
+                            "condition_type": "not",
+                            "content_ref": "contentByNextAndType"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "in standby - Others": {
+            "group" : "To be restarted, Alternate Play",
+            "target": "reports/reports_next\\standby_others.md",
+            "about" : "game not fitting previous types and started but in standby ( not VN or RPG or Coop ) - Also include not classified games because without proper tagging , it's others",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "NEXT",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNorVNAorRPGorCoop"
+                ],
+                "condition_type": "not",
+                "contents": [
+                  {
+                    "tag_refs" : [
+                      "isToBeContinued"
+                    ],
+                    "contents" : [
+                      {
+                        "tag_refs": [
+                          "isDevInProgress",
+                          "isInProgress"
+                        ],
+                        "condition_type": "not",
+                        "contents": [
+                          {
+                            "tag_refs": [
+                              "isDone"
+                            ],
+                            "condition_type": "not",
+                            "content_ref": "contentByNextAndType"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+
+          "My wish list - RPGs": {
+            "group" : "Wish",
+            "target": "reports/reports_wish\\RPGs_wish.md",
+            "about" : "Wished RPGs ( available or in development )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isWished",
+                  "isRPG"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "title": "Not yet available !",
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ]
+                  },
+                  {
+                    "title": "Romance included !",
+                    "tag_refs": [
+                      "isRomanceStory"
+                    ]                  },
+                  {
+                    "title": "Others",
+                    "content_ref": "contentByType"
+                  }
+                ]
+              }
+            ]
+          },
+          "My wish list - VNs": {
+            "group" : "Wish",
+            "target": "reports/reports_wish\\VNs_wish.md",
+            "about" : "VN Wish listed ( ``PLATFORM/Wish`` ) for Available games ( Most expected and then 1 to undefined )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isWished",
+                  "isVNS"
+                ],
+                "multi_condition": "and",
+                "contents" :  [
+                  {
+                    "tag_refs": [
+                      "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents": [
+                      {
+                        "title": "Most expected",
+                        "tag_condition": [
+                          "PLAY/EXPECTED"
+                        ],
+                        "content_ref": "contentByDate"
+                      },
+                      {
+                        "content_ref": "contentByWish"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "My wish list - VNAs": {
+            "group" : "Wish",
+            "target": "reports/reports_wish\\VNAs_wish.md",
+            "about" : "VNA Wish listed ( ``PLATFORM/Wish`` )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isWished",
+                  "isVNA"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByWish"
+              }
+            ]
+          },
+          "My wish list - Coops": {
+            "group" : "Wish",
+            "target": "reports/reports_wish\\Coops_wish.md",
+            "about" : "Potential coop game",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isWished",
+                  "isCoop"
+                ],
+                "multi_condition": "and",
+                "content_ref": "contentByWish"
+              }
+            ]
+          },
+          "My wish list - Others": {
+            "group" : "Wish",
+            "target": "reports/reports_wish\\Others_wish.md",
+            "about" : "game not fitting previous types and wished ( not VN or RPG or Coop )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "WISH",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isWished"
+                ],
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isVNorVNAorRPGorCoop"
+                    ],
+                    "condition_type": "not",
+                    "content_ref": "contentByWish"
+                  }
+                ]
+              }
+            ]
+          },
+
+          "KickStarted": {
+            "group" : "Development Follow UP",
+            "target": "reports\\Kicks.md",
+            "about" : "kickstarted game ( development still in progress )",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "EDITOR/NOTE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isDevInProgress",
+                  "isKickStarted"
+                ],
+                "multi_condition": "and",
+                "contents": [
+                  {
+                    "content_ref": "contentByDate"
+                  }
+                ]
+              }
+            ]
+          },
+          "Wish from review": {
+            "group" : "Wish",
+            "target": "reports/reports_wish\\wish_from_review.md",
+            "about" : "game with good notation from 'home made review' that are candidate to be bought",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "PRICE",
+            "showTags": "DoneGameTags",
+            "contents": [
+              {
+                "tag_condition" : [ "PLATFORM/Review"],
+                "contents" : [
+                  {
+                    "tag_refs": [
+                      "isDoneGood"
+                    ],
+                    "contents" : [
+                      {
+                        "tag_condition" : [ "NOT/WISHED" ],
+                        "condition_type": "not",
+                        "content_ref": "contentByDoneAndCat"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+
+          "Editors": {
+            "group" : "Recap",
+            "target": "Editors.md",
+            "about" : "All editors ( that have catch my interest ). Classified by type EDITOR/ and expectation for other game EDTLOVE/( GOOD, AVG, LOW ), comment tag is INFO",
+            "path_ref": "editors",
+            "commentTag": "INFO",
+            "showTags": "editorTags",
+            "contents": [
+              {
+                "title": "%TAGNAME%",
+                "tag_condition": [ "EDITOR/" ],
+                "content_ref": "contentByEdtLove",
+                "else": {
+                  "title": "Editor without flag"
+                }
+              }
+            ]
+          },
+          "done (evaluation published)" : {
+            "group" : "Recap",
+            "target": "reports/reports_done\\Reviews.md",
+            "about": "Game with review / Evaluation published",
+            "commentTag": "DONE",
+            "path_ref": "game_available_and_in_development",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "DONE/Review"
+                ]
+              }
+            ]
+          },
+          "Done - Best games" : {
+            "group" : "Recap",
+            "target": "reports/reports_done\\BestGames.md",
+            "about": "Best games done",
+            "commentTag": "DONE",
+            "path_ref": "game_available_and_in_development",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "DONE/1"
+                ],
+                "content_ref": "contentByType"
+              }
+            ]
+          },
+          "Done - Good games" : {
+            "group" : "Recap",
+            "target": "reports/reports_done\\GoodGames.md",
+            "about": "Good game done",
+            "commentTag": "DONE",
+            "path_ref": "game_available_and_in_development",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "DONE/2"
+                ],
+                "content_ref": "contentByType"
+              }
+            ]
+          },
+          "Done VNAs": {
+            "group" : "Recap",
+            "target": "reports/reports_done\\done_vna.md",
+            "about" : "VNAs done (at least 30% of the game before stopping)",
+            "path_ref": "game_available_and_in_development",
+            "commentTag": "DONE",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "tag_refs": [
+                  "isVNA"
+                ],
+                "contents": [
+                  {
+                    "tag_refs": [
+                      "isDone"
+                    ],
+                    "content_ref": "VNAFiltering"
+                  }
+                ]
+              }
+            ]
+          },
+          "Errors - Missing tags" : {
+            "group" : "Misc",
+            "target": "reports\\Errors-Missing.md",
+            "about" : "Try to detected what is missing",
+            "path_ref": "game_available_and_in_development",
+            "commentTag" : "info",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Missing Platform",
+                "tag_condition": [
+                  "PLATFORM"
+                ],
+                "condition_type": "not"
+              },
+              {
+                "title": "Missing Type",
+                "tag_condition": [
+                  "TYPE"
+                ],
+                "condition_type": "not",
+                "content_ref": "contentByPlatform"
+              },
+              {
+                "title": "Missing Category",
+                "tag_condition": [
+                  "CAT"
+                ],
+                "condition_type": "not"
+              },
+              {
+                "title": "VN Missing Story",
+                "tag_refs": [
+                  "isVNS"
+                ],
+                "contents" : [
+                  {
+                    "title": "VN Missing Story",
+                    "tag_condition": [
+                      "STORY"
+                    ],
+                    "condition_type": "not"
+                  }
+                ]
+              }
+            ]
+          },
+          "Errors - Tag conflicts" : {
+            "group" : "Misc",
+            "target": "reports\\Errors-Conflicts.md",
+            "about" : "Try to detected conflict between tags",
+            "path_ref": "game_available_and_in_development",
+            "commentTag" : "info",
+            "showTags": "allGameTags",
+            "contents": [
+              {
+                "title": "Wished and Done",
+                "tag_condition": [
+                  "WISH", "DONE"
+                ],
+                "multi_condition": "and",
+                "contents" : [
+                  {
+                    "title": "#WISH and #DONE ( should set to PLATFORM/WISH and only #WISH tag )",
+                    "tag_condition" : [ "PLATFORM/Wish"],
+                    "condition_type": "not"
+                  }
+                ]
+              },
+              {
+                "title": "Wished and Next ?",
+                "tag_condition": [
+                  "NEXT", "WISH"
+                ],
+                "multi_condition": "and",
+                "contents" : [
+                  {
+                    "title": "#WISH and #NEXT ( should set to PLATFORM/WISH and only #WISH tag )",
+                    "tag_condition" : [ "TYPE/Coop"],
+                    "condition_type": "not"
+                  }
+                ]
+              },
+              {
+                "title": "TESTED and any tag for test is finished",
+                "tag_condition": [
+                  "PLAY/TESTED"
+                ],
+                "contents" : [
+                  {
+                  "title": "#PLAY/TESTED and in to be done state",
+                  "tag_refs": [
+                      "isWaitUpdate", "isWaitMod", "isUpdateAvailable", "isWaitCompleted", "isToBeContinued", "isAltRoute"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "Some stats": {
+            "group" : "Misc",
+            "about" : "Some numbers...",
+            "target": "reports\\Stats.md",
+            "path_ref": "game_available_and_in_development",
+            "count": {
+              "Games ": {
+                "tag_condition": [
+                  "PLATFORM"
+                ]
+              },
+              "Games to classify": {
+                "path_condition": [
+                  "2.To classify"
+                ]
+              },
+              "Games available": {
+                "path_condition": [
+                  "1.Available"
+                ]
+              },
+              "Games KickStarted": {
+                "tag_condition": [
+                  "DEV/KICKSTARTED"
+                ]
+              },
+              "Games Kick Started ( in development )": {
+                "path_condition": [
+                  "6.Kickstarted\\in progress"
+                ]
+              },
+              "Games in development": {
+                "path_condition": [
+                  "5.Dev in progress"
+                ]
+              },
+              "Games Evaluated": {
+                "tag_condition": [
+                  "DONE"
+                ]
+              },
+              "Games Evaluated 1++": {
+                "tag_condition": [
+                  "DONE/1"
+                ]
+              },
+              "Games Available 1++": {
+                "path_condition": [
+                  "1 ++"
+                ]
+              },
+              "VNA": {
+                "tag_refs": [
+                  "isVNA"
+                ]
+              },
+              "VN": {
+                "tag_refs": [
+                  "isVNS"
+                ]
+              },
+              "VN Evaluated": {
+                "tag_refs": [
+                  "isDone",
+                  "isVNS"
+                ]
+              },
+              "Games in standby": {
+                "tag_condition": [
+                  "PLAY/STANDBY"
+                ]
+              },
+              "Games with alternative route": {
+                "tag_condition": [
+                  "PLAY/ALT_ROUTES"
+                ]
+              },
+              "Games suite": {
+                "tag_condition": [
+                  "PLAY/SUITE"
+                ]
+              }
+            }
+          },
+          "Long sheet (>60 lines)" : {
+            "group" : "Misc",
+            "target": "reports/Long.md",
+            "about": "Game sheet is longer than 60 lines (only header is parsed for tags)",
+            "commentTag": "INFO",
+            "path_ref": "game_available_and_in_development",
+            "showTags": "sizeTags",
+            "contents": [
+              {
+                "tag_condition": [
+                  "LONGSHEET"
+                ]
+              }
+            ]
+          }
+        },
+        "shared_contents" : {
+          "paths" : {
+            "game_owned": ["1.Available", "2.To classify" ],
+            "game_available" : ["1.Available","2.To classify","5.Dev in progress"],
+            "game_available_and_in_development" : [ "1.Available", "2.To classify", "4.Wishlist (game available)\\Game sheets","5.Dev in progress", "6.Kickstarted\\in progress", "_Incoming" ],
+            "editors" :  [  "Editors" ]
+          },
+          "tags" : {
+            "isEditor" : [ "EDITOR" ],
+            "isKickStarted" : [ "DEV/KICKSTARTED" ],
+            "isEarlyAccess" : [ "PRICE/EARLY_ACCESS_PAID" ],
+            "isWished" : [ "PLATFORM/Wish" ],
+            "isDevInProgress" : [ "DEV/DEV_IN_PROGRESS" ],
+            "isTested" : [ "PLAY/TESTED" ],
+            "isWaitUpdate" : [ "PLAY/WAIT_UPDATE" ],
+            "isWaitMod" : [ "PLAY/WAIT_MOD" ],
+            "isUpdateAvailable" :  [ "PLAY/UPDATE_AVAILABLE" ],
+            "isWaitCompleted" : [ "PLAY/WAIT_COMPLETED" ],
+            "isWaitExtension" : [ "DEV/STILL_UPDATED" ],
+            "isInProgress" : [ "PLAY/INPROGRESS" ],
+            "isInStandby" : [ "PLAY/STANDBY" ],
+            "isToBeContinued" : [ "PLAY/STANDBY", "PLAY/NOT_FINISHED", "PLAY/STARTED" ],
+            "isSequel" : [ "PLAY/AFTER_STORY", "PLAY/SUITE" ],
+            "isAltRoute" : [ "PLAY/ALT_ROUTES", "PLAY/ALT_CHOICES" ],
+            "isDone" : [ "DONE" ],
+            "isDoneGood" : [ "DONE/1", "DONE/2" ],
+            "isRPG" : [ "TYPE/RPG" ],
+            "isFPS" : [ "TYPE/RPG/FPS" ],
+            "isTurnBased" : [ "TYPE/RPG/TourParTour", "TYPE/RPG/JRPG", "TYPE/RPG/ISO" ],
+            "isVN" : [ "TYPE/VN/", "TYPE/VNA" ],
+            "isVNS" : [ "TYPE/VN/" ],
+            "isVNA" : [ "TYPE/VNA" ],
+            "isCoop" : [ "TYPE/Coop" ],
+            "isStrongStory" :  [ "STORY/RomanceStrongStory", "STORY/StrongStory", "TYPE/VN/PureStory" ],
+            "isRomanceAdultFocus" : [ "KEY/VNAH", "STORY/RomanceAdultFocus", "KEY/HOT"],
+            "isRomanceStory" : [ "STORY/Romance" ],
+            "isClassic" : [ "STORY/ClassicAnim" ],
+            "isFemaleFocus" : [ "TYPE/VN/Yuri", "KEY/FemaleMC"],
+            "isVNorVNAorRPGorCoop" : [ "TYPE/RPG", "TYPE/VN", "TYPE/VNA", "TYPE/Coop"]
+          },
+          "info_tags" : {
+            "editorTags" : [ "EDTNOTE", "EDTTYPE" ],
+            "allGameTags" : [  "PLATFORM", "PLAY", "DEV", "CAT", "ART", "TYPE", "KEY", "NEXT", "STORY" ],
+            "PlatformGameTags" : [ "DEV", "ART", "TYPE", "KEY", "NEXT" ],
+            "DoneGameTags" : [ "DONE", "ART", "TYPE", "KEY" ],
+            "waitedGameTags" : [ "ART", "TYPE", "KEY", "NEXT", "PLAY", "DATE" ],
+            "sizeTags" : [ "LONGSHEET" ]
+          },
+          "contentByStory": [
+                          {
+                              "title": "%TAGNAME%",
+                              "tag_condition": [
+                                  "STORY/"
+                              ],
+                              "else" : {
+                                  "title": "story unset"
+                              }
+                          }
+                      ],
+          "contentByCategory": [
+                          {
+                              "title": "%TAGNAME%",
+                              "tag_condition": [
+                                  "CAT/"
+                              ],
+                              "else" : {
+                                  "title": "No category"
+                              }
+                          }
+                      ],
+          "contentByArtStyle" : [
+							{
+								"title": "Anim Art Style",
+								"tag_condition": [
+									"ART/ANIM"
+								]
+							},
+							{
+								"title": "European Art",
+								"tag_condition": [
+									"ART/EURO"
+								]
+							},
+							{
+								"title": "3D Rendering",
+								"tag_condition": [
+									"ART/3DRENDER"
+								]
+							},
+							{
+								"title": "Pixel Art",
+								"tag_condition": [
+									"ART/PIXEL"
+								]
+							},
+							{
+								"title": "Art ? It's a joke ?",
+								"tag_condition": [
+									"ART/BOF"
+								]
+							},
+							{
+								"title": "Art style undefined"
+							}
+						],
+          "contentByType" : [
+                 {
+                    "title": "%TAGNAME%",
+                    "tag_condition": [
+                        "TYPE/"
+                    ],
+                    "else": {
+                        "title": "Undefined TYPE"
+                    }
+                }
+          ],
+          "contentByDate" : [
+                 {
+                    "title": "%TAGNAME%",
+                    "tag_condition": [
+                        "DATE/"
+                    ],
+                    "else": {
+                        "title": "Target DATE note set"
+                    }
+                }
+          ],
+          "contentByTypeTagByStoryType": [
+            {
+              "title": "%TAGNAME%",
+              "tag_condition": [
+                "TYPE/"
+              ],
+              "commentTag": "NEXT",
+              "contents": [
+                {
+                  "title": "Classic Anim Story",
+                  "tag_condition": [
+                    "STORY/ClassicAnim"
+                  ]
+                },
+                {
+                  "title": "Romance with a strong story",
+                  "tag_condition": [
+                    "STORY/StrongStory"
+                  ]
+                },
+                {
+                  "title": "Pure Romance",
+                  "tag_condition": [
+                    "STORY/PureRomance"
+                  ]
+                },
+                {
+                  "title": "Story with Romance",
+                  "tag_condition": [
+                    "STORY/RomanceStory"
+                  ]
+                },
+                {
+                  "title": "Story",
+                  "tag_condition": [
+                    "KEY/NoRomanceStory"
+                  ]
+                },
+                {
+                  "title": "To try ( real story ? )",
+                  "tag_condition": [
+                    "STORY/ToTry"
+                  ]
+                },
+                {
+                  "title": "Pure action / Arcade",
+                  "tag_condition": [
+                    "STORY/NONE"
+                  ]
+                },
+                {
+                  "title": "Undefined Story type",
+                  "commentTag": "NEXT"
+                }
+              ],
+              "else": {
+                "title": "Undefined TYPE"
+              }
+            }
+          ],
+          "contentByPlatform": [
+                  {
+                      "title": "%TAGNAME%",
+                      "tag_condition": [
+                          "PLATFORM/"
+                      ],
+                      "else" : {
+                          "title": "Undefined platform"
+                      }
+                  }
+              ],
+          "contentByNextAndType" : [
+            {
+              "title" : "Must be done !",
+              "tag_condition" : [ "NEXT/1" ],
+              "content_ref" : "contentByType"
+            },
+            {
+              "title" : "Others",
+              "content_ref" : "contentByType"
+            }
+          ],
+          "contentByDoneAndCat" : [
+            {
+              "title" : "Best ones !",
+              "tag_condition" : [ "DONE/1" ],
+              "content_ref" : "contentByCategory"
+            },
+            {
+              "title" : "Good ones",
+              "content_ref" : "contentByCategory"
+            }
+          ],
+          "contentByAlternateToBeDone" : [
+                  {
+                    "tag_refs": [
+                      "isInProgress", "isDevInProgress"
+                    ],
+                    "condition_type": "not",
+                    "contents" : [
+                      {
+                        "tag_refs" : [ "isAltRoute" ],
+                        "content_ref": "contentByPlay"
+                      }
+                    ]
+                  }
+                ],
+          "contentInProgressAndCompleteToBeDoneNotStandbyByNext": [
+                  {
+                    "title" : "In progress",
+                    "description" : " | - show isInProgress ( 1st Play: not isDone / Re play )\n | - exclude isDevInProgress isToBeContinued\n | - And show by NEXT",
+                    "tag_refs": [
+                      "isInProgress"
+                    ],
+                    "contents": [
+                      {
+                        "title" : "1st play",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "else" : {
+                          "title" : "In progress - Re play"
+                        }
+                      }
+                    ],
+                    "else" : {
+                      "title" : "",
+                      "tag_refs": [
+                        "isDevInProgress",
+                        "isToBeContinued"
+                      ],
+                      "condition_type": "not",
+                      "content_ref": "contentToBeDoneByNext"
+                    }
+                  }
+                ],
+          "contentInProgressAndByNext": [
+                  {
+                    "title" : "In progress",
+                    "tag_refs": [
+                      "isInProgress"
+                    ],
+                    "contents": [
+                      {
+                        "title" : "1st play",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "else" : {
+                          "title" : "In progress - Re play"
+                        }
+                      }
+                    ],
+                    "else" : {
+                      "contents" : [
+                        {
+                          "title" : "Most expected",
+                          "tag_condition" : [ "PLAY/EXPECTED"]
+                        },
+                        {
+                          "content_ref": "contentByNext"
+                        }
+                      ]
+                    }
+                  }
+                ],
+          "contentInProgressAndByNextNotDone": [
+                  {
+                    "title" : "In progress",
+                    "tag_refs": [
+                      "isInProgress"
+                    ],
+                    "contents": [
+                      {
+                        "title" : "1st play",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "else" : {
+                          "title" : "In progress - Re play"
+                        }
+                      }
+                    ],
+                    "else" : {
+                      "tag_refs": [
+                        "isDone"
+                      ],
+                      "condition_type": "not",
+                      "contents" : [
+                        {
+                          "title" : "Most expected",
+                          "tag_condition" : [ "PLAY/EXPECTED"]
+                        },
+                        {
+                          "content_ref": "contentByNext"
+                        }
+                      ]
+                    }
+                  }
+                ],
+          "contentInProgressAndByDate": [
+                  {
+                    "title" : "In progress",
+                    "tag_refs": [
+                      "isInProgress"
+                    ],
+                    "contents": [
+                      {
+                        "title" : "1st play",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "else" : {
+                          "title" : "In progress - Re play"
+                        }
+                      }
+                    ],
+                    "else" : {
+                      "content_ref": "contentByDate"
+                    }
+                  }
+                ],
+          "contentInProgressAndByStory": [
+                  {
+                    "title" : "In progress",
+                    "tag_refs": [
+                      "isInProgress"
+                    ],
+                    "contents": [
+                      {
+                        "title" : "1st play",
+                        "tag_refs": [
+                          "isDone"
+                        ],
+                        "condition_type": "not",
+                        "else" : {
+                          "title" : "In progress - Re play"
+                        }
+                      }
+                    ],
+                    "else" : {
+                      "content_ref": "contentByStory"
+                    }
+                  }
+                ],
+          "contentToBeDoneByNext" : [
+                      {
+                        "title": "To be done",
+                        "tag_refs": [
+                          "isDone",
+                          "isWished"
+                        ],
+                        "condition_type": "not",
+                        "contents" : [
+                          {
+                            "title" : "Most expected",
+                            "tag_condition" : [ "PLAY/EXPECTED"]
+                          },
+                          {
+                            "content_ref": "contentByNext"
+                          }
+                        ]
+                      }
+                    ],
+          "contentByNext": [
+                  {
+                      "title": "%TAGNAME%",
+                      "tag_condition": [
+                          "NEXT/"
+                      ],
+                      "else" : {
+                          "title": "Undefined expectation"
+                      }
+                  }
+              ],
+          "contentByEdtLove": [
+                  {
+                      "title": "%TAGNAME%",
+                      "tag_condition": [
+                          "EDTLOVE/"
+                      ],
+                      "else" : {
+                          "title": "Undefined expectation (EDTLOVE not set)"
+                      }
+                  }
+              ],
+          "contentByWish": [
+                  {
+                      "title": "%TAGNAME%",
+                      "tag_condition": [
+                          "WISH/"
+                      ],
+                      "else" : {
+                          "title": "Undefined expectation"
+                      }
+                  }
+              ],
+          "missingStory": [
+                  {
+                    "title": "Missing Story",
+                    "tag_condition": [ "STORY" ],
+                    "condition_type": "not"
+                  }
+          ],
+          "VNAFiltering": [
+            {
+              "title": "%TAGNAME%",
+              "tag_condition": [
+                "STORY/"
+              ],
+              "contents": [
+                {
+                  "title": "Female MC",
+                  "tag_condition": [
+                    "KEY/FemaleMC"
+                  ]
+                },
+                {
+                  "title": "Classic VNA Pitch",
+                  "tag_condition": [
+                    "KEY/VNAH"
+                  ]
+                },
+                {
+                  "title": ""
+                }
+              ],
+              "else": {
+                "title": "Story ?"
+              }
+            }
+          ],
+          "VNFiltering": [
+            {
+              "title": "%TAGNAME%",
+              "tag_condition": [
+                "TYPE/"
+              ],
+              "contents": [
+                {
+                  "title": "Must Be Done",
+                  "tag_condition": [
+                    "NEXT/1"
+                  ]
+                },
+                {
+                  "title": "To be Done",
+                  "tag_condition": [
+                    "NEXT/2"
+                  ]
+                },
+                {
+                  "title": "To Test",
+                  "tag_condition": [
+                    "NEXT/3"
+                  ]
+                },
+                {
+                  "title": "For information",
+                  "tag_condition": [
+                    "NEXT/4"
+                  ]
+                },
+                {
+                  "title": "Unset expectation"
+                }
+              ],
+              "else": {
+                "title": "Unset Type"
+              }
+            }
+          ],
+          "contentByPlay": [
+            {
+              "title": "%TAGNAME%",
+              "tag_condition": [
+                "PLAY/"
+              ],
+              "contents": [
+                {
+                  "title": "Hybrid VN Action",
+                  "tag_condition": [
+                    "TYPE/VN/Action"
+                  ]
+                },
+                {
+                  "title": "Strong Story",
+                  "tag_condition": [
+                    "STORY/StrongStory"
+                  ]
+                },
+                {
+                  "title": "Romance Story",
+                  "tag_condition": [
+                    "STORY/RomanceStory"
+                  ]
+                },
+                {
+                  "title": "Light Story"
+                }
+              ],
+              "else": {
+                "title": "Story ?"
+              }
+            }
+          ]
+        }
+    },
+	"disk": {
+		"folders" : [
+			"E:\\Jeux Standalone ou Patch Jeux\\RealVN",
+			"E:\\Jeux Standalone ou Patch Jeux\\RealVN-FreeVNs",
+			"E:\\Jeux Standalone ou Patch Jeux\\RealVN-FreeVNs_Vrac",
+			"E:\\Jeux Standalone ou Patch Jeux\\RealVN-WIP-Tested",
+            "E:\\Jeux Standalone ou Patch Jeux\\A_CLASSER_COMPLET",
+            "E:\\Jeux Standalone ou Patch Jeux\\A_CLASSER_2",
+			"E:\\Downloads\\VNDwld",
+			"G:\\RealVN-WIP",
+			"G:\\RealVN-ToBeClassified",
+			"E:\\Jeux Standalone ou Patch Jeux\\BuyOnItchIO",
+			"E:\\Jeux Standalone ou Patch Jeux\\BuyOnDenpa",
+			"E:\\Jeux Standalone ou Patch Jeux\\BuyOnMangaGamer"
+		],
+        "ignoreDuplicateOn" : [
+          "Done1", "Done2", "Done3", "steam.url", "itchio.url", "_TESTED", "Nouveau raccourci Internet.url", "3-Yuri", "4-Romance", "f95.url", "VNs", "maybe", "_3_Romance", "_3_Yuri", "readme.txt", "Saisons", "Previous", "Mods", "Saves"
+        ],
+        "suffixToCheck" : [
+          "dll", "pak"
+        ],
+        "targetAll" : "reports\\disk content - all files.md",
+        "targetErrors" : "reports\\disk content - duplicate stuff.md"
+	}
+}

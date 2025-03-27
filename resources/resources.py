@@ -47,6 +47,13 @@ class Icons:
     RUNNING = None
     MANY = None
     NOT_FOUND = None
+    SAVE = None
+    EXPAND = None
+    PLUS = None
+    MINUS = None
+    DELETE = None
+    UP = None
+    DOWN = None
 
     CACHE = dict()
 
@@ -81,6 +88,13 @@ class Icons:
         Icons.IMPORT = QPixmap(resource_path("import-file-24.png"))
         Icons.MANY = QPixmap(resource_path("many-16.png"))
         Icons.NOT_FOUND = QPixmap(resource_path("clear-search-16.png"))
+        Icons.SAVE = QPixmap(resource_path("save-16.png"))
+        Icons.EXPAND = QPixmap(resource_path("expand-16.png"))
+        Icons.PLUS = QPixmap(resource_path("plus-16.png"))
+        Icons.MINUS = QPixmap(resource_path("minus-16.png"))
+        Icons.DELETE = QPixmap(resource_path("delete-16.png"))
+        Icons.UP = QPixmap(resource_path("up-16.png"))
+        Icons.DOWN = QPixmap(resource_path("down-16.png"))
 
     @staticmethod
     def loadIcons(iconName):
